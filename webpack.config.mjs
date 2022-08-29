@@ -3,6 +3,7 @@ import CopyPlugin from "copy-webpack-plugin";
 import { fileURLToPath } from "url";
 import NodePolyfillPlugin from 'node-polyfill-webpack-plugin';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
+import Dotenv from 'dotenv-webpack';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -57,6 +58,9 @@ export default function(env, argv) {
     resolve: {
       // https://stackoverflow.com/questions/40565361/what-does-resolve-extensions-do-in-webpack
       extensions: [ '.tsx', '.jsx', '.ts', '.js' ],
+      fallback: {
+        "fs": false
+      }
     },
     plugins: [
       new NodePolyfillPlugin(),
@@ -66,6 +70,7 @@ export default function(env, argv) {
           "./index.html"
         ],
       }),
+      new Dotenv()
     ].filter(Boolean)
   };
 }
