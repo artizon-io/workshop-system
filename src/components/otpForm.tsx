@@ -14,28 +14,28 @@ import {
 import React, { FC } from "react";
 
 
-interface Props {
+export interface OTPFormProps {
   readonly isOpen: boolean;
   readonly onClose: () => void;
-  readonly verificationCode: string;
-  readonly setVerificationCode: (code: string) => void;
-  readonly handleClick: React.MouseEventHandler<HTMLButtonElement>;
+  readonly OTP: string;
+  readonly setOTP: (code: string) => void;
+  readonly handleClickOTP: React.MouseEventHandler<HTMLButtonElement>;
   readonly isOTPInvalid: boolean;
-  readonly countDown: number;
+  readonly cooldownOTP: number;
 }
 
-export const OTPForm = React.forwardRef<HTMLButtonElement, Props>(({
+export const OTPForm = React.forwardRef<HTMLButtonElement, OTPFormProps & React.HTMLAttributes<HTMLDivElement>>(({
   isOpen,
   onClose,
-  verificationCode,
-  setVerificationCode,
-  handleClick,
+  OTP,
+  setOTP,
+  handleClickOTP,
   isOTPInvalid,
-  countDown,
+  cooldownOTP,
   ...props
 }, ref) => {
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} {...props}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Phone Verification</ModalHeader>
@@ -47,16 +47,16 @@ export const OTPForm = React.forwardRef<HTMLButtonElement, Props>(({
           <InputGroup className="phone-verification-input">
             <Input
               type="number"
-              value={verificationCode}
-              onChange={e => setVerificationCode(e.target.value)}
-              placeholder={countDown ? `Try again in ${countDown} seconds` : "6-digit verification code"}
-              disabled={!!countDown}
+              value={OTP}
+              onChange={e => setOTP(e.target.value)}
+              placeholder={cooldownOTP ? `Try again in ${cooldownOTP} seconds` : "6-digit verification code"}
+              disabled={!!cooldownOTP}
               isInvalid={isOTPInvalid}
             />
           </InputGroup>
           {isOTPInvalid && <Text color="red.600" fontSize="sm">OTP is invalid</Text>}
           <ModalFooter>
-            <Button onClick={handleClick} ref={ref} colorScheme="blue" disabled={!!countDown}>Submit</Button>
+            <Button onClick={handleClickOTP} ref={ref} colorScheme="blue" disabled={!!cooldownOTP}>Submit</Button>
           </ModalFooter>
         </ModalBody>
 

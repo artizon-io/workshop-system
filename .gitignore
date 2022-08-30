@@ -2,3 +2,4 @@ node_modules/
 assets/test/
 *.log
 *.env
+.README.md
