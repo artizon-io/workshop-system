@@ -11,7 +11,6 @@ export const FirebaseContext = React.createContext<{
   firebaseAnalytics: Analytics,
   auth: Auth,
   user: User,
-  setUser: (user: User) => void,
   firestore: Firestore,
 } | null>(null);
 

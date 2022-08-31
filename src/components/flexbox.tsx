@@ -6,7 +6,6 @@ const StyledFlexbox = styled.div`
   display: flex;
   flex-direction: column;
   gap: 30px;
-  margin: 50px 100px;
 `;
 
 export const Flexbox : FC<{

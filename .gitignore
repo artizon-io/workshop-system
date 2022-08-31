@@ -3,3 +3,5 @@ assets/test/
 *.log
 *.env
 .README.md
+src/firebaseConfig.tsx
+public/

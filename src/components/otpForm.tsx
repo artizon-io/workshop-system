@@ -35,7 +35,7 @@ export const OTPForm = React.forwardRef<HTMLButtonElement, OTPFormProps & React.
   ...props
 }, ref) => {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} {...props}>
+    <Modal isOpen={isOpen} onClose={onClose} isCentered closeOnOverlayClick {...props}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Phone Verification</ModalHeader>
@@ -55,10 +55,10 @@ export const OTPForm = React.forwardRef<HTMLButtonElement, OTPFormProps & React.
             />
           </InputGroup>
           {isOTPInvalid && <Text color="red.600" fontSize="sm">OTP is invalid</Text>}
-          <ModalFooter>
-            <Button onClick={handleClickOTP} ref={ref} colorScheme="blue" disabled={!!cooldownOTP}>Submit</Button>
-          </ModalFooter>
         </ModalBody>
+        <ModalFooter>
+          <Button onClick={handleClickOTP} ref={ref} colorScheme="blue" disabled={!!cooldownOTP}>Submit</Button>
+        </ModalFooter>
 
       </ModalContent>
     </Modal>

@@ -21,6 +21,7 @@ export default function(env, argv) {
     devServer: {
       static: './public',
       // hot: true,
+      historyApiFallback: true,
     },
     devtool: isDevelopment ? 'source-map' : false,
     module: {
