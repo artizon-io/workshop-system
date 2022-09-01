@@ -16,13 +16,15 @@ export const makeAdmin = functions.region('asia-east2').https.onCall((data, cont
   if (context.app == undefined) {
     throw new functions.https.HttpsError(
       'failed-precondition',
-      'The function must be called from an App Check verified app.')
+      'The function must be called from an App Check verified app.'
+    )
   }
 
   if (!context.auth?.token.admin) {
-    return {
-      error: 'Privilege failure'
-    }
+    throw new functions.https.HttpsError(
+      'permission-denied',
+      'Not enough privilege'
+    )
   }
 
   return admin.auth().getUserByPhoneNumber(data.phoneNumber)
@@ -30,7 +32,5 @@ export const makeAdmin = functions.region('asia-east2').https.onCall((data, cont
     .then(() => ({
       message: `Successfully make ${data.phoneNumber} an admin`
     }))
-    .catch(err => ({
-      error: err
-    }));
+    .catch(err => err);
 });
