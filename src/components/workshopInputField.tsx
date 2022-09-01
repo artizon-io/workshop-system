@@ -10,11 +10,13 @@ const StyledWorkshopInputField = styled.span`
 export const WorkshopInputField: FC<{
   readonly k: string;
   readonly value: string;
+  readonly isUpdating: boolean;
 
 } & React.HTMLAttributes<HTMLInputElement>> = ({
   k,
   value,
   onChange,
+  isUpdating,
   ...props
 }) => {
   return (
@@ -23,6 +25,7 @@ export const WorkshopInputField: FC<{
       <Input
         value={value}
         onChange={onChange}
+        disabled={isUpdating}
       />
     </StyledWorkshopInputField>
   );
