@@ -10,10 +10,18 @@ import * as admin from "firebase-admin";
 // });
 
 export const makeAdmin = functions.region('asia-east2').https.onCall((data, context) => {
+  if (!context.auth?.token.admin) {
+    return {
+      error: 'Privilege failure'
+    }
+  }
+
   return admin.auth().getUserByPhoneNumber(data.phoneNumber)
     .then(user => admin.auth().setCustomUserClaims(user.uid, { admin: true }))
     .then(() => ({
       message: `Successfully make ${data.phoneNumber} an admin`
     }))
-    .catch(err => console.log(err));
+    .catch(err => ({
+      error: err
+    }));
 });
