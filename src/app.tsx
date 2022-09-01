@@ -6,6 +6,7 @@ import styled from '@emotion/styled';
 // https://firebase.google.com/docs/web/setup#available-libraries
 import { FirebaseApp, initializeApp } from "firebase/app";
 import { Analytics, getAnalytics } from "firebase/analytics";
+import { getFunctions } from "firebase/functions";
 import { Auth, ConfirmationResult, getAuth, RecaptchaVerifier, signInWithPhoneNumber, User, UserCredential } from "firebase/auth";
 import { Firestore, getFirestore, collection, addDoc } from "firebase/firestore";
 import { FirebaseContext } from './hooks/useFirebaseContext';
@@ -38,6 +39,9 @@ auth.useDeviceLanguage();
 
 const firestore = getFirestore();
 
+const functions = getFunctions();
+
+
 // Open issue on reCAPTCHA error during local dev
 // https://github.com/firebase/firebase-js-sdk/issues/3356
 
@@ -59,7 +63,8 @@ const App : FC<{}> = ({}) => {
       firebaseAnalytics,
       auth,
       user,
-      firestore
+      firestore,
+      functions
     }}>
       <ChakraProvider>
         <BrowserRouter>
