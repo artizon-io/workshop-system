@@ -882,6 +882,14 @@
     csstype "^3.0.11"
     lodash.mergewith "4.6.2"
 
+"@chakra-ui/styled-system@^2.3.1":
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/@chakra-ui/styled-system/-/styled-system-2.3.1.tgz#abf7c4e1638aaa9d92e7cf9acde17785703d166e"
+  integrity sha512-jyR9s2yk5TEyq4HUfjrgUeaOzd9ZTZrbjK96UjtiTCZGO/q4j2RXtYvfheUjUyW1UnzI2A1ffHOJca8tBMDjpA==
+  dependencies:
+    csstype "^3.0.11"
+    lodash.mergewith "4.6.2"
+
 "@chakra-ui/switch@2.0.11":
   version "2.0.11"
   resolved "https://registry.yarnpkg.com/@chakra-ui/switch/-/switch-2.0.11.tgz#57117417d1bb072f506c8c30e1a961ee7f78496b"
@@ -4543,6 +4551,13 @@ react-dom@^18.2.0:
   dependencies:
     loose-envify "^1.1.0"
     scheduler "^0.23.0"
+
+react-error-boundary@^3.1.4:
+  version "3.1.4"
+  resolved "https://registry.yarnpkg.com/react-error-boundary/-/react-error-boundary-3.1.4.tgz#255db92b23197108757a888b01e5b729919abde0"
+  integrity sha512-uM9uPzZJTF6wRQORmSrvOIgt4lJ9MC1sNgEOj2XGsDTRE4kmpWxg7ENK9EWNKJRMAOY9z0MuF4yIfl6gp4sotA==
+  dependencies:
+    "@babel/runtime" "^7.12.5"
 
 react-fast-compare@3.2.0:
   version "3.2.0"

@@ -4,6 +4,8 @@ import { Heading, Text, Modal, ModalBody, ModalHeader, ModalFooter, ModalOverlay
 import { Card, StyledCard } from './card';
 import { Timestamp } from 'firebase/firestore';
 import { WorkshopInputField } from './workshopInputField';
+import { ErrorBoundary } from 'react-error-boundary'
+import { MapErrorFallback } from './mapErrorFallback';
 
 
 // const StyledWorkshop = styled(StyledCard.withComponent("button"))`
@@ -93,7 +95,14 @@ export const Workshop: FC<{
                   <WorkshopInputField k="Fee" value={fee} onChange={e => setFee((e.target as HTMLInputElement).value)}/>
                   <WorkshopInputField k="Venue" value={venue} onChange={e => setVenue((e.target as HTMLInputElement).value)}/>
                   <WorkshopInputField k="Map source" value={mapsrc} onChange={e => setMapsrc((e.target as HTMLInputElement).value)}/>
-                  <iframe src={mapsrc} style={{border: 0, width: "100%", height: "30vh"}} allowFullScreen={false} loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
+                  {/* <ErrorBoundary
+                    FallbackComponent={MapErrorFallback}
+                    // onReset={() => {
+                    //   // reset the state of your app so the error doesn't happen again
+                    // }}
+                  > */}
+                    <iframe src={`https://www.google.com/maps/embed?${mapsrc}`} style={{border: 0, width: "100%", height: "30vh"}} allowFullScreen={false} loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
+                  {/* </ErrorBoundary> */}
                 </>
               }
             </ModalBody>
