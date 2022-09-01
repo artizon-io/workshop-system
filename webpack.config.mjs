@@ -14,10 +14,12 @@ export default function(env, argv) {
     entry: './src/index.tsx',
     output: {
       path: path.resolve(__dirname, 'public'),
-      publicPath: '',
+      publicPath: '/',
       filename: 'index.js',
     },
     // mode: 'development',
+    // See webpack-dev-server interop with nested routes
+    // https://stackoverflow.com/questions/56573363/react-router-v4-nested-routes-not-work-with-webpack-dev-server
     devServer: {
       static: './public',
       // hot: true,

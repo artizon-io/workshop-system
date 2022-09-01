@@ -7,9 +7,10 @@ import { WorkshopList } from '../components/workshopList';
 import { useWorkshops } from '../hooks/useWorkshops';
 import { WorkshopModalAdmin } from '../components/workshopModalAdmin';
 import { useNavigate } from 'react-router-dom';
+import { MakeAdminModal } from '../components/makeAdminModal';
 
 
-const StyledAdmin = styled.main`
+const StyledAdminManagement = styled.main`
   padding: 20px 50px;
   display: flex;
   flex-direction: column;
@@ -21,7 +22,7 @@ const StyledAdmin = styled.main`
   }
 `;
 
-export const Admin: FC<{
+export const AdminManagement: FC<{
 
 } & React.HTMLAttributes<HTMLDivElement>> = ({ ...props }) => {
   const {
@@ -30,22 +31,20 @@ export const Admin: FC<{
     auth,
     user,
     firestore,
+    functions
   } = useFirebaseContext();
 
-  const workshops = useWorkshops();
-  const [isWorkshopModalOpened, setIsWorkshopModalOpened] = useState(false);
-  const navigate = useNavigate();
+  const [isMakeAdminModalOpened, setIsMakeAdminModalOpened] = useState(false);
 
   return (
-    <StyledAdmin {...props}>
+    <StyledAdminManagement {...props}>
       <div className="button-container">
-        <Button colorScheme="blue" className="button" onClick={() => setIsWorkshopModalOpened(true)}>Add Workshop</Button>
-        <WorkshopModalAdmin
-          isOpen={isWorkshopModalOpened}
-          onClose={() => setIsWorkshopModalOpened(false)}
+        <Button colorScheme="blue" className="button" onClick={() => setIsMakeAdminModalOpened(true)}>Make Admin</Button>
+        <MakeAdminModal
+          isOpen={isMakeAdminModalOpened}
+          onClose={() => setIsMakeAdminModalOpened(false)}
         />
       </div>
-      <WorkshopList workshops={workshops} adminMode={true}/>
-    </StyledAdmin>
+    </StyledAdminManagement>
   );
 }
