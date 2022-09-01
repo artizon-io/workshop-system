@@ -3,6 +3,7 @@ import styled from '@emotion/styled';
 import { Workshop, WorkshopType } from './workshop';
 import { Text } from '@chakra-ui/react';
 import { Flexbox } from './flexbox';
+import { WorkshopModalAdmin } from './workshopModalAdmin';
 
 
 const StyledWorkshopList = styled.div`
@@ -23,8 +24,9 @@ export const WorkshopList: FC<{
         workshops ? workshops.map(workshop => <Workshop
           key={workshop.id}
           workshop={workshop}
-          adminMode={adminMode}
-        />) : <Text>Loading...</Text>
+          isAdmin={adminMode}
+        />)
+          : <Text>Loading...</Text>
       }
     </StyledWorkshopList>
   );
