@@ -2,7 +2,7 @@ import React, { FC, useState } from 'react';
 import styled from '@emotion/styled';
 import { Heading, Text, Modal, ModalBody, ModalHeader, ModalFooter, ModalOverlay, ModalContent, ModalCloseButton, Button, ModalProps } from '@chakra-ui/react';
 import { Card, StyledCard } from './card';
-import { doc, Timestamp } from 'firebase/firestore';
+import { addDoc, collection, doc, Timestamp } from 'firebase/firestore';
 import { WorkshopInputField } from './workshopInputField';
 import { ErrorBoundary } from 'react-error-boundary'
 import { MapErrorFallback } from './mapErrorFallback';
@@ -14,7 +14,7 @@ import { Flexbox } from './flexbox';
 
 
 export const WorkshopModalAdmin: FC<{
-  readonly workshop: WorkshopType;
+  readonly workshop?: WorkshopType;
   readonly isOpen: boolean;
   readonly onClose: () => void;
 
@@ -24,16 +24,36 @@ export const WorkshopModalAdmin: FC<{
   onClose,
   ...props
 }) => {
-  const [date, setDate] = useState(workshop.datetime.toDate().toLocaleDateString());
-  const [time, setTime] = useState(workshop.datetime.toDate().toLocaleTimeString());
-  const [title, setTitle] = useState(workshop.title);
-  const [fee, setFee] = useState(workshop.fee.toString());
-  const [duration, setDuration] = useState(workshop.duration.toString());
-  const [language, setLanguage] = useState(workshop.language);
-  const [capacity, setCapacity] = useState(workshop.capacity.toString());
-  const [venue, setVenue] = useState(workshop.venue);
-  const [mapsrc, setMapsrc] = useState(workshop.mapsrc);
-  const [description, setDescription] = useState(workshop.description);
+  const [date, setDate] = !!workshop
+    ? useState(workshop.datetime.toDate().toLocaleDateString())
+    : useState('');
+  const [time, setTime] = !!workshop
+    ? useState(workshop.datetime.toDate().toLocaleTimeString())
+    : useState('');
+  const [title, setTitle] = !!workshop
+    ? useState(workshop.title)
+    : useState('');
+  const [fee, setFee] = !!workshop
+    ? useState(workshop.fee.toString())
+    : useState('');
+  const [duration, setDuration] = !!workshop
+    ? useState(workshop.duration.toString())
+    : useState('');
+  const [language, setLanguage] = !!workshop
+    ? useState(workshop.language)
+    : useState('');
+  const [capacity, setCapacity] = !!workshop
+    ? useState(workshop.capacity.toString())
+    : useState('');
+  const [venue, setVenue] = !!workshop
+    ? useState(workshop.venue)
+    : useState('');
+  const [mapsrc, setMapsrc] = !!workshop
+    ? useState(workshop.mapsrc)
+    : useState('');
+  const [description, setDescription] = !!workshop
+    ? useState(workshop.description)
+    : useState('');
   
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -54,14 +74,14 @@ export const WorkshopModalAdmin: FC<{
           <Flexbox>
             <WorkshopInputField k="Title" value={title} onChange={e => setTitle((e.target as HTMLInputElement).value)} isUpdating={isUpdating}/>
             <WorkshopInputField k="Description" value={description} onChange={e => setDescription((e.target as HTMLInputElement).value)} isUpdating={isUpdating}/>
-            <WorkshopInputField k="Date" value={date} onChange={e => setDate((e.target as HTMLInputElement).value)} isUpdating={isUpdating}/>
-            <WorkshopInputField k="Time" value={time} onChange={e => setTime((e.target as HTMLInputElement).value)} isUpdating={isUpdating}/>
-            <WorkshopInputField k="Duration" value={duration} onChange={e => setDuration((e.target as HTMLInputElement).value)} isUpdating={isUpdating}/>
+            <WorkshopInputField k="Date" placeholder="e.g. 31/08/2022" value={date} onChange={e => setDate((e.target as HTMLInputElement).value)} isUpdating={isUpdating}/>
+            <WorkshopInputField k="Time" placeholder="e.g. 19:30:00" value={time} onChange={e => setTime((e.target as HTMLInputElement).value)} isUpdating={isUpdating}/>
+            <WorkshopInputField k="Duration" placeholder="in minutes" value={duration} onChange={e => setDuration((e.target as HTMLInputElement).value)} isUpdating={isUpdating}/>
             <WorkshopInputField k="Language" value={language} onChange={e => setLanguage((e.target as HTMLInputElement).value)} isUpdating={isUpdating}/>
-            <WorkshopInputField k="Capacity" value={capacity} onChange={e => setCapacity((e.target as HTMLInputElement).value)} isUpdating={isUpdating}/>
-            <WorkshopInputField k="Fee" value={fee} onChange={e => setFee((e.target as HTMLInputElement).value)} isUpdating={isUpdating}/>
+            <WorkshopInputField k="Capacity" placeholder="limit on no. heads" value={capacity} onChange={e => setCapacity((e.target as HTMLInputElement).value)} isUpdating={isUpdating}/>
+            <WorkshopInputField k="Fee" value={fee} placeholder="value in HKD" onChange={e => setFee((e.target as HTMLInputElement).value)} isUpdating={isUpdating}/>
             <WorkshopInputField k="Venue" value={venue} onChange={e => setVenue((e.target as HTMLInputElement).value)} isUpdating={isUpdating}/>
-            <WorkshopInputField k="Map source" value={mapsrc} onChange={e => setMapsrc((e.target as HTMLInputElement).value)} isUpdating={isUpdating}/>
+            <WorkshopInputField k="Map source" value={mapsrc} placeholder="string after 'https://www.google.com/maps/embed?'" onChange={e => setMapsrc((e.target as HTMLInputElement).value)} isUpdating={isUpdating}/>
             {/* <ErrorBoundary
               FallbackComponent={MapErrorFallback}
               // onReset={() => {
@@ -77,28 +97,54 @@ export const WorkshopModalAdmin: FC<{
             disabled={isUpdating}
             colorScheme="blue"
             onClick={() => {
-              setIsUpdating(true);
-              setDoc(doc(firestore, 'workshops', workshop.id), {
-                title,
-                fee: parseInt(fee),
-                venue,
-                language,
-                mapsrc,
-                capacity: parseInt(capacity),
-                duration: parseInt(duration),
-                description,
-                datetime: datetimestrToTimestamp(date, time)
-              })
-                .then(() => {
-                  console.log("Successfully update workshop details");
-                  setIsUpdating(false);
+              if (!!workshop) {
+                setIsUpdating(true);
+                setDoc(doc(firestore, 'workshops', workshop.id), {
+                  title,
+                  fee: parseInt(fee),
+                  venue,
+                  language,
+                  mapsrc,
+                  capacity: parseInt(capacity),
+                  duration: parseInt(duration),
+                  description,
+                  datetime: datetimestrToTimestamp(date, time)
                 })
-                .catch(err => {
-                  console.log(err);
-                  setIsUpdating(false);
-                });
+                  .then(() => {
+                    console.log("Successfully update workshop details");
+                    setIsUpdating(false);
+                  })
+                  .catch(err => {
+                    console.log(err);
+                    setIsUpdating(false);
+                  });
+              } else {
+                setIsUpdating(true);
+                addDoc(collection(firestore, 'workshops'), {
+                  title,
+                  fee: parseInt(fee),
+                  venue,
+                  language,
+                  mapsrc,
+                  capacity: parseInt(capacity),
+                  duration: parseInt(duration),
+                  description,
+                  datetime: datetimestrToTimestamp(date, time)
+                })
+                  .then(() => {
+                    console.log("Successfully add new workshop");
+                    setIsUpdating(false);
+                  })
+                  .catch(err => {
+                    console.log(err);
+                    setIsUpdating(false);
+                  });
+              }
             }}
-          >Apply changes</Button>
+          >{!!workshop
+            ? "Apply changes"
+            : "Create"
+          }</Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

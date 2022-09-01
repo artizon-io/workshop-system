@@ -7,7 +7,6 @@ import { WorkshopModalAdmin } from './workshopModalAdmin';
 
 
 const StyledWorkshopList = styled.div`
-  padding: 50px;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;

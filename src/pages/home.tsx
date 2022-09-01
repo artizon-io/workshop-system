@@ -12,6 +12,10 @@ import { useWorkshops } from '../hooks/useWorkshops';
 
 
 const StyledHome = styled.main`
+  padding: 20px 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 `;
 
 

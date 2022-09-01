@@ -17,6 +17,7 @@ export const WorkshopInputField: FC<{
   value,
   onChange,
   isUpdating,
+  placeholder,
   ...props
 }) => {
   return (
@@ -26,6 +27,7 @@ export const WorkshopInputField: FC<{
         value={value}
         onChange={onChange}
         disabled={isUpdating}
+        placeholder={placeholder}
       />
     </StyledWorkshopInputField>
   );
