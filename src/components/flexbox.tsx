@@ -1,5 +1,6 @@
 import React, { FC } from "react";
-import styled from "@emotion/styled";
+import styled, { StyledComponent, StyledOptions, StyledTags } from "@emotion/styled";
+import { StyledComponentProps } from "../types/emotion";
 
 
 const StyledFlexbox = styled.div`
@@ -8,9 +9,11 @@ const StyledFlexbox = styled.div`
   gap: 30px;
 `;
 
-export const Flexbox : FC<{
+interface Props extends React.HTMLAttributes<HTMLDivElement>, StyledComponentProps {
 
-} & React.HTMLAttributes<HTMLDivElement>> = ({children, ...props}) => {
+}
+
+export const Flexbox : FC<Props> = ({children, ...props}) => {
   return (
     <StyledFlexbox {...props}>
       {children}
