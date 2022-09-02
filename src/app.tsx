@@ -31,6 +31,7 @@ import { appCheckSiteKey, firebaseConfig } from './firebaseConfig';
 import { Admin } from './pages/admin';
 import { AdminLayout } from './layout/adminLayout';
 import { AdminManagement } from './pages/adminManagement';
+import Logger from 'js-logger';
 
 // Initialize Firebase
 const firebaseApp = initializeApp(firebaseConfig);
@@ -43,6 +44,15 @@ auth.useDeviceLanguage();
 const firestore = getFirestore(firebaseApp);
 
 const functions = getFunctions(firebaseApp, 'asia-east2');
+
+// To be make Logger.OFF at production
+Logger.useDefaults({
+  defaultLevel: Logger.TRACE,
+  formatter: function (messages, context) {
+    // messages.unshift(new Date().toUTCString());
+    messages.unshift(`[${context.level.name}]`)
+  }
+});
 
 // Be to disabled for production build
 // @ts-ignore

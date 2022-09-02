@@ -5,6 +5,7 @@ import { Auth, ConfirmationResult, getAuth, RecaptchaVerifier, signInWithPhoneNu
 import { useFirebaseContext } from '../hooks/useFirebaseContext';
 import { PhoneForm } from '../components/phoneForm';
 import { OTPForm } from '../components/otpform';
+import Logger from 'js-logger';
 
 
 const StyledContainer = styled.div`
@@ -46,11 +47,11 @@ const Login : FC<{}> = ({}) => {
       'size': 'invisible',
       'callback': res => {
         // reCAPTCHA solved, allow signInWithPhoneNumber
-        console.log("Recaptcha passed");
+        Logger.info("Recaptcha passed");
       },
       'expired-callback': () => {
         // Response expired. Ask user to solve reCAPTCHA again.
-        console.log("Recaptcha expired");
+        Logger.warn("Recaptcha expired");
         // Logic to re-init recaptcha
       }
     }, auth);
@@ -84,19 +85,19 @@ const Login : FC<{}> = ({}) => {
     setIsPhoneInvalid(false);
     // recaptchaVerifier.render()
     //   .then(widgetId => {
-    //     console.log(widgetId);
+    //      Logger.info("WidgetId", widgetId);
     //   })
     //   .catch(err => {
-    //     console.log(err);
+    //     Logger.error(err);
     //   });
     recaptchaVerifier.verify()
       .then(token => {
-        console.log("Recaptcha verified");
+        Logger.info("Recaptcha verified");
         setRecaptchaVerifierToken(token);
         signInWithPhone();
       })
       .catch(err => {
-        console.log(err);
+        Logger.error("Recaptcha verification failure", err);
       });
   }
   
@@ -112,7 +113,7 @@ const Login : FC<{}> = ({}) => {
       }).catch(err => {
         // Error; SMS not sent
         // ...
-        console.log(err);
+        Logger.error("Trigger phone signin failed", err);
         setIsPhoneInvalid(true);
       });
     setPhone('');
@@ -126,7 +127,7 @@ const Login : FC<{}> = ({}) => {
         setIsOTPModalOpened(false);
       })
       .catch(err => {
-        console.log(err);
+        Logger.error("OTP verification failed", err);
         setIsOTPInvalid(true);
       });
     setOTP('');

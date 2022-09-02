@@ -11,6 +11,8 @@ import { useFirebaseContext } from '../hooks/useFirebaseContext';
 import { datetimestrToTimestamp } from '../utils/datetimestrToTimestamp';
 import { StyledWorkshop, WorkshopType } from './workshop';
 import { Flexbox } from './flexbox';
+import { useFormik } from 'formik';
+import Logger from 'js-logger';
 
 
 export const WorkshopModalAdmin: FC<{
@@ -71,7 +73,7 @@ export const WorkshopModalAdmin: FC<{
       <ModalContent>
         <ModalCloseButton />
         <ModalBody>
-          <Flexbox>
+          <Flexbox as="form">
             <WorkshopInputField k="Title" value={title} onChange={e => setTitle((e.target as HTMLInputElement).value)} isUpdating={isUpdating}/>
             <WorkshopInputField k="Description" value={description} onChange={e => setDescription((e.target as HTMLInputElement).value)} isUpdating={isUpdating}/>
             <WorkshopInputField k="Date" placeholder="e.g. 31/08/2022" value={date} onChange={e => setDate((e.target as HTMLInputElement).value)} isUpdating={isUpdating}/>
@@ -111,11 +113,11 @@ export const WorkshopModalAdmin: FC<{
                   datetime: datetimestrToTimestamp(date, time)
                 })
                   .then(() => {
-                    console.log("Successfully update workshop details");
+                    Logger.info("Successfully update workshop details");
                     setIsUpdating(false);
                   })
                   .catch(err => {
-                    console.log(err);
+                    Logger.error(err);
                     setIsUpdating(false);
                   });
               } else {
@@ -132,11 +134,21 @@ export const WorkshopModalAdmin: FC<{
                   datetime: datetimestrToTimestamp(date, time)
                 })
                   .then(() => {
-                    console.log("Successfully add new workshop");
+                    Logger.info("Successfully add new workshop");
+                    setTitle('');
+                    setFee('');
+                    setVenue('');
+                    setLanguage('');
+                    setMapsrc('');
+                    setCapacity('');
+                    setDuration('');
+                    setDescription('');
+                    setDate('');
+                    setTime('');
                     setIsUpdating(false);
                   })
                   .catch(err => {
-                    console.log(err);
+                    Logger.error(err);
                     setIsUpdating(false);
                   });
               }

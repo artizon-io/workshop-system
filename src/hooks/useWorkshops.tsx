@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { WorkshopType } from "../components/workshop";
 import { useFirebaseContext } from "./useFirebaseContext";
 import { collection } from "firebase/firestore";
+import Logger from "js-logger";
 
 
 export const useWorkshops = () => {
@@ -17,7 +18,7 @@ export const useWorkshops = () => {
   } = useFirebaseContext();
 
   useEffect(() => {
-    console.log("Fetching workshops from server");
+    Logger.info("Fetching workshops from server");
     getDocsFromServer(collection(firestore, 'workshops'))
       .then(snapshot => {
         let temp = [];
@@ -27,7 +28,7 @@ export const useWorkshops = () => {
         setWorkshops(temp);
       })
       .catch(err => {
-        console.log(err);
+        Logger.error(err);
       });
   }, []);
 

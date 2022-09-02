@@ -12,6 +12,7 @@ import { datetimestrToTimestamp } from '../utils/datetimestrToTimestamp';
 import { WorkshopType } from './workshop';
 import { Flexbox } from './flexbox';
 import { httpsCallable } from "firebase/functions";
+import Logger from 'js-logger';
 
 
 export const MakeAdminModal: FC<{
@@ -28,6 +29,7 @@ export const MakeAdminModal: FC<{
   } = useFirebaseContext();
   
   const [phone, setPhone] = useState('');
+  const [isUpdating, setIsUpdating] = useState(false);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered closeOnOverlayClick size="md" scrollBehavior='inside' {...props}>
@@ -39,18 +41,24 @@ export const MakeAdminModal: FC<{
           <Input
             value={phone}
             onChange={e => setPhone(e.target.value)}
+            disabled={isUpdating}
+            placeholder="e.g. +85291001234"
           />
         </ModalBody>
         <ModalFooter>
           <Button
             colorScheme="blue"
+            disabled={isUpdating}
             onClick={() => {
+              setIsUpdating(true);
               httpsCallable(functions, 'makeAdmin')({ phoneNumber: phone })
                 .then(res => {
-                  console.log(res);
+                  Logger.info(`Retrieve data`, res.data);
+                  setIsUpdating(false);
                 })
                 .catch(err => {
-                  console.log(err.message);
+                  Logger.error(`Error message`, err.message);
+                  setIsUpdating(false);
                 });
             }}
           >Make account an Admin</Button>
