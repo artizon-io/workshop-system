@@ -3,7 +3,7 @@ import CopyPlugin from "copy-webpack-plugin";
 import { fileURLToPath } from "url";
 import NodePolyfillPlugin from 'node-polyfill-webpack-plugin';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
-import Dotenv from 'dotenv-webpack';
+// import Dotenv from 'dotenv-webpack';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -25,7 +25,8 @@ export default function(env, argv) {
       // hot: true,
       historyApiFallback: true,
     },
-    devtool: isDevelopment ? 'source-map' : false,
+    devtool: isDevelopment ? 'eval-source-map' : false,
+    // devtool: isDevelopment ? 'eval-source-map' : 'source-map',
     module: {
       rules: [
         {
@@ -34,11 +35,12 @@ export default function(env, argv) {
           use: {
             loader: 'babel-loader',
             options: {
+              sourceMaps: true,
               plugins: [
                 [
                   "@babel/plugin-transform-typescript",
                   {
-                    "isTSX": true
+                    "isTSX": true,
                   }
                 ],
                 "@babel/plugin-transform-react-jsx",
@@ -73,7 +75,7 @@ export default function(env, argv) {
           "./index.html"
         ],
       }),
-      new Dotenv()
+      // new Dotenv()
     ].filter(Boolean)
   };
 }
