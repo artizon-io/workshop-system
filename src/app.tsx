@@ -15,6 +15,7 @@ import Login from './pages/login';
 import { Home } from './pages/home';
 import { Layout } from './layout/layout';
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
+import { enableIndexedDbPersistence } from "firebase/firestore"; 
 
 
 // const firebaseConfig = {
@@ -32,6 +33,16 @@ import { Admin } from './pages/admin';
 import { AdminLayout } from './layout/adminLayout';
 import { AdminManagement } from './pages/adminManagement';
 import Logger from 'js-logger';
+import { Enroll } from './pages/enroll';
+
+// To be make Logger.OFF at production
+Logger.useDefaults({
+  defaultLevel: Logger.TRACE,
+  formatter: function (messages, context) {
+    // messages.unshift(new Date().toUTCString());
+    messages.unshift(`[${context.level.name}]`)
+  }
+});
 
 // Initialize Firebase
 const firebaseApp = initializeApp(firebaseConfig);
@@ -42,17 +53,21 @@ const auth = getAuth(firebaseApp);
 auth.useDeviceLanguage();
 
 const firestore = getFirestore(firebaseApp);
+enableIndexedDbPersistence(firestore)
+  .catch(err => {
+    if (err.code == 'failed-precondition') {
+      // Multiple tabs open, persistence can only be enabled
+      // in one tab at a a time.
+      // ...
+    } else if (err.code == 'unimplemented') {
+      // The current browser does not support all of the
+      // features required to enable persistence
+      // ...
+    }
+    Logger.warn(err);
+  });
 
 const functions = getFunctions(firebaseApp, 'asia-east2');
-
-// To be make Logger.OFF at production
-Logger.useDefaults({
-  defaultLevel: Logger.TRACE,
-  formatter: function (messages, context) {
-    // messages.unshift(new Date().toUTCString());
-    messages.unshift(`[${context.level.name}]`)
-  }
-});
 
 // Be to disabled for production build
 // @ts-ignore
@@ -98,6 +113,7 @@ const App : FC<{}> = ({}) => {
               {/* Layout not being able to consome context */}
               <Route path="/" element={<Layout user={user} auth={auth}/>}>
                 <Route index element={user ? <Home/> : <Navigate to="/login"/>}/>
+                <Route path="workshop/:workshopId/enroll/:enrollId" element={user ? <Enroll/> : <Navigate to="/login"/>}/>
               </Route>
               <Route path="/admin" element={<AdminLayout user={user} auth={auth}/>}>
                 <Route index element={user ? <Admin/> : <Navigate to="/login"/>}/>  
@@ -105,9 +121,9 @@ const App : FC<{}> = ({}) => {
               </Route>
               <Route path="/login" element={!user ? <Login/> : <Navigate to="/"/>}/>
 
-              <Route path="*" element={<Heading>Not Found</Heading>}/>
+              <Route path="*" element={<Heading fontWeight={'medium'}>Not Found</Heading>}/>
             </Routes>
-            : <Heading>Checking if logged in...</Heading>
+            : <Heading fontWeight={'medium'}>Checking if logged in...</Heading>
           }
         </BrowserRouter>
       </ChakraProvider>

@@ -18,6 +18,11 @@ import { WorkshopModal } from './workshopModal';
 export const StyledWorkshop = styled(Card)`
   padding: 30px;
   align-items: flex-start;
+  justify-content: space-between;
+
+  & > .upper {
+    gap: 20px;
+  }
 
   /* &:hover {
     box-shadow: 0px 0px 16px 4px #f0f0f0;
@@ -54,10 +59,12 @@ export const Workshop: FC<{
       // onClick={() => setIsModalOpened(true)}
       {...props}
     >
-      <Heading size="md" fontWeight="medium">{workshop.title}</Heading>
-      {!!workshop.description && <Text>Description: {workshop.description}</Text>}
-      <Text>Date: {workshop.datetime.toDate().toLocaleDateString()}</Text>
-      <Text>Time: {workshop.datetime.toDate().toLocaleTimeString()}</Text>
+      <Flexbox className='upper'>
+        <Heading size="md" fontWeight="medium">{workshop.title}</Heading>
+        {!!workshop.description && <Text>Description: {workshop.description}</Text>}
+        <Text>Date: {workshop.datetime.toDate().toLocaleDateString()}</Text>
+        <Text>Time: {workshop.datetime.toDate().toLocaleTimeString()}</Text>
+      </Flexbox>
       <Button onClick={() => setIsModalOpened(true)} colorScheme="blue">View Details</Button>
       {/* Map */}
       {isAdmin ?
@@ -70,7 +77,6 @@ export const Workshop: FC<{
           isOpen={isModalOpened}
           onClose={() => setIsModalOpened(false)}
           workshop={workshop}
-          {...props}
         />
       }
     </StyledWorkshop>

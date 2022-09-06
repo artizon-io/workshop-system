@@ -22,7 +22,7 @@ const StyledHome = styled.main`
 export const Home: FC<{
 
 } & React.HTMLAttributes<HTMLDivElement>> = ({ ...props }) => {
-  const workshops = useWorkshops();
+  const workshops = useWorkshops(false);
 
   const {
     firebaseApp,

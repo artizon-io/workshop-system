@@ -32,7 +32,7 @@ export const Admin: FC<{
     firestore,
   } = useFirebaseContext();
 
-  const workshops = useWorkshops();
+  const workshops = useWorkshops(true);
   const [isWorkshopModalOpened, setIsWorkshopModalOpened] = useState(false);
   const navigate = useNavigate();
 

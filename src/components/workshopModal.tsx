@@ -11,6 +11,9 @@ import { useFirebaseContext } from '../hooks/useFirebaseContext';
 import { datetimestrToTimestamp } from '../utils/datetimestrToTimestamp';
 import { WorkshopType } from './workshop';
 import { Flexbox } from './flexbox';
+import { httpsCallable } from 'firebase/functions';
+import Logger from 'js-logger';
+import { useNavigate } from 'react-router-dom';
 
 
 export const WorkshopModal: FC<{
@@ -24,6 +27,12 @@ export const WorkshopModal: FC<{
   onClose,
   ...props
 }) => {
+  const {
+    functions
+  } = useFirebaseContext();
+
+  const [isWaitingForEnroll, setIsWaitingForEnroll] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered closeOnOverlayClick size="4xl" scrollBehavior='inside' {...props}>
@@ -47,7 +56,21 @@ export const WorkshopModal: FC<{
         <ModalFooter>
           <Button
             colorScheme="blue"
-            // onClick={}
+            onClick={() => {
+              setIsWaitingForEnroll(true);
+              httpsCallable(functions, 'initiateEnroll')({ workshopId: workshop.id })
+                .then(res => {
+                  Logger.info(`Retrieve data`, res.data);
+                  // setIsWaitingForEnroll(false);
+                  // @ts-ignore
+                  navigate(`/workshop/${workshop.id}/enroll/${res.data.enrollId}`);
+                })
+                .catch(err => {
+                  Logger.error(`Error message`, err.message);
+                  setIsWaitingForEnroll(false);
+                });
+            }}
+            disabled={isWaitingForEnroll}
           >Enroll</Button>
         </ModalFooter>
       </ModalContent>
