@@ -1,9 +1,6 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
-import { ChakraProvider } from '@chakra-ui/react';
+import React, { FC, ReactElement, ReactNode, useEffect, useRef, useState } from 'react';
+import { ChakraProvider, useToast } from '@chakra-ui/react';
 import { Heading, Input, InputGroup, InputLeftAddon, Button, useDisclosure } from '@chakra-ui/react'
-import styled from '@emotion/styled';
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 import { FirebaseApp, initializeApp } from "firebase/app";
 import { Analytics, getAnalytics } from "firebase/analytics";
 import { getFunctions } from "firebase/functions";
@@ -16,33 +13,17 @@ import { Home } from './pages/home';
 import { Layout } from './layout/layout';
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 import { enableIndexedDbPersistence } from "firebase/firestore"; 
-import { Elements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
-
-
-// const firebaseConfig = {
-//   apiKey: process.env.firebaseApiKey,
-//   authDomain: process.env.firebaseAuthDomain,
-//   projectId: process.env.firebaseProjectId,
-//   storageBucket: process.env.firebaseStorageBucket,
-//   messagingSenderId: process.env.firebaseMessagingSenderId,
-//   appId: process.env.firebaseAppId,
-//   measurementId: process.env.firebaseMeasurementId
-// };
-
 import { appCheckSiteKey, firebaseConfig } from './firebaseConfig';
 import { Admin } from './pages/admin';
 import { AdminLayout } from './layout/adminLayout';
 import { AdminManagement } from './pages/adminManagement';
 import Logger from 'js-logger';
 import { Enroll } from './pages/enroll';
-import { stripePublic } from './stripeConfig';
 
 // To be make Logger.OFF at production
 Logger.useDefaults({
   defaultLevel: Logger.TRACE,
   formatter: function (messages, context) {
-    // messages.unshift(new Date().toUTCString());
     messages.unshift(`[${context.level.name}]`)
   }
 });
@@ -56,39 +37,30 @@ const auth = getAuth(firebaseApp);
 auth.useDeviceLanguage();
 
 const firestore = getFirestore(firebaseApp);
-enableIndexedDbPersistence(firestore)
-  .catch(err => {
-    if (err.code == 'failed-precondition') {
-      // Multiple tabs open, persistence can only be enabled
-      // in one tab at a a time.
-      // ...
-    } else if (err.code == 'unimplemented') {
-      // The current browser does not support all of the
-      // features required to enable persistence
-      // ...
-    }
-    Logger.warn(err);
-  });
 
 const functions = getFunctions(firebaseApp, 'asia-east2');
 
 // Be to disabled for production build
-// @ts-ignore
 globalThis.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
 
 const appCheck = initializeAppCheck(firebaseApp, {
   provider: new ReCaptchaV3Provider(appCheckSiteKey),
   // Optional argument. If true, the SDK automatically refreshes App Check
   // tokens as needed.
-  isTokenAutoRefreshEnabled: true
+  isTokenAutoRefreshEnabled: true,
 });
-
-// Open issue on reCAPTCHA error during local dev
-// https://github.com/firebase/firebase-js-sdk/issues/3356
 
 const App : FC<{}> = ({}) => {
   const [user, setUser] = useState<User>(null);
   const [isCheckingUserLoggedIn, setIsCheckingUserLoggedIn] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const toast = useToast();
+
+  const checkIsAdmin = async (user : User) : Promise<void> => {
+    const idToken = await user.getIdTokenResult(true);  // force refresh
+    if (idToken.claims.admin)
+      setIsAdmin(true);
+  }
 
   useEffect(() => {
     auth.onAuthStateChanged(user => {
@@ -96,7 +68,45 @@ const App : FC<{}> = ({}) => {
       if (isCheckingUserLoggedIn)
         setIsCheckingUserLoggedIn(false);
     });
+
+    enableIndexedDbPersistence(firestore).catch(err => {
+      if (err.code == 'failed-precondition') {
+        // Multiple tabs open, persistence can only be enabled
+        // in one tab at a a time.
+        toast({
+          description: "We noticed you have multiple on-going sessions on other browser tabs. Please close all others or the website might behave unexpectedly.",
+          status: 'warning',
+          duration: 9000,
+          isClosable: true,
+          position: 'bottom',
+        });
+      } else if (err.code == 'unimplemented') {
+        // The current browser does not support all of the
+        // features required to enable persistence
+        toast({
+          description: "Your browser version is incompatible. Be aware that the website might behave unexpectedly.",
+          status: 'warning',
+          duration: 9000,
+          isClosable: true,
+          position: 'bottom',
+        });
+      }
+      Logger.warn(err);
+    });
   }, []);
+
+  useEffect(() => {
+    checkIsAdmin(user);
+  }, [isCheckingUserLoggedIn]);
+
+  const adminConditionalRender = (elem : ReactElement) : ReactNode => {
+    if (isCheckingUserLoggedIn)
+      return (<Heading fontWeight={'medium'}>Checking if logged in</Heading>);
+    else if (!isAdmin)
+      return (<Navigate to="/login"/>);
+    else
+      return elem;
+  }
 
   return (
     <FirebaseContext.Provider value={{
@@ -110,23 +120,22 @@ const App : FC<{}> = ({}) => {
     }}>
       <ChakraProvider>
         <BrowserRouter>
-          {!isCheckingUserLoggedIn ?
-            <Routes>
-              {/* Layout not being able to consome context */}
-              <Route path="/" element={<Layout user={user} auth={auth}/>}>
-                <Route index element={user ? <Home/> : <Navigate to="/login"/>}/>
-                <Route path="workshop/:workshopId/enroll/:enrollId" element={user ? <Enroll/> : <Navigate to="/login"/>}/>
-              </Route>
-              <Route path="/admin" element={<AdminLayout user={user} auth={auth}/>}>
-                <Route index element={user ? <Admin/> : <Navigate to="/login"/>}/>  
-                <Route path="admin-management" element={user ? <AdminManagement/> : <Navigate to="/login"/>}/>
-              </Route>
-              <Route path="/login" element={!user ? <Login/> : <Navigate to="/"/>}/>
+          <Routes>
+            {/* Layout not being able to consome context */}
+            <Route path="/" element={<Layout user={user} auth={auth}/>}>
+              <Route index element={<Home/>}/>
+              <Route path="workshop/:workshopId/enroll/:enrollId" element={<Enroll/>}/>
+            </Route>
 
-              <Route path="*" element={<Heading fontWeight={'medium'}>Not Found</Heading>}/>
-            </Routes>
-            : <Heading fontWeight={'medium'}>Checking if logged in...</Heading>
-          }
+            <Route path="/admin" element={<AdminLayout user={user} auth={auth}/>}>
+              <Route index element={adminConditionalRender(<Admin/>)}/>  
+              <Route path="admin-management" element={adminConditionalRender(<AdminManagement/>)}/>
+            </Route>
+
+            <Route path="/login" element={<Login/>}/>
+
+            <Route path="*" element={<Heading fontWeight={'medium'}>Not Found</Heading>}/>
+          </Routes>
         </BrowserRouter>
       </ChakraProvider>
     </FirebaseContext.Provider>

@@ -10,11 +10,12 @@ const StyledLayout = styled.div`
 
 `;
 
-export const Layout: FC<{
+interface Props extends React.HTMLAttributes<HTMLDivElement> {
   readonly user?: User;
   readonly auth: Auth;
+}
 
-} & React.HTMLAttributes<HTMLDivElement>> = ({ user, auth, ...props }) => {
+export const Layout: FC<Props> = ({ user, auth, ...props }) => {
   return (
     <StyledLayout {...props}>
       <Nav user={user} auth={auth}/>

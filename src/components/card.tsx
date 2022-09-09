@@ -11,10 +11,11 @@ export const StyledCard = styled.div`
   border-radius: 20px;
 `;
 
+interface Props extends React.HTMLAttributes<HTMLDivElement> {
 
-export const Card : FC<{
+}
 
-} & React.HTMLAttributes<HTMLDivElement>> = ({children, ...props}) => {
+export const Card : FC<Props> = ({children, ...props}) => {
   return (
     <StyledCard {...props}>{children}</StyledCard>
   );

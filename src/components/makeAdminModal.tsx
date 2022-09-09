@@ -1,25 +1,16 @@
 import React, { FC, useState } from 'react';
-import styled from '@emotion/styled';
 import { Heading, Text, Modal, ModalBody, ModalHeader, ModalFooter, ModalOverlay, ModalContent, ModalCloseButton, Button, Input } from '@chakra-ui/react';
-import { Card, StyledCard } from './card';
-import { doc, Timestamp } from 'firebase/firestore';
-import { WorkshopInputField } from './workshopInputField';
-import { ErrorBoundary } from 'react-error-boundary'
-import { MapErrorFallback } from './mapErrorFallback';
-import { setDoc } from 'firebase/firestore';
 import { useFirebaseContext } from '../hooks/useFirebaseContext';
-import { datetimestrToTimestamp } from '../utils/datetimestrToTimestamp';
-import { WorkshopType } from './workshop';
-import { Flexbox } from './flexbox';
 import { httpsCallable } from "firebase/functions";
 import Logger from 'js-logger';
 
 
-export const MakeAdminModal: FC<{
+interface Props extends React.HTMLAttributes<HTMLDivElement> {
   readonly isOpen: boolean;
   readonly onClose: () => void;
+}
 
-} & React.HTMLAttributes<HTMLDivElement>> = ({
+export const MakeAdminModal: FC<Props> = ({
   isOpen,
   onClose,
   ...props
@@ -51,7 +42,14 @@ export const MakeAdminModal: FC<{
             disabled={isUpdating}
             onClick={() => {
               setIsUpdating(true);
-              httpsCallable(functions, 'makeAdmin')({ phoneNumber: phone })
+              httpsCallable<
+                {  // request
+                  phoneNumber: string;
+                },
+                {  // response
+                  message: string;
+                }
+              >(functions, 'makeAdmin')({ phoneNumber: phone })
                 .then(res => {
                   Logger.info(`Retrieve data`, res.data);
                   setIsUpdating(false);

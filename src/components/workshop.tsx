@@ -2,16 +2,10 @@ import React, { FC, useState } from 'react';
 import styled from '@emotion/styled';
 import { Heading, Text, Modal, ModalBody, ModalHeader, ModalFooter, ModalOverlay, ModalContent, ModalCloseButton, Button } from '@chakra-ui/react';
 import { Card, StyledCard } from './card';
-import { doc, Timestamp } from 'firebase/firestore';
-import { WorkshopInputField } from './workshopInputField';
-import { ErrorBoundary } from 'react-error-boundary'
-import { MapErrorFallback } from './mapErrorFallback';
-import { setDoc } from 'firebase/firestore';
-import { useFirebaseContext } from '../hooks/useFirebaseContext';
-import { datetimestrToTimestamp } from '../utils/datetimestrToTimestamp';
 import { Flexbox } from './flexbox';
 import { WorkshopModalAdmin } from './workshopModalAdmin';
 import { WorkshopModal } from './workshopModal';
+import { Workshop } from '../hooks/useWorkshop';
 
 
 // const StyledWorkshop = styled(StyledCard.withComponent("button"))`
@@ -23,31 +17,14 @@ export const StyledWorkshop = styled(Card)`
   & > .upper {
     gap: 20px;
   }
-
-  /* &:hover {
-    box-shadow: 0px 0px 16px 4px #f0f0f0;
-  }
-  transition: box-shadow 0.3s; */
 `;
 
-export interface WorkshopType {
-  id: string;
-  title: string;
-  description: string;
-  datetime: Timestamp;
-  duration: number;
-  language: string;
-  capacity: number;
-  fee: number;
-  venue: string;
-  mapsrc: string;
+interface Props extends React.HTMLAttributes<HTMLDivElement> {
+  readonly workshop: Workshop;
+  readonly isAdmin: boolean;
 }
 
-export const Workshop: FC<{
-  readonly workshop: WorkshopType;
-  readonly isAdmin: boolean;
-
-} & React.HTMLAttributes<HTMLDivElement>> = ({ 
+export const WorkshopBrief: FC<Props> = ({ 
   workshop,
   isAdmin,
   ...props
@@ -56,7 +33,6 @@ export const Workshop: FC<{
 
   return (
     <StyledWorkshop
-      // onClick={() => setIsModalOpened(true)}
       {...props}
     >
       <Flexbox className='upper'>
@@ -66,7 +42,6 @@ export const Workshop: FC<{
         <Text>Time: {workshop.datetime.toDate().toLocaleTimeString()}</Text>
       </Flexbox>
       <Button onClick={() => setIsModalOpened(true)} colorScheme="blue">View Details</Button>
-      {/* Map */}
       {isAdmin ?
         <WorkshopModalAdmin
           isOpen={isModalOpened}

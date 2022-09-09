@@ -29,9 +29,11 @@ const StyledFooter = styled.footer`
   }
 `;
 
-export const Footer: FC<{
+interface Props extends React.HTMLAttributes<HTMLDivElement> {
 
-} & React.HTMLAttributes<HTMLDivElement>> = ({ ...props }) => {
+}
+
+export const Footer: FC<Props> = ({ ...props }) => {
   return (
     <StyledFooter {...props}>
       <ul className="links">

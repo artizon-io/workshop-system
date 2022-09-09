@@ -1,12 +1,10 @@
 import React, { FC, useState } from 'react';
 import styled from '@emotion/styled';
 import { Heading, Text, Button } from '@chakra-ui/react';
-import { useFirebaseContext } from '../hooks/useFirebaseContext';
-import { StyledNav } from '../styles/styledNav';
 import { WorkshopList } from '../components/workshopList';
 import { useWorkshops } from '../hooks/useWorkshops';
 import { WorkshopModalAdmin } from '../components/workshopModalAdmin';
-import { useNavigate } from 'react-router-dom';
+import { useWorkshopsRealtime } from '../hooks/useWorkshopsRealtime';
 
 
 const StyledAdmin = styled.main`
@@ -21,20 +19,10 @@ const StyledAdmin = styled.main`
   }
 `;
 
-export const Admin: FC<{
-
-} & React.HTMLAttributes<HTMLDivElement>> = ({ ...props }) => {
-  const {
-    firebaseApp,
-    firebaseAnalytics,
-    auth,
-    user,
-    firestore,
-  } = useFirebaseContext();
-
-  const workshops = useWorkshops(true);
+export const Admin: FC<{}> = ({ ...props }) => {
+  const workshops = useWorkshops();
+  // const workshops = useWorkshopsRealtime();
   const [isWorkshopModalOpened, setIsWorkshopModalOpened] = useState(false);
-  const navigate = useNavigate();
 
   return (
     <StyledAdmin {...props}>

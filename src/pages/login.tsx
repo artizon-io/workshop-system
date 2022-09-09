@@ -1,11 +1,12 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { Heading, Input, InputGroup, InputLeftAddon, Button, useDisclosure } from '@chakra-ui/react'
 import styled from '@emotion/styled';
-import { Auth, ConfirmationResult, getAuth, RecaptchaVerifier, signInWithPhoneNumber, User, UserCredential } from "firebase/auth";
+import { ApplicationVerifier, ConfirmationResult, RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { useFirebaseContext } from '../hooks/useFirebaseContext';
 import { PhoneForm } from '../components/phoneForm';
 import { OTPForm } from '../components/otpform';
 import Logger from 'js-logger';
+import HCaptcha from '@hcaptcha/react-hcaptcha';
 
 
 const StyledContainer = styled.div`
@@ -15,12 +16,33 @@ const StyledContainer = styled.div`
   margin: 100px;
 `;
 
+export type CaptchaRef = {
+  elem: HCaptcha;
+  token: string;
+};
+
+class HCaptchaVerifier implements ApplicationVerifier {
+  type = "hcaptcha";
+
+  captchaRef: React.MutableRefObject<CaptchaRef>;
+
+  constructor(captchaRef) {
+    this.captchaRef = captchaRef;
+  }
+
+  async verify(): Promise<string> {
+    this.captchaRef.current.elem.execute();
+    return this.captchaRef.current.token;
+  }
+}
+
 
 const Login : FC<{}> = ({}) => {
   const [phone, setPhone] = useState('');
   const [OTP, setOTP] = useState('');
 
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  const captchaRef = useRef<CaptchaRef>(null);
+  const [applicationVerifier, setApplicationVerifier] = useState<ApplicationVerifier>(null);
 
   const [cooldownPhone, setCooldownPhone] = useState(0);
   const [isPhoneInvalid, setIsPhoneInvalid] = useState(false);
@@ -28,36 +50,12 @@ const Login : FC<{}> = ({}) => {
   const [cooldownOTP, setCooldownOTP] = useState(0);
   const [isOTPInvalid, setIsOTPInvalid] = useState(false);
 
-  const [recaptchaVerifier, setRecaptchaVerifier] = useState<RecaptchaVerifier>(null);
-  const [recaptchaVerifierToken, setRecaptchaVerifierToken] = useState<string>('');
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult>(null);
 
   const {
-    firebaseApp,
-    firebaseAnalytics,
     auth,
-    user,
-    firestore,
   } = useFirebaseContext();
   
-
-  useEffect(() => {
-    // https://stackoverflow.com/questions/62619916/firebase-invisible-recaptcha-does-not-work-in-react-js
-    const verifier = new RecaptchaVerifier(buttonRef.current, {
-      'size': 'invisible',
-      'callback': res => {
-        // reCAPTCHA solved, allow signInWithPhoneNumber
-        Logger.info("Recaptcha passed");
-      },
-      'expired-callback': () => {
-        // Response expired. Ask user to solve reCAPTCHA again.
-        Logger.warn("Recaptcha expired");
-        // Logic to re-init recaptcha
-      }
-    }, auth);
-    setRecaptchaVerifier(verifier);
-  }, []);
-
   const initPhoneCountDown = (time: number) => {
     initCountdown(setCooldownPhone, time);
   }
@@ -80,30 +78,19 @@ const Login : FC<{}> = ({}) => {
     }, 1000);
   }
 
+  useEffect(() => {
+    setApplicationVerifier(new HCaptchaVerifier(captchaRef));
+  }, []);
+
   const handleClickPhone : React.MouseEventHandler<HTMLButtonElement> = (e) => {
     initPhoneCountDown(10);
     setIsPhoneInvalid(false);
-    // recaptchaVerifier.render()
-    //   .then(widgetId => {
-    //      Logger.info("WidgetId", widgetId);
-    //   })
-    //   .catch(err => {
-    //     Logger.error(err);
-    //   });
-    recaptchaVerifier.verify()
-      .then(token => {
-        Logger.info("Recaptcha verified");
-        setRecaptchaVerifierToken(token);
-        signInWithPhone();
-      })
-      .catch(err => {
-        Logger.error("Recaptcha verification failure", err);
-      });
+    signInWithPhone();
   }
-  
+
   const signInWithPhone = () => {
     const phoneWithDistrict = '+852' + phone;
-    signInWithPhoneNumber(auth, phoneWithDistrict, recaptchaVerifier)
+    signInWithPhoneNumber(auth, phoneWithDistrict, applicationVerifier)
       .then(confirmationResult => {
         // SMS sent. Prompt user to type the code from the message, then sign the
         // user in with confirmationResult.confirm(code).
@@ -140,7 +127,7 @@ const Login : FC<{}> = ({}) => {
         handleClickPhone={handleClickPhone}
         phone={phone}
         setPhone={setPhone}
-        ref={buttonRef}
+        ref={captchaRef}
         cooldownPhone={cooldownPhone}
         isPhoneInvalid={isPhoneInvalid}
       />

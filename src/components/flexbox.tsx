@@ -1,6 +1,5 @@
-import React, { FC } from "react";
+import React, { FC, ReactElement } from "react";
 import styled, { StyledComponent, StyledOptions, StyledTags } from "@emotion/styled";
-import { StyledComponentProps } from "../types/emotion";
 
 
 const StyledFlexbox = styled.div`
@@ -9,11 +8,17 @@ const StyledFlexbox = styled.div`
   gap: 30px;
 `;
 
-interface Props extends React.HTMLAttributes<HTMLDivElement>, StyledComponentProps {
-
+interface Props<T extends React.ElementType> {
+  as?: T;
+  children?: React.ReactNode;
 }
 
-export const Flexbox : FC<Props> = ({children, ...props}) => {
+export const Flexbox =
+  <T extends React.ElementType = "div">  // by default as="div"
+  ({as, children, ...props} : Props<T> & Omit<React.ComponentPropsWithoutRef<T>, keyof Props<T>>) => {  // TODO
+
+  const Component = as || "div";  // not to be confused with TS as keyword
+
   return (
     <StyledFlexbox {...props}>
       {children}

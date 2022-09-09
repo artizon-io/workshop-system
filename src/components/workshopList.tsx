@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import styled from '@emotion/styled';
-import { Workshop, WorkshopType } from './workshop';
+import { WorkshopBrief } from './workshop';
+import { Workshop } from '../hooks/useWorkshop';
 import { Text } from '@chakra-ui/react';
 import { Flexbox } from './flexbox';
 import { WorkshopModalAdmin } from './workshopModalAdmin';
@@ -12,20 +13,21 @@ const StyledWorkshopList = styled.div`
   gap: 20px;
 `;
 
-export const WorkshopList: FC<{
-  readonly workshops: WorkshopType[]
+interface Props extends React.HTMLAttributes<HTMLDivElement> {
+  readonly workshops: Workshop[];
   readonly adminMode: boolean;
+}
 
-} & React.HTMLAttributes<HTMLDivElement>> = ({ workshops, adminMode, ...props }) => {
+export const WorkshopList: FC<Props> = ({ workshops, adminMode, ...props }) => {
   return (
     <StyledWorkshopList {...props}>
-      {
-        workshops ? workshops.map(workshop => <Workshop
+      {workshops
+        ? workshops.map(workshop => <WorkshopBrief
           key={workshop.id}
           workshop={workshop}
           isAdmin={adminMode}
         />)
-          : <Text>Loading...</Text>
+        : <Text>Loading...</Text>
       }
     </StyledWorkshopList>
   );

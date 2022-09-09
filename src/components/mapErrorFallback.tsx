@@ -7,11 +7,12 @@ const StyledMapErrorFallback = styled.div`
 
 `;
 
-export const MapErrorFallback: FC<{
+interface Props extends React.HTMLAttributes<HTMLDivElement> {
   readonly error : any;
   readonly resetErrorBoundary : any;
+}
 
-} & React.HTMLAttributes<HTMLDivElement>> = ({ ...props }) => {
+export const MapErrorFallback: FC<Props> = ({ ...props }) => {
   return (
     <StyledMapErrorFallback {...props}>
       <Text>Error rendering map</Text>

@@ -1,23 +1,15 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import styled from '@emotion/styled';
-import { useFirebaseContext } from '../hooks/useFirebaseContext';
-import { Button, Input, InputGroup, InputLeftAddon, Text } from '@chakra-ui/react';
-import { Nav } from '../components/nav';
-import { Footer } from '../components/footer';
-import { getDocs, getDoc, getDocFromServer, getDocsFromServer, collection, Timestamp } from 'firebase/firestore';
+import { Button, Heading, Input, InputGroup, InputLeftAddon, Text } from '@chakra-ui/react';
 import { Flexbox } from '../components/flexbox';
-import { Workshop, WorkshopType } from '../components/workshop';
-import { WorkshopList } from '../components/workshopList';
-import { useWorkshops } from '../hooks/useWorkshops';
 import { useParams } from 'react-router-dom';
 import Logger from 'js-logger';
-import { useFormik } from 'formik';
 import { useWorkshop } from '../hooks/useWorkshop';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { stripePublic } from '../stripeConfig';
-import { useLocation } from 'react-router-dom';
 import { EnrollPaymentForm } from '../components/enrollPaymentForm';
+import { getCookies } from '../utils/cookies';
 
 
 const StyledHome = styled.main`
@@ -32,35 +24,20 @@ const StyledHome = styled.main`
 // recreating the `Stripe` object on every render.
 const stripePromise = loadStripe(stripePublic);
 
-export const Enroll: FC<{
-
-} & React.HTMLAttributes<HTMLDivElement>> = ({ ...props }) => {
-  const {
-    firebaseApp,
-    firebaseAnalytics,
-    auth,
-    user,
-    firestore,
-  } = useFirebaseContext();
-
+export const Enroll: FC<{}> = ({ ...props }) => {
   const { enrollId, workshopId } = useParams();
-  useEffect(() => {
-    Logger.log(enrollId);
-  }, []);
-
   const workshop = useWorkshop(workshopId);
+  const cookies = useMemo(() => getCookies(), [document.cookie]);
 
-  const location = useLocation();
-
-  useEffect(() => {
-    // TODO: check if enrollId is valid
-  }, []);
+  if (!cookies['stripeClientSecret'])
+    return (
+      <Heading fontWeight={'medium'}>You do not have access to this page</Heading>
+    );
 
   return (
     <StyledHome {...props}>
       <Elements stripe={stripePromise} options={{
-          // @ts-ignore
-          clientSecret: location.state.stripeClientSecret,
+          clientSecret: cookies['stripeClientSecret'],
         }}
       >
        <EnrollPaymentForm/>

@@ -16,6 +16,6 @@ export const FirebaseContext = React.createContext<{
   firestore: Firestore,
   functions: Functions,
   appCheck: AppCheck
-} | null>(null);
+}>(null);
 
 export const useFirebaseContext = () => useContext(FirebaseContext);

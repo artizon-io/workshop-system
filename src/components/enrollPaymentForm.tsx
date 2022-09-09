@@ -1,35 +1,19 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
-import styled from '@emotion/styled';
+import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { useFirebaseContext } from '../hooks/useFirebaseContext';
-import { Button, Input, InputGroup, InputLeftAddon, Text } from '@chakra-ui/react';
-import { Nav } from '../components/nav';
-import { Footer } from '../components/footer';
-import { getDocs, getDoc, getDocFromServer, getDocsFromServer, collection, Timestamp } from 'firebase/firestore';
+import { Button, Heading, Input, InputGroup, InputLeftAddon, Text } from '@chakra-ui/react';
 import { Flexbox } from '../components/flexbox';
-import { Workshop, WorkshopType } from '../components/workshop';
-import { WorkshopList } from '../components/workshopList';
-import { useWorkshops } from '../hooks/useWorkshops';
-import { useParams } from 'react-router-dom';
 import Logger from 'js-logger';
 import { useFormik } from 'formik';
-import { useWorkshop } from '../hooks/useWorkshop';
-import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import { stripePublic } from '../stripeConfig';
 import { useLocation } from 'react-router-dom';
+import { getCookies } from '../utils/cookies';
 
 
-export const EnrollPaymentForm: FC<{
+interface Props extends  React.HTMLAttributes<HTMLDivElement> {
 
-} & React.HTMLAttributes<HTMLDivElement>> = ({ ...props }) => {
-  const {
-    firebaseApp,
-    firebaseAnalytics,
-    auth,
-    user,
-    firestore,
-  } = useFirebaseContext();
+}
 
+export const EnrollPaymentForm: FC<Props> = ({ ...props }) => {
   const formik = useFormik({
     initialValues: {
       firstName: '',
@@ -40,13 +24,13 @@ export const EnrollPaymentForm: FC<{
     // validate,
     onSubmit: async data => {
       setIsSubmitting(true);
-      Logger.info("Data: ", data);
+      Logger.info("Submitting form data:", data);
 
       const { error } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          // Make sure to change this to your payment completion page
-          return_url: "http://localhost:3000",
+          return_url: `http://localhost:8080/workshop/`,
+          // return_url: "http://firebase-app.",
         },
       });
   
@@ -65,17 +49,19 @@ export const EnrollPaymentForm: FC<{
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const location = useLocation();
-
   const stripe = useStripe();
   const elements = useElements();
+  
+  const cookies = useMemo(() => getCookies(), [document.cookie]);
 
   useEffect(() => {
     if (!stripe)
       return;
 
-    // @ts-ignore
-    stripe.retrievePaymentIntent(location.state.stripeClientSecret).then(({ paymentIntent }) => {
+    if (!cookies['stripeClientSecret'])
+      throw Error('Stripe client secret token not present in site cookie');
+
+    stripe.retrievePaymentIntent(cookies['stripeClientSecret']).then(({ paymentIntent }) => {
       switch (paymentIntent.status) {
         case "succeeded":
           Logger.info("Payment succeeded!");
@@ -94,7 +80,6 @@ export const EnrollPaymentForm: FC<{
   }, [stripe]);
 
   return (
-    // @ts-ignore
     <Flexbox as="form" onSubmit={formik.handleSubmit}>
       <InputGroup>
         <InputLeftAddon>First Name</InputLeftAddon>

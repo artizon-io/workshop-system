@@ -1,12 +1,6 @@
 import React, { FC, useState } from 'react';
 import styled from '@emotion/styled';
 import { Heading, Text, Button } from '@chakra-ui/react';
-import { useFirebaseContext } from '../hooks/useFirebaseContext';
-import { StyledNav } from '../styles/styledNav';
-import { WorkshopList } from '../components/workshopList';
-import { useWorkshops } from '../hooks/useWorkshops';
-import { WorkshopModalAdmin } from '../components/workshopModalAdmin';
-import { useNavigate } from 'react-router-dom';
 import { MakeAdminModal } from '../components/makeAdminModal';
 
 
@@ -22,18 +16,7 @@ const StyledAdminManagement = styled.main`
   }
 `;
 
-export const AdminManagement: FC<{
-
-} & React.HTMLAttributes<HTMLDivElement>> = ({ ...props }) => {
-  const {
-    firebaseApp,
-    firebaseAnalytics,
-    auth,
-    user,
-    firestore,
-    functions
-  } = useFirebaseContext();
-
+export const AdminManagement: FC<{}> = ({ ...props }) => {
   const [isMakeAdminModalOpened, setIsMakeAdminModalOpened] = useState(false);
 
   return (

@@ -10,18 +10,19 @@ import { useNavigate } from 'react-router-dom';
 import { Auth, User } from 'firebase/auth';
 
 
-export const AdminNav: FC<{
-  user: User,
-  auth: Auth
+interface Props extends React.HTMLAttributes<HTMLDivElement> {
+  user: User;
+  auth: Auth;
+}
 
-} & React.HTMLAttributes<HTMLDivElement>> = ({ user, auth, ...props }) => {
+export const AdminNav: FC<Props> = ({ user, auth, ...props }) => {
   const navigate = useNavigate();
 
   return (
     <StyledNav>
       <Heading fontWeight='medium'>Workshop System Admin</Heading>
       <div className="right">
-        {user ? <Text>{user.phoneNumber}</Text> : ""}
+        {!!user ?? <Text>{user.phoneNumber}</Text>}
         <Button colorScheme="blue" onClick={() => {navigate("./admin-management")}}>Admin Accounts Management</Button>
         <Button colorScheme="blue" onClick={() => {auth.signOut()}}>Log out</Button>
       </div>

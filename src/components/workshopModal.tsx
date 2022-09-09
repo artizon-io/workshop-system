@@ -1,27 +1,20 @@
 import React, { FC, useState } from 'react';
-import styled from '@emotion/styled';
 import { Heading, Text, Modal, ModalBody, ModalHeader, ModalFooter, ModalOverlay, ModalContent, ModalCloseButton, Button } from '@chakra-ui/react';
-import { Card, StyledCard } from './card';
-import { doc, Timestamp } from 'firebase/firestore';
-import { WorkshopInputField } from './workshopInputField';
-import { ErrorBoundary } from 'react-error-boundary'
-import { MapErrorFallback } from './mapErrorFallback';
-import { setDoc } from 'firebase/firestore';
 import { useFirebaseContext } from '../hooks/useFirebaseContext';
-import { datetimestrToTimestamp } from '../utils/datetimestrToTimestamp';
-import { WorkshopType } from './workshop';
+import { Workshop } from '../hooks/useWorkshop';
 import { Flexbox } from './flexbox';
 import { httpsCallable } from 'firebase/functions';
 import Logger from 'js-logger';
 import { useNavigate } from 'react-router-dom';
 
 
-export const WorkshopModal: FC<{
+interface Props extends React.HTMLAttributes<HTMLDivElement> {
   readonly isOpen: boolean;
   readonly onClose: () => void;
-  readonly workshop: WorkshopType
+  readonly workshop: Workshop;
+}
 
-} & React.HTMLAttributes<HTMLDivElement>> = ({ 
+export const WorkshopModal: FC<Props> = ({ 
   workshop,
   isOpen,
   onClose,
@@ -58,14 +51,20 @@ export const WorkshopModal: FC<{
             colorScheme="blue"
             onClick={() => {
               setIsWaitingForEnroll(true);
-              httpsCallable(functions, 'initiateEnroll')({ workshopId: workshop.id })
+              httpsCallable<
+                {  // request
+                  workshopId: string;
+                },
+                {  // response
+                  enrollId: string;
+                  stripeClientSecret: string;
+                }
+              >(functions, 'initiateEnroll')({ workshopId: workshop.id })
                 .then(res => {
-                  Logger.info(`Retrieve data`, res.data);
-                  // setIsWaitingForEnroll(false);
-                  // @ts-ignore
+                  // Logger.info(`Retrieve data`, res.data);
+                  setIsWaitingForEnroll(false);
                   navigate(`/workshop/${workshop.id}/enroll/${res.data.enrollId}`, {
                     state: {
-                      // @ts-ignore
                       stripeClientSecret: res.data.stripeClientSecret
                     }
                   });

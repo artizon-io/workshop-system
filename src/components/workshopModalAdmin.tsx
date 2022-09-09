@@ -1,75 +1,40 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
-import styled from '@emotion/styled';
 import { Heading, Text, Modal, ModalBody, ModalHeader, ModalFooter, ModalOverlay, ModalContent, ModalCloseButton, Button, ModalProps, Input, InputAddon, InputLeftAddon, InputGroup, SlideFade, Box, Collapse, Spinner, TableContainer, Table, TableCaption, Thead, Tr, Th, Tbody, Td, Tfoot } from '@chakra-ui/react';
-import { Card, StyledCard } from './card';
 import { addDoc, collection, deleteDoc, doc, onSnapshot, Timestamp } from 'firebase/firestore';
-import { WorkshopInputField } from './workshopInputField';
-import { ErrorBoundary } from 'react-error-boundary'
-import { MapErrorFallback } from './mapErrorFallback';
 import { setDoc } from 'firebase/firestore';
 import { useFirebaseContext } from '../hooks/useFirebaseContext';
 import { datetimestrToTimestamp } from '../utils/datetimestrToTimestamp';
-import { StyledWorkshop, WorkshopType } from './workshop';
+import { Workshop } from '../hooks/useWorkshop';
 import { Flexbox } from './flexbox';
 import { useFormik } from 'formik';
 import Logger from 'js-logger';
+import { useWorkshopConfidentialRealtime } from '../hooks/useWorkshopConfidentialRealtime';
 
 
-export const WorkshopModalAdmin: FC<{
-  readonly workshop?: WorkshopType;
+interface Props extends React.HTMLAttributes<HTMLDivElement> {
+  readonly workshop?: Workshop;
   readonly isOpen: boolean;
   readonly onClose: () => void;
+}
 
-} & React.HTMLAttributes<HTMLDivElement>> = ({ 
+
+export const WorkshopModalAdmin: FC<Props> = ({
   workshop,
   isOpen,
   onClose,
   ...props
 }) => {
-  const validate = values => {
-    const errors : any = {};
-    if (!values.title) {
-      errors.title = 'Required';
-    }
-  
-    if (!values.description) {
-      errors.description = 'Required';
-    }
-  
-    if (!values.venue) {
-      errors.venue = 'Required';
-    }
+  const [isUpdating, setIsUpdating] = useState(false);
 
-    if (!values.fee) {
-      errors.fee = 'Required';
-    }
+  const formButtonRef = useRef<HTMLButtonElement>(null);  // place button at modal footer instead of inside form (inside modal body)
 
-    if (!values.duration) {
-      errors.duration = 'Required';
-    }
+  const [isEnrollDetailsOpened, setIsEnrollDetailsOpened] = useState(false);
 
-    if (!values.language) {
-      errors.language = 'Required';
-    }
+  const workshopConfidential = useWorkshopConfidentialRealtime(workshop.id);
 
-    if (!values.capacity) {
-      errors.capacity = 'Required';
-    }
-
-    if (!values.mapsrc) {
-      errors.capacity = 'Required';
-    }
-
-    if (!values.date) {
-      errors.date = 'Required';
-    }
-
-    if (!values.time) {
-      errors.time = 'Required';
-    }
-
-    return errors;
-  };
+  const {
+    firestore,
+  } = useFirebaseContext();
 
   const formik = useFormik({
     initialValues: {
@@ -82,126 +47,86 @@ export const WorkshopModalAdmin: FC<{
       capacity: workshop?.capacity ?? '',
       mapsrc: workshop?.mapsrc ?? '',
       date: workshop?.datetime.toDate().toLocaleDateString("sv-SE") ?? '',  // only to set the format
-      // date: workshop?.datetime.toDate().toISOString().substring(0, 10) ?? '',
       time: workshop?.datetime.toDate().toLocaleTimeString("en-GB", {hour: '2-digit', minute: '2-digit', hour12: false}) ?? '',  // only to set the format
-      // time: workshop?.datetime.toDate().toISOString().substring(11,16) ?? '',
     },
-    validate,
+    validate: values => {
+      const errors : any = {};
+      if (!values.title) {
+        errors.title = 'Required';
+      }
+    
+      if (!values.description) {
+        errors.description = 'Required';
+      }
+    
+      if (!values.venue) {
+        errors.venue = 'Required';
+      }
+  
+      if (!values.fee) {
+        errors.fee = 'Required';
+      }
+  
+      if (!values.duration) {
+        errors.duration = 'Required';
+      }
+  
+      if (!values.language) {
+        errors.language = 'Required';
+      }
+  
+      if (!values.capacity) {
+        errors.capacity = 'Required';
+      }
+  
+      if (!values.mapsrc) {
+        errors.capacity = 'Required';
+      }
+  
+      if (!values.date) {
+        errors.date = 'Required';
+      }
+  
+      if (!values.time) {
+        errors.time = 'Required';
+      }
+  
+      return errors;
+    },
     onSubmit: data => {
       setIsUpdating(true);  // Firestore offline data actually allows for instant local write
                             // but we are blocking it here intentionally
-      Logger.info("Data: ", data);
-      Logger.debug("Fee is type:", typeof data.fee);
-      if (!!workshop)
-        updateDocToFirestore(data);
-      else
-        addDocToFirestore(data);
+      Logger.info("Data:", data);
+      setDoc(doc(firestore, 'workshops', workshop.id), {
+        title: data.title,
+        fee: data.fee,
+        venue: data.venue,
+        language: data.language,
+        mapsrc: data.mapsrc,
+        capacity: data.capacity,
+        duration: data.duration,
+        description: data.description,
+        datetime: datetimestrToTimestamp(data.date, data.time)
+      })
+        .then(() => {
+          Logger.info("Successfully write workshop");
+          setIsUpdating(false);
+        })
+        .catch(err => {
+          Logger.error("Fail writing workshop", err);
+          setIsUpdating(false);
+        });
     },
   });
-
-  const updateDocToFirestore = ({
-    title,
-    description,
-    venue,
-    fee,
-    duration,
-    language,
-    capacity,
-    mapsrc,
-    date,
-    time,
-  }) => {
-    setDoc(doc(firestore, 'workshops', workshop.id), {
-      title,
-      fee,
-      venue,
-      language,
-      mapsrc,
-      capacity,
-      duration,
-      description,
-      datetime: datetimestrToTimestamp(date, time)
-    })
-      .then(() => {
-        Logger.info("Successfully update workshop details");
-        setIsUpdating(false);
-      })
-      .catch(err => {
-        Logger.error("Fail updating workshop details", err);
-        setIsUpdating(false);
-      });
-  }
-
-  const addDocToFirestore = ({
-    title,
-    description,
-    venue,
-    fee,
-    duration,
-    language,
-    capacity,
-    mapsrc,
-    date,
-    time,
-  }) => {
-    addDoc(collection(firestore, 'workshops'), {
-      title,
-      fee,
-      venue,
-      language,
-      mapsrc,
-      capacity,
-      duration,
-      description,
-      datetime: datetimestrToTimestamp(date, time)
-    })
-      .then(() => {
-        Logger.info("Successfully add new workshop");
-        setIsUpdating(false);
-      })
-      .catch(err => {
-        Logger.error("Fail adding new workshop", err);
-        setIsUpdating(false);
-      });
-  }
-  
-  const [isUpdating, setIsUpdating] = useState(false);
-
-  const formButtonRef = useRef<HTMLButtonElement>(null);
-
-  const [isEnrollPageOpened, setIsEnrollPageOpened] = useState(false);
-  const [workshopConfidential, setWorkshopConfidential] = useState(null);
-  const [isListenerAttached, setIsListenerAttached] = useState(false);
-
-  const {
-    firebaseApp,
-    firebaseAnalytics,
-    auth,
-    user,
-    firestore,
-  } = useFirebaseContext();
-
-  useEffect(() => {
-    // Logger.debug("Date:", workshop?.datetime.toDate().toISOString().substring(0, 10));
-    // Logger.debug("Date:", workshop?.datetime.toDate().toLocaleDateString("sv-SE"));
-    // Logger.debug(workshop?.datetime.toDate().toISOString().substring(0, 10) === workshop?.datetime.toDate().toLocaleDateString("sv-SE"));
-    // Logger.debug("Time:", workshop?.datetime.toDate().toISOString().substring(11,16));
-    // Logger.debug("Time:", workshop?.datetime.toDate().toLocaleTimeString("en-US", {hour: '2-digit', minute: '2-digit', hour12: false}));
-  }, []);
-
-  // useEffect(() => {
-  //   Logger.debug("Date (current):", formik.values.date);
-  // }, [formik.values.date]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered closeOnOverlayClick size="4xl" scrollBehavior='inside' {...props}>
       <ModalOverlay />
-      {!isEnrollPageOpened ?
+      {!isEnrollDetailsOpened ?
         <ModalContent>
           <ModalHeader>Workshop Details</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            {/* @ts-ignore */}
             <Flexbox as="form" onSubmit={formik.handleSubmit}>
               <InputGroup>
                 <InputLeftAddon>Title</InputLeftAddon>
@@ -243,15 +168,8 @@ export const WorkshopModalAdmin: FC<{
                 <InputLeftAddon>Capacity</InputLeftAddon>
                 <Input name="capacity" type={"number"} onChange={formik.handleChange} value={formik.values.capacity} disabled={isUpdating} isInvalid={!!formik.errors.capacity}/>
               </InputGroup>
-              {/* <ErrorBoundary
-                FallbackComponent={MapErrorFallback}
-                // onReset={() => {
-                //   // reset the state of your app so the error doesn't happen again
-                // }}
-              > */}
-                <iframe src={`https://www.google.com/maps/embed?${formik.values.mapsrc}`} style={{border: 0, width: "100%", height: "30vh"}} allowFullScreen={false} loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
-              {/* </ErrorBoundary> */}
-              <button type="submit" style={{display: "none"}} ref={formButtonRef}></button>
+              <iframe src={`https://www.google.com/maps/embed?${formik.values.mapsrc}`} style={{border: 0, width: "100%", height: "30vh"}} allowFullScreen={false} loading="lazy" referrerPolicy="no-referrer-when-downgrade"/>
+              <button type="submit" style={{display: "none"}} ref={formButtonRef}/>
             </Flexbox>
           </ModalBody>
           <ModalFooter>
@@ -260,15 +178,7 @@ export const WorkshopModalAdmin: FC<{
                 disabled={isUpdating}
                 colorScheme="blue"
                 onClick={() => {
-                  setIsEnrollPageOpened(true);
-
-                  if (isListenerAttached)
-                    return;
-
-                  onSnapshot(doc(firestore, `/workshop-confidential/${workshop.id}`), snapshot => {
-                    setWorkshopConfidential(snapshot.data());
-                  });
-                  setIsListenerAttached(true);
+                  setIsEnrollDetailsOpened(true);
                 }}
                 marginRight={'3'}
               >
@@ -326,17 +236,15 @@ export const WorkshopModalAdmin: FC<{
                       <Th>First Name</Th>
                       <Th>Phone number</Th>
                       <Th>Email</Th>
-                      {/* <Th>Enroll ID</Th> */}
                       <Th>Payment status</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {workshopConfidential.enrolls?.map(entity => <Tr key={entity.id}>
+                    {workshopConfidential.enrolls.map(entity => <Tr key={entity.id}>
                       <Td>{entity.lastName}</Td>
                       <Td>{entity.firstName}</Td>
                       <Td>{entity.phone}</Td>
                       <Td>{entity.email}</Td>
-                      {/* <Td>{entity.id}</Td> */}
                       <Td>{entity.paymentStatus}</Td>
                     </Tr>)}
                   </Tbody>
@@ -355,7 +263,7 @@ export const WorkshopModalAdmin: FC<{
         <ModalFooter>
           <Button
             colorScheme={"blue"}
-            onClick={() => setIsEnrollPageOpened(false)}
+            onClick={() => setIsEnrollDetailsOpened(false)}
           >Back</Button>
         </ModalFooter>
       </ModalContent>

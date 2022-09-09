@@ -1,6 +1,8 @@
-import React, { FC, useEffect } from "react";
+import React, { FC, useEffect, useImperativeHandle, useRef } from "react";
 import { Heading, Input, InputGroup, InputLeftAddon, Button, Text } from '@chakra-ui/react'
 import styled from "@emotion/styled";
+import HCaptcha from "@hcaptcha/react-hcaptcha";
+import { CaptchaRef } from "../pages/login";
 
 
 const StyledPhoneForm = styled.div`
@@ -13,17 +15,27 @@ export interface PhoneFormProps {
   readonly setPhone: (phone: string) => void;
   readonly handleClickPhone: React.MouseEventHandler<HTMLButtonElement>;
   readonly isPhoneInvalid: boolean;
-  readonly cooldownPhone: number
+  readonly cooldownPhone: number;
 }
 
-export const PhoneForm = React.forwardRef<HTMLButtonElement, PhoneFormProps & React.HTMLAttributes<HTMLDivElement>>(({
+export const PhoneForm = React.forwardRef<CaptchaRef, PhoneFormProps & React.HTMLAttributes<HTMLDivElement>>(({
   phone,
   setPhone,
   handleClickPhone,
   isPhoneInvalid,
   cooldownPhone,
   ...props
-}, ref) => {
+}, captchaRef) => {
+  const captchaElemRef = useRef<HCaptcha>(null);
+  const captchaTokenRef = useRef<string>(null);
+
+  useImperativeHandle(captchaRef, () => {
+    return ({
+      elem: captchaElemRef.current,
+      token: captchaTokenRef.current
+    })
+  });
+
   return (
     <StyledPhoneForm {...props}>
       <Heading size="md" fontWeight="normal" mb="10">Sign in with Phone Number</Heading>
@@ -47,9 +59,15 @@ export const PhoneForm = React.forwardRef<HTMLButtonElement, PhoneFormProps & Re
           </ul>
         </div>
       }
+      <HCaptcha
+        sitekey="your-sitekey"
+        onVerify={token => {
+          captchaTokenRef.current = token;
+        }}
+        ref={captchaElemRef}
+      />
       <Button
         onClick={handleClickPhone}
-        ref={ref}
         colorScheme="blue"
         disabled={!!cooldownPhone}
         className="button"
