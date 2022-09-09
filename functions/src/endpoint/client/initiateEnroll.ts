@@ -3,9 +3,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { CloudTasksClient } from '@google-cloud/tasks';
 
 import * as admin from "firebase-admin";
-import { verifyAdmin, verifyAppCheck, verifyLogin } from "../utils/verify";
-import { initStripe } from "../utils/stripe";
-import { getError } from "../utils/error";
+import { verifyAdmin, verifyAppCheck, verifyLogin } from "../../utils/verify";
+import { initStripe } from "../../utils/stripe";
+import { getError } from "../../utils/error";
 
 
 export const initiateEnroll = functions.region('asia-east2').https.onCall(async (data, context) => {

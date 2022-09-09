@@ -1,6 +1,6 @@
 import * as functions from "firebase-functions";
-import { verifyAdmin, verifyAppCheck } from "../utils/verify";
-import { getError } from "../utils/error";
+import { verifyAdmin, verifyAppCheck } from "../../utils/verify";
+import { getError } from "../../utils/error";
 
 import * as admin from "firebase-admin";
 
