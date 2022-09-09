@@ -18,6 +18,7 @@
     "@google-cloud/tasks": "^3.0.2",
     "firebase-admin": "^11.0.1",
     "firebase-functions": "^3.23.0",
+    "stripe": "^10.7.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

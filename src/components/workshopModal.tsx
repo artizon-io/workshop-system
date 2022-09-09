@@ -63,7 +63,12 @@ export const WorkshopModal: FC<{
                   Logger.info(`Retrieve data`, res.data);
                   // setIsWaitingForEnroll(false);
                   // @ts-ignore
-                  navigate(`/workshop/${workshop.id}/enroll/${res.data.enrollId}`);
+                  navigate(`/workshop/${workshop.id}/enroll/${res.data.enrollId}`, {
+                    state: {
+                      // @ts-ignore
+                      stripeClientSecret: res.data.stripeClientSecret
+                    }
+                  });
                 })
                 .catch(err => {
                   Logger.error(`Error message`, err.message);

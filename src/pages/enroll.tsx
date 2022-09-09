@@ -13,6 +13,11 @@ import { useParams } from 'react-router-dom';
 import Logger from 'js-logger';
 import { useFormik } from 'formik';
 import { useWorkshop } from '../hooks/useWorkshop';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import { stripePublic } from '../stripeConfig';
+import { useLocation } from 'react-router-dom';
+import { EnrollPaymentForm } from '../components/enrollPaymentForm';
 
 
 const StyledHome = styled.main`
@@ -23,6 +28,9 @@ const StyledHome = styled.main`
   gap: 20px;
 `;
 
+// Make sure to call `loadStripe` outside of a component’s render to avoid
+// recreating the `Stripe` object on every render.
+const stripePromise = loadStripe(stripePublic);
 
 export const Enroll: FC<{
 
@@ -40,22 +48,9 @@ export const Enroll: FC<{
     Logger.log(enrollId);
   }, []);
 
-  const formik = useFormik({
-    initialValues: {
-      firstName: '',
-      lastName: '',
-      phone: '',
-      email: ''
-    },
-    // validate,
-    onSubmit: data => {
-      setIsSubmitting(true);
-      Logger.info("Data: ", data);
-    },
-  });
-
   const workshop = useWorkshop(workshopId);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const location = useLocation();
 
   useEffect(() => {
     // TODO: check if enrollId is valid
@@ -63,39 +58,26 @@ export const Enroll: FC<{
 
   return (
     <StyledHome {...props}>
-      {/* @ts-ignore */}
-      <Flexbox as="form" onSubmit={formik.handleSubmit}>
-        <InputGroup>
-          <InputLeftAddon>First Name</InputLeftAddon>
-          <Input name="first-name" type={"text"} onChange={formik.handleChange} value={formik.values.firstName} disabled={isSubmitting} isInvalid={!!formik.errors.firstName}/>
-        </InputGroup>
-        <InputGroup>
-          <InputLeftAddon>Last Name</InputLeftAddon>
-          <Input name="last-name" type={"text"} onChange={formik.handleChange} value={formik.values.firstName} disabled={isSubmitting} isInvalid={!!formik.errors.firstName}/>
-        </InputGroup>
-        <InputGroup>
-          <InputLeftAddon>Phone Number</InputLeftAddon>
-          <Input name="phone" type={"tel"} onChange={formik.handleChange} value={formik.values.phone} disabled={isSubmitting} isInvalid={!!formik.errors.phone}/>
-        </InputGroup>
-        <InputGroup>
-          <InputLeftAddon>Email Address</InputLeftAddon>
-          <Input name="email" type={"email"} onChange={formik.handleChange} value={formik.values.email} disabled={isSubmitting} isInvalid={!!formik.errors.email}/>
-        </InputGroup>
-        <Button colorScheme={'blue'} disabled={isSubmitting} type="submit">Pay</Button>
-      </Flexbox>
-      {!!workshop &&
-        <Flexbox>
-          <Text>{workshop.title}</Text>
-          <Text>Description: {workshop.description}</Text>
-          <Text>Date: {workshop.datetime.toDate().toLocaleDateString()}</Text>
-          <Text>Time: {workshop.datetime.toDate().toLocaleTimeString()}</Text>
-          <Text>Duration: {workshop.duration} mins</Text>
-          <Text>Language: {workshop.language}</Text>
-          <Text>Capacity: {workshop.capacity}</Text>
-          <Text>Fee: HKD {workshop.fee}</Text>
-          <Text>Venue: {workshop.venue}</Text>
-        </Flexbox>
-      }
+      <Elements stripe={stripePromise} options={{
+          // @ts-ignore
+          clientSecret: location.state.stripeClientSecret,
+        }}
+      >
+       <EnrollPaymentForm/>
+        {!!workshop &&
+          <Flexbox>
+            <Text>{workshop.title}</Text>
+            <Text>Description: {workshop.description}</Text>
+            <Text>Date: {workshop.datetime.toDate().toLocaleDateString()}</Text>
+            <Text>Time: {workshop.datetime.toDate().toLocaleTimeString()}</Text>
+            <Text>Duration: {workshop.duration} mins</Text>
+            <Text>Language: {workshop.language}</Text>
+            <Text>Capacity: {workshop.capacity}</Text>
+            <Text>Fee: HKD {workshop.fee}</Text>
+            <Text>Venue: {workshop.venue}</Text>
+          </Flexbox>
+        }
+      </Elements>
     </StyledHome>
   );
 }

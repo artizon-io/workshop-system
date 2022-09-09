@@ -16,6 +16,8 @@ import { Home } from './pages/home';
 import { Layout } from './layout/layout';
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 import { enableIndexedDbPersistence } from "firebase/firestore"; 
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 
 
 // const firebaseConfig = {
@@ -34,6 +36,7 @@ import { AdminLayout } from './layout/adminLayout';
 import { AdminManagement } from './pages/adminManagement';
 import Logger from 'js-logger';
 import { Enroll } from './pages/enroll';
+import { stripePublic } from './stripeConfig';
 
 // To be make Logger.OFF at production
 Logger.useDefaults({
@@ -79,7 +82,6 @@ const appCheck = initializeAppCheck(firebaseApp, {
   // tokens as needed.
   isTokenAutoRefreshEnabled: true
 });
-
 
 // Open issue on reCAPTCHA error during local dev
 // https://github.com/firebase/firebase-js-sdk/issues/3356
