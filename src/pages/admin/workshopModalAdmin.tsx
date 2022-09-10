@@ -136,6 +136,7 @@ export const WorkshopModalAdmin: FC<Props> = ({
           <ModalCloseButton />
           <ModalBody>
             <Flexbox as="form" onSubmit={formik.handleSubmit}>
+            {/* <form onSubmit={formik.handleSubmit}> */}
               <InputGroup>
                 <InputLeftAddon>Title</InputLeftAddon>
                 <Input name="title" type={"text"} onChange={formik.handleChange} value={formik.values.title} disabled={isUpdating} isInvalid={!!formik.errors.title}/>
@@ -179,9 +180,11 @@ export const WorkshopModalAdmin: FC<Props> = ({
               <iframe src={`https://www.google.com/maps/embed?${formik.values.mapsrc}`} style={{border: 0, width: "100%", height: "30vh"}} allowFullScreen={false} loading="lazy" referrerPolicy="no-referrer-when-downgrade"/>
               <button type="submit" style={{display: "none"}} ref={formButtonRef}/>
             </Flexbox>
+            {/* </form> */}
           </ModalBody>
           {!!workshop
             ? <WorkshopModalAdminEditModeFooter
+              // onClick={() => formButtonRef.current.click()}
               formButtonRef={formButtonRef}
               isUpdating={isUpdating}
               onClose={onClose}
@@ -190,6 +193,7 @@ export const WorkshopModalAdmin: FC<Props> = ({
               workshop={workshop}
             />
             : <WorkshopModalAdminAddModeFooter
+              // onClick={() => formButtonRef.current.click()}
               formButtonRef={formButtonRef}
               isUpdating={isUpdating}
             />

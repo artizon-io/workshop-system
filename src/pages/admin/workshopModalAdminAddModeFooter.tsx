@@ -7,7 +7,6 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
   readonly formButtonRef: React.MutableRefObject<HTMLButtonElement>;
 }
 
-
 export const WorkshopModalAdminAddModeFooter: FC<Props> = ({
   isUpdating,
   formButtonRef,

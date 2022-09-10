@@ -10,17 +10,16 @@ const StyledFlexbox = styled.div`
 
 interface Props<T extends React.ElementType> {
   as?: T;
-  children?: React.ReactNode;
 }
 
 export const Flexbox =
-  <T extends React.ElementType = "div">  // by default as="div"
-  ({as, children, ...props} : Props<T> & Omit<React.ComponentPropsWithoutRef<T>, keyof Props<T>>) => {  // TODO
+  <T extends React.ElementType = "div">
+  ({as, children, ...props} : Props<T> & React.ComponentProps<T>) => {
 
   const Component = as || "div";  // not to be confused with TS as keyword
 
   return (
-    <StyledFlexbox {...props}>
+    <StyledFlexbox as={Component} {...props}>
       {children}
     </StyledFlexbox>
   );
