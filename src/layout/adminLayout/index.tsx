@@ -1,8 +1,7 @@
 import React, { FC } from 'react';
 import styled from '@emotion/styled';
-import { Outlet } from 'react-router-dom';
-import { Auth, User } from 'firebase/auth';
-import { AdminNav } from '../components/adminNav';
+import { AdminNav } from './adminNav';
+import { useFirebaseContext } from 'hooks/useFirebaseContext';
 
 
 const StyledAdminLayout = styled.div`
@@ -10,15 +9,19 @@ const StyledAdminLayout = styled.div`
 `;
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
-  readonly user?: User;
-  readonly auth: Auth;
+
 }
 
-export const AdminLayout: FC<Props> = ({ user, auth, ...props }) => {
+export const AdminLayout: FC<Props> = ({ children, ...props }) => {
+  const {
+    user,
+    auth
+  } = useFirebaseContext();
+
   return (
     <StyledAdminLayout {...props}>
       <AdminNav user={user} auth={auth}/>
-      <Outlet/>
+      {children}
     </StyledAdminLayout>
   );
 }

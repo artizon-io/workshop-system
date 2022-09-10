@@ -1,7 +1,7 @@
 import { getDocs, getDocsFromServer, onSnapshot } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { Workshop } from "./useWorkshop";
-import { useFirebaseContext } from "./useFirebaseContext";
+import { Workshop } from "types/workshop";
+import { useFirebaseContext } from "hooks/useFirebaseContext";
 import { collection } from "firebase/firestore";
 import Logger from "js-logger";
 

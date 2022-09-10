@@ -1,12 +1,11 @@
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
-import { useFirebaseContext } from '../hooks/useFirebaseContext';
 import { Button, Heading, Input, InputGroup, InputLeftAddon, Text } from '@chakra-ui/react';
-import { Flexbox } from '../components/flexbox';
+import { Flexbox } from 'components/flexbox';
 import Logger from 'js-logger';
 import { useFormik } from 'formik';
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { useLocation } from 'react-router-dom';
-import { getCookies } from '../utils/cookies';
+import { getCookies } from 'utils/cookies';
 
 
 interface Props extends  React.HTMLAttributes<HTMLDivElement> {

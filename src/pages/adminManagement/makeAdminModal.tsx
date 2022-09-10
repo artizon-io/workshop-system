@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react';
 import { Heading, Text, Modal, ModalBody, ModalHeader, ModalFooter, ModalOverlay, ModalContent, ModalCloseButton, Button, Input } from '@chakra-ui/react';
-import { useFirebaseContext } from '../hooks/useFirebaseContext';
+import { useFirebaseContext } from 'hooks/useFirebaseContext';
 import { httpsCallable } from "firebase/functions";
 import Logger from 'js-logger';
 

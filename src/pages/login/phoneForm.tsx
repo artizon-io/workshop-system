@@ -2,7 +2,7 @@ import React, { FC, useEffect, useImperativeHandle, useRef } from "react";
 import { Heading, Input, InputGroup, InputLeftAddon, Button, Text } from '@chakra-ui/react'
 import styled from "@emotion/styled";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
-import { CaptchaRef } from "../pages/login";
+// import { CaptchaRef } from "pages/login";
 
 
 const StyledPhoneForm = styled.div`
@@ -18,7 +18,9 @@ export interface PhoneFormProps {
   readonly cooldownPhone: number;
 }
 
-export const PhoneForm = React.forwardRef<CaptchaRef, PhoneFormProps & React.HTMLAttributes<HTMLDivElement>>(({
+export const PhoneForm
+  // = React.forwardRef<CaptchaRef, PhoneFormProps & React.HTMLAttributes<HTMLDivElement>>(({
+  = React.forwardRef<HTMLButtonElement, PhoneFormProps & React.HTMLAttributes<HTMLDivElement>>(({
   phone,
   setPhone,
   handleClickPhone,
@@ -26,15 +28,15 @@ export const PhoneForm = React.forwardRef<CaptchaRef, PhoneFormProps & React.HTM
   cooldownPhone,
   ...props
 }, captchaRef) => {
-  const captchaElemRef = useRef<HCaptcha>(null);
-  const captchaTokenRef = useRef<string>(null);
+  // const captchaElemRef = useRef<HCaptcha>(null);
+  // const captchaTokenRef = useRef<string>(null);
 
-  useImperativeHandle(captchaRef, () => {
-    return ({
-      elem: captchaElemRef.current,
-      token: captchaTokenRef.current
-    })
-  });
+  // useImperativeHandle(captchaRef, () => {
+  //   return ({
+  //     elem: captchaElemRef.current,
+  //     token: captchaTokenRef.current
+  //   })
+  // });
 
   return (
     <StyledPhoneForm {...props}>
@@ -59,18 +61,19 @@ export const PhoneForm = React.forwardRef<CaptchaRef, PhoneFormProps & React.HTM
           </ul>
         </div>
       }
-      <HCaptcha
-        sitekey="your-sitekey"
+      {/* <HCaptcha
+        sitekey="c288475e-9c18-4634-9bae-4b9a09929406"        
         onVerify={token => {
           captchaTokenRef.current = token;
         }}
         ref={captchaElemRef}
-      />
+      /> */}
       <Button
         onClick={handleClickPhone}
         colorScheme="blue"
         disabled={!!cooldownPhone}
         className="button"
+        ref={captchaRef}
       >Submit</Button>
     </StyledPhoneForm>
   );

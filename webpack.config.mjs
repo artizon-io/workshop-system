@@ -3,7 +3,6 @@ import CopyPlugin from "copy-webpack-plugin";
 import { fileURLToPath } from "url";
 import NodePolyfillPlugin from 'node-polyfill-webpack-plugin';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
-// import Dotenv from 'dotenv-webpack';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -32,28 +31,28 @@ export default function(env, argv) {
         {
           test: /\.tsx?$/,
           exclude: /node_modules/,
-          use: {
-            loader: 'babel-loader',
-            options: {
-              sourceMaps: true,
-              plugins: [
-                [
-                  "@babel/plugin-transform-typescript",
-                  {
-                    "isTSX": true,
-                  }
-                ],
-                "@babel/plugin-transform-react-jsx",
-                isDevelopment && 'react-refresh/babel',
-              ].filter(Boolean)
+          use: [
+            {
+              loader: 'babel-loader',
+              options: {
+                sourceMaps: true,
+                plugins: [
+                  // [
+                  //   "@babel/plugin-transform-typescript",
+                  //   {
+                  //     "isTSX": true,
+                  //   }
+                  // ],
+                  "@babel/plugin-transform-react-jsx",
+                  isDevelopment && 'react-refresh/babel',
+                ].filter(Boolean)
+              }
+            },
+            {
+              loader: 'ts-loader'
             }
-          }
+          ]
         },
-        // {
-        //   test: /\.tsx?$/,
-        //   use: 'ts-loader',
-        //   exclude: /node_modules/,
-        // },
         {
           test: /\.(jpe?g|webp|png)$/,
           type: 'asset/resource'
@@ -65,7 +64,17 @@ export default function(env, argv) {
       extensions: [ '.tsx', '.jsx', '.ts', '.js' ],
       fallback: {
         "fs": false
-      }
+      },
+      alias: {
+        pages: path.resolve(__dirname, 'src/pages/'),
+        components: path.resolve(__dirname, 'src/components/'),
+        config: path.resolve(__dirname, 'src/config/'),
+        styles: path.resolve(__dirname, 'src/styles/'),
+        utils: path.resolve(__dirname, 'src/utils/'),
+        layout: path.resolve(__dirname, "src/layout"),
+        hooks: path.resolve(__dirname, "src/hooks"),
+        types: path.resolve(__dirname, "src/types"),
+      },
     },
     plugins: [
       new NodePolyfillPlugin(),
@@ -75,7 +84,6 @@ export default function(env, argv) {
           "./index.html"
         ],
       }),
-      // new Dotenv()
     ].filter(Boolean)
   };
 }

@@ -1,7 +1,8 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
-import { WorkshopList } from '../components/workshopList';
-import { useWorkshops } from '../hooks/useWorkshops';
+import { WorkshopList } from 'components/workshopList';
+import { useWorkshops } from 'hooks/useWorkshops';
+import { Layout } from 'layout/layout';
 
 
 const StyledHome = styled.main`
@@ -16,8 +17,10 @@ export const Home: FC<{}> = ({ ...props }) => {
   const workshops = useWorkshops();
 
   return (
-    <StyledHome {...props}>
-      <WorkshopList workshops={workshops} adminMode={false}/>
-    </StyledHome>
+    <Layout>
+      <StyledHome {...props}>
+        <WorkshopList workshops={workshops} adminMode={false}/>
+      </StyledHome>
+    </Layout>
   );
 }

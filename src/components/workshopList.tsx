@@ -1,10 +1,8 @@
 import React, { FC } from 'react';
 import styled from '@emotion/styled';
-import { WorkshopBrief } from './workshop';
-import { Workshop } from '../hooks/useWorkshop';
+import { WorkshopBrief } from 'components/WorkshopBrief';
+import { Workshop } from "types/workshop";
 import { Text } from '@chakra-ui/react';
-import { Flexbox } from './flexbox';
-import { WorkshopModalAdmin } from './workshopModalAdmin';
 
 
 const StyledWorkshopList = styled.div`

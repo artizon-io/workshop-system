@@ -1,9 +1,14 @@
 {
   "compilerOptions": {
-    "jsx": "react",
+    "jsx": "preserve",
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
     "moduleResolution": "Node",
+    "target": "ES6",
+    "baseUrl": "./src",
+    "paths": {
+      "*": ["*"],
+    }
   },
   "include": [
     "src"

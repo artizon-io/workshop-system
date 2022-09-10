@@ -1,11 +1,11 @@
 import React, { FC, useState } from 'react';
 import styled from '@emotion/styled';
 import { Heading, Text, Modal, ModalBody, ModalHeader, ModalFooter, ModalOverlay, ModalContent, ModalCloseButton, Button } from '@chakra-ui/react';
-import { Card, StyledCard } from './card';
-import { Flexbox } from './flexbox';
-import { WorkshopModalAdmin } from './workshopModalAdmin';
-import { WorkshopModal } from './workshopModal';
-import { Workshop } from '../hooks/useWorkshop';
+import { Card, StyledCard } from 'components/card';
+import { Flexbox } from 'components/flexbox';
+import { WorkshopModalAdmin } from 'pages/admin/workshopModalAdmin';
+import { WorkshopModal } from 'pages/home/workshopModal';
+import { Workshop } from 'types/workshop';
 
 
 // const StyledWorkshop = styled(StyledCard.withComponent("button"))`

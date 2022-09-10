@@ -1,0 +1,1 @@
+export const stripePublic = "pk_live_51LfDfAFVLId4QDWRQ9oxVJIF0WN8xYJAzAfsJsp7bWY3CpUmWJpYqgBpfJYZvNr1J6eoFdak4B8oOrQ24zbzAA9100LsTNjtBA";

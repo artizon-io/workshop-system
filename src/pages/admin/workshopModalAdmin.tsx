@@ -2,13 +2,15 @@ import React, { FC, useEffect, useRef, useState } from 'react';
 import { Heading, Text, Modal, ModalBody, ModalHeader, ModalFooter, ModalOverlay, ModalContent, ModalCloseButton, Button, ModalProps, Input, InputAddon, InputLeftAddon, InputGroup, SlideFade, Box, Collapse, Spinner, TableContainer, Table, TableCaption, Thead, Tr, Th, Tbody, Td, Tfoot } from '@chakra-ui/react';
 import { addDoc, collection, deleteDoc, doc, onSnapshot, Timestamp } from 'firebase/firestore';
 import { setDoc } from 'firebase/firestore';
-import { useFirebaseContext } from '../hooks/useFirebaseContext';
-import { datetimestrToTimestamp } from '../utils/datetimestrToTimestamp';
-import { Workshop } from '../hooks/useWorkshop';
-import { Flexbox } from './flexbox';
+import { useFirebaseContext } from 'hooks/useFirebaseContext';
+import { datetimestrToTimestamp } from 'utils/datetimestrToTimestamp';
+import { Workshop } from 'types/workshop';
+import { Flexbox } from 'components/flexbox';
 import { useFormik } from 'formik';
 import Logger from 'js-logger';
-import { useWorkshopConfidentialRealtime } from '../hooks/useWorkshopConfidentialRealtime';
+import { WorkshopModalAdminAddModeFooter } from './workshopModalAdminAddModeFooter';
+import { WorkshopModalAdminEditModeFooter } from './workshopModalAdminEditModeFooter';
+import { WorkshopModalAdminEnrollDetails } from './workshopModalAdminEnrollDetails';
 
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
@@ -29,8 +31,6 @@ export const WorkshopModalAdmin: FC<Props> = ({
   const formButtonRef = useRef<HTMLButtonElement>(null);  // place button at modal footer instead of inside form (inside modal body)
 
   const [isEnrollDetailsOpened, setIsEnrollDetailsOpened] = useState(false);
-
-  const workshopConfidential = useWorkshopConfidentialRealtime(workshop.id);
 
   const {
     firestore,
@@ -94,10 +94,14 @@ export const WorkshopModalAdmin: FC<Props> = ({
       return errors;
     },
     onSubmit: data => {
+      Logger.debug("Triggering on submit");
       setIsUpdating(true);  // Firestore offline data actually allows for instant local write
                             // but we are blocking it here intentionally
       Logger.info("Data:", data);
-      setDoc(doc(firestore, 'workshops', workshop.id), {
+      const docRef = !!workshop
+        ? doc(firestore, 'workshops', workshop.id)
+        : doc(firestore, 'workshops');
+      setDoc(docRef, {
         title: data.title,
         fee: data.fee,
         venue: data.venue,
@@ -122,8 +126,12 @@ export const WorkshopModalAdmin: FC<Props> = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered closeOnOverlayClick size="4xl" scrollBehavior='inside' {...props}>
       <ModalOverlay />
-      {!isEnrollDetailsOpened ?
-        <ModalContent>
+      {!!isEnrollDetailsOpened
+        ? <WorkshopModalAdminEnrollDetails
+          setIsEnrollDetailsOpened={setIsEnrollDetailsOpened}
+          workshop={workshop}
+        />
+        : <ModalContent>
           <ModalHeader>Workshop Details</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -172,101 +180,21 @@ export const WorkshopModalAdmin: FC<Props> = ({
               <button type="submit" style={{display: "none"}} ref={formButtonRef}/>
             </Flexbox>
           </ModalBody>
-          <ModalFooter>
-            {!!workshop && <>
-              <Button
-                disabled={isUpdating}
-                colorScheme="blue"
-                onClick={() => {
-                  setIsEnrollDetailsOpened(true);
-                }}
-                marginRight={'3'}
-              >
-                View Enroll Details
-              </Button>
-              <Button
-                disabled={isUpdating}
-                colorScheme="red"
-                onClick={() => {
-                  setIsUpdating(true);
-                  deleteDoc(doc(firestore, `/workshops/${workshop.id}`))
-                    .then(() => {
-                      Logger.info("Successfully delete workshop");
-                      onClose();
-                    })
-                    .catch(err => {
-                      Logger.error(err);
-                      setIsUpdating(false);
-                    });
-                }}
-                marginRight={'3'}
-              >Delete</Button>
-            </>}
-            <Button
-              disabled={isUpdating}
-              colorScheme="blue"
-              onClick={() => {
-                formButtonRef.current.click();
-              }}
-            >{!!workshop
-              ? "Apply changes"
-              : "Create"
-            }</Button>
-          </ModalFooter>
-        </ModalContent>
-      : <ModalContent>
-        <ModalHeader>Workshop Enroll Details</ModalHeader>
-        <ModalBody>
-          {!workshopConfidential
-            ? <Spinner
-              thickness='4px'
-              speed='0.65s'
-              emptyColor='gray.200'
-              color='blue.500'
-              size='xl'
+          {!!workshop
+            ? <WorkshopModalAdminEditModeFooter
+              formButtonRef={formButtonRef}
+              isUpdating={isUpdating}
+              onClose={onClose}
+              setIsEnrollDetailsOpened={setIsEnrollDetailsOpened}
+              setIsUpdating={setIsUpdating}
+              workshop={workshop}
             />
-            : <Flexbox>
-              <Text>Current/Capacity: {workshopConfidential.current}/{workshop.capacity}</Text>
-              <TableContainer>
-                <Table variant='simple'>
-                  {/* <TableCaption>Workshop enrolled members details</TableCaption> */}
-                  <Thead>
-                    <Tr>
-                      <Th>Last Name</Th>
-                      <Th>First Name</Th>
-                      <Th>Phone number</Th>
-                      <Th>Email</Th>
-                      <Th>Payment status</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {workshopConfidential.enrolls.map(entity => <Tr key={entity.id}>
-                      <Td>{entity.lastName}</Td>
-                      <Td>{entity.firstName}</Td>
-                      <Td>{entity.phone}</Td>
-                      <Td>{entity.email}</Td>
-                      <Td>{entity.paymentStatus}</Td>
-                    </Tr>)}
-                  </Tbody>
-                  {/* <Tfoot>
-                    <Tr>
-                      <Th>Name</Th>
-                      <Th>Phone number</Th>
-                      <Th>Email</Th>
-                    </Tr>
-                  </Tfoot> */}
-                </Table>
-              </TableContainer>
-            </Flexbox>
+            : <WorkshopModalAdminAddModeFooter
+              formButtonRef={formButtonRef}
+              isUpdating={isUpdating}
+            />
           }
-        </ModalBody>
-        <ModalFooter>
-          <Button
-            colorScheme={"blue"}
-            onClick={() => setIsEnrollDetailsOpened(false)}
-          >Back</Button>
-        </ModalFooter>
-      </ModalContent>
+        </ModalContent>
       }
     </Modal>
   );

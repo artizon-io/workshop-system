@@ -1,20 +1,8 @@
 import { getDocs, getDocsFromServer, onSnapshot, doc, getDoc, DocumentData } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { useFirebaseContext } from "./useFirebaseContext";
+import { useFirebaseContext } from "hooks/useFirebaseContext";
 import Logger from "js-logger";
-
-
-export interface WorkshopConfidential {
-  current: number;
-  enrolls: Array<{
-    id: string;
-    firstName?: string;
-    lastName?: string;
-    phone?: string;
-    email?: string;
-    paymentStatus: string;
-  }>
-}
+import { WorkshopConfidential } from "types/workshopConfidential";
 
 
 export const useWorkshopConfidentialRealtime = (workshopId: string) => {

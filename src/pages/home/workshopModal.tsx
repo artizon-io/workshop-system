@@ -1,8 +1,8 @@
 import React, { FC, useState } from 'react';
 import { Heading, Text, Modal, ModalBody, ModalHeader, ModalFooter, ModalOverlay, ModalContent, ModalCloseButton, Button } from '@chakra-ui/react';
-import { useFirebaseContext } from '../hooks/useFirebaseContext';
-import { Workshop } from '../hooks/useWorkshop';
-import { Flexbox } from './flexbox';
+import { useFirebaseContext } from 'hooks/useFirebaseContext';
+import { Workshop } from 'types/workshop';
+import { Flexbox } from 'components/flexbox';
 import { httpsCallable } from 'firebase/functions';
 import Logger from 'js-logger';
 import { useNavigate } from 'react-router-dom';
