@@ -3,6 +3,7 @@ declare global {
     interface ProcessEnv {
       STRIPE_SECRET: string;
       FIREBASE_CONFIG: string;
+      SESSION_SECRET: string;
     }
   }
 }
