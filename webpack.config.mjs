@@ -74,6 +74,7 @@ export default function(env, argv) {
         layout: path.resolve(__dirname, "src/layout"),
         hooks: path.resolve(__dirname, "src/hooks"),
         types: path.resolve(__dirname, "src/types"),
+        context: path.resolve(__dirname, "src/context"),
       },
     },
     plugins: [

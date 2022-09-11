@@ -4,8 +4,7 @@ import { Flexbox } from 'components/flexbox';
 import Logger from 'js-logger';
 import { useFormik } from 'formik';
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import { useLocation } from 'react-router-dom';
-import { getCookies } from 'utils/cookies';
+import { getCookie } from 'utils/cookies';
 
 
 interface Props extends  React.HTMLAttributes<HTMLDivElement> {
@@ -51,16 +50,19 @@ export const EnrollPaymentForm: FC<Props> = ({ ...props }) => {
   const stripe = useStripe();
   const elements = useElements();
   
-  const cookies = useMemo(() => getCookies(), [document.cookie]);
+  // const cookie = useMemo(() => getCookie(), [document.cookie]);
 
   useEffect(() => {
     if (!stripe)
       return;
 
-    if (!cookies['stripeClientSecret'])
+    if (!window.localStorage['stripeClientSecret'])
+    // if (!cookie['stripeClientSecret'])
       throw Error('Stripe client secret token not present in site cookie');
 
-    stripe.retrievePaymentIntent(cookies['stripeClientSecret']).then(({ paymentIntent }) => {
+    // subscribe to changes in paymentIntent
+    // stripe.retrievePaymentIntent(cookie['stripeClientSecret']).then(({ paymentIntent }) => {
+    stripe.retrievePaymentIntent(window.localStorage['stripeClientSecret']).then(({ paymentIntent }) => {
       switch (paymentIntent.status) {
         case "succeeded":
           Logger.info("Payment succeeded!");
@@ -71,8 +73,17 @@ export const EnrollPaymentForm: FC<Props> = ({ ...props }) => {
         case "requires_payment_method":
           Logger.info("Your payment was not successful, please try again.");
           break;
+        case "requires_capture":
+          Logger.info("");
+          break;
+        case "requires_confirmation":
+          Logger.info("");
+          break;
+        case "requires_action":
+          Logger.info("");
+          break;
         default:
-          Logger.info("Something went wrong.");
+          Logger.error("Unknown paymentIntention status received:", paymentIntent.status);
           break;
       }
     });

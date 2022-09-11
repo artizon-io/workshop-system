@@ -6,6 +6,9 @@ import { Flexbox } from 'components/flexbox';
 import { httpsCallable } from 'firebase/functions';
 import Logger from 'js-logger';
 import { useNavigate } from 'react-router-dom';
+import { setCookie } from 'utils/cookies';
+import { useStripeContext } from 'hooks/useStripeContext';
+import axios from 'axios';
 
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
@@ -23,6 +26,10 @@ export const WorkshopModal: FC<Props> = ({
   const {
     functions
   } = useFirebaseContext();
+
+  // const {
+  //   setStripeClientSecret
+  // } = useStripeContext();
 
   const [isWaitingForEnroll, setIsWaitingForEnroll] = useState(false);
   const navigate = useNavigate();
@@ -51,23 +58,26 @@ export const WorkshopModal: FC<Props> = ({
             colorScheme="blue"
             onClick={() => {
               setIsWaitingForEnroll(true);
-              httpsCallable<
-                {  // request
-                  workshopId: string;
-                },
-                {  // response
-                  enrollId: string;
-                  stripeClientSecret: string;
-                }
-              >(functions, 'initiateEnroll')({ workshopId: workshop.id })
+              axios
+                .post(`https://asia-east2-workshop-system-24df0.cloudfunctions.net/initiateEnroll`, {
+                  workshopId: workshop.id
+                })
+              // httpsCallable<
+              //   {  // request
+              //     workshopId: string;
+              //   },
+              //   {  // response
+              //     enrollId: string;
+              //     stripeClientSecret: string;
+              //   }
+              // >(functions, 'initiateEnroll')({ workshopId: workshop.id })
                 .then(res => {
-                  // Logger.info(`Retrieve data`, res.data);
+                  Logger.info(`Retrieve data`, res.data);
+                  // setCookie("stripeClientSecret", res.data.stripeClientSecret, 1);
+                  window.localStorage["stripeClientSecret"] = res.data.stripeClientSecret;
+                  // setStripeClientSecret(res.data.stripeClientSecret);
                   setIsWaitingForEnroll(false);
-                  navigate(`/workshop/${workshop.id}/enroll/${res.data.enrollId}`, {
-                    state: {
-                      stripeClientSecret: res.data.stripeClientSecret
-                    }
-                  });
+                  navigate(`/workshop/${workshop.id}/enroll/${res.data.enrollId}`);
                 })
                 .catch(err => {
                   Logger.error(`Error message`, err.message);

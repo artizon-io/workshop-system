@@ -5,8 +5,8 @@ import { FirebaseApp, initializeApp } from "firebase/app";
 import { Analytics, getAnalytics } from "firebase/analytics";
 import { getFunctions } from "firebase/functions";
 import { Auth, ConfirmationResult, getAuth, RecaptchaVerifier, signInWithPhoneNumber, User, UserCredential } from "firebase/auth";
-import { Firestore, getFirestore, collection, addDoc } from "firebase/firestore";
-import { FirebaseContext } from './hooks/useFirebaseContext';
+import { Firestore, getFirestore, collection, addDoc, enableMultiTabIndexedDbPersistence } from "firebase/firestore";
+import { FirebaseContext } from 'context/firebaseContext';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Login from 'pages/login';
 import { Home } from 'pages/home';
@@ -17,6 +17,8 @@ import { Admin } from 'pages/admin';
 import { AdminManagement } from 'pages/adminManagement';
 import Logger from 'js-logger';
 import { Enroll } from 'pages/enroll';
+import { getPerformance } from "firebase/performance";
+// import { StripeContext } from 'context/stripeContext';
 
 // To be make Logger.OFF at production
 Logger.useDefaults({
@@ -38,6 +40,8 @@ const firestore = getFirestore(firebaseApp);
 
 const functions = getFunctions(firebaseApp, 'asia-east2');
 
+const performance = getPerformance(firebaseApp);
+
 // Be to disabled for production build
 globalThis.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
 const appCheck = initializeAppCheck(firebaseApp, {
@@ -53,6 +57,8 @@ const App : FC<{}> = ({}) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const toast = useToast();
 
+  // const [stripeClientSecret, setStripeClientSecret] = useState<string>(null);
+
   const checkIsAdmin = async (user : User) : Promise<void> => {
     const idToken = await user.getIdTokenResult(true);  // force refresh
     if (idToken.claims.admin)
@@ -61,7 +67,7 @@ const App : FC<{}> = ({}) => {
 
   // Force enabling firestore cache before any of the useEffect of child elements
   useLayoutEffect(() => {
-    enableIndexedDbPersistence(firestore)
+    enableMultiTabIndexedDbPersistence(firestore)
       .catch(err => {
         if (err.code == 'failed-precondition') {
           // Multiple tabs open, persistence can only be enabled
@@ -135,28 +141,34 @@ const App : FC<{}> = ({}) => {
       user,
       firestore,
       functions,
-      appCheck
+      appCheck,
+      performance
     }}>
-      <ChakraProvider>
-        <BrowserRouter>
-          <Routes>
-            {/* Layout not being able to consome context */}
-            <Route path="/">
-              <Route index element={<Home/>}/>
-              <Route path="workshop/:workshopId/enroll/:enrollId" element={<Enroll/>}/>
-            </Route>
+      {/* <StripeContext.Provider value={{
+        stripeClientSecret,
+        setStripeClientSecret
+      }}> */}
+        <ChakraProvider>
+          <BrowserRouter>
+            <Routes>
+              {/* Layout not being able to consome context */}
+              <Route path="/">
+                <Route index element={<Home/>}/>
+                <Route path="workshop/:workshopId/enroll/:enrollId" element={<Enroll/>}/>
+              </Route>
 
-            <Route path="/admin">
-              <Route index element={adminConditionalRender(<Admin/>)}/>  
-              <Route path="admin-management" element={adminConditionalRender(<AdminManagement/>)}/>
-            </Route>
+              <Route path="/admin">
+                <Route index element={adminConditionalRender(<Admin/>)}/>  
+                <Route path="admin-management" element={adminConditionalRender(<AdminManagement/>)}/>
+              </Route>
 
-            <Route path="/login" element={loginConditionalRender()}/>
+              <Route path="/login" element={loginConditionalRender()}/>
 
-            <Route path="*" element={<Text>Not Found</Text>}/>
-          </Routes>
-        </BrowserRouter>
-      </ChakraProvider>
+              <Route path="*" element={<Text>Not Found</Text>}/>
+            </Routes>
+          </BrowserRouter>
+        </ChakraProvider>
+      {/* </StripeContext.Provider> */}
     </FirebaseContext.Provider>
   );
 }
