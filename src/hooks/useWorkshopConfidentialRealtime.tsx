@@ -5,8 +5,10 @@ import Logger from "js-logger";
 import { WorkshopConfidential } from "types/workshopConfidential";
 
 
-export const useWorkshopConfidentialRealtime = (workshopId: string) => {
+export const useWorkshopConfidentialRealtime = (workshopId: string) : [WorkshopConfidential | null, boolean, string | null] => {
   const [workshopConfidential, setWorkshopConfidential] = useState<WorkshopConfidential>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string>(null);
 
   const {
     firestore,
@@ -14,10 +16,21 @@ export const useWorkshopConfidentialRealtime = (workshopId: string) => {
 
   useEffect(() => {
     Logger.info("Fetching workshop-confidential from server, realtime");
-    onSnapshot(doc(firestore, `/workshop-confidential/${workshopId}`), snapshot => {
-      setWorkshopConfidential(snapshot.data() as WorkshopConfidential);
-    });
+    onSnapshot(doc(firestore, `/workshop-confidential/${workshopId}`),
+      snapshot => {  // onNext
+        setWorkshopConfidential(snapshot.data() as WorkshopConfidential);
+        if (isLoading)
+          setIsLoading(false);
+        Logger.info("Finish setting up realtime listener on workshops collection");
+      },
+      err => {  // onError
+        if (isLoading)
+          setIsLoading(false);
+        Logger.error(err);
+        setError(err.message);
+      }
+    );
   }, []);
 
-  return workshopConfidential;
+  return [workshopConfidential, isLoading, error];
 }

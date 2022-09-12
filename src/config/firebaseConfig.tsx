@@ -9,3 +9,5 @@ export const firebaseConfig = {
 };
 
 export const appCheckSiteKey = "6Lecx8UhAAAAACEy_BQD1Ow7ws3Zo7SJpGYRKtcT";
+
+export const appLocation = "asia-east2";

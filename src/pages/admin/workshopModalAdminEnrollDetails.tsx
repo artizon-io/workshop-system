@@ -16,54 +16,56 @@ export const WorkshopModalAdminEnrollDetails: FC<Props> = ({
   workshop,
   ...props
 }) => {
-  const workshopConfidential = useWorkshopConfidentialRealtime(workshop.id);
+  const [workshopConfidential, isLoading, error] = useWorkshopConfidentialRealtime(workshop.id);
+
+  if (isLoading)
+    return (
+      <Spinner
+        thickness='4px'
+        speed='0.65s'
+        emptyColor='gray.200'
+        color='blue.500'
+        size='xl'
+      />
+    );
 
   return (
     <ModalContent {...props}>
       <ModalHeader>Workshop Enroll Details</ModalHeader>
       <ModalBody>
-        {!workshopConfidential
-          ? <Spinner
-            thickness='4px'
-            speed='0.65s'
-            emptyColor='gray.200'
-            color='blue.500'
-            size='xl'
-          />
-          : <Flexbox>
-            <Text>Current/Capacity: {workshopConfidential.current}/{workshop.capacity}</Text>
-            <TableContainer>
-              <Table variant='simple'>
-                {/* <TableCaption>Workshop enrolled members details</TableCaption> */}
-                <Thead>
-                  <Tr>
-                    <Th>Last Name</Th>
-                    <Th>First Name</Th>
-                    <Th>Phone number</Th>
-                    <Th>Email</Th>
-                    <Th>Payment status</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {workshopConfidential.enrolls.map(entity => <Tr key={entity.id}>
-                    <Td>{entity.lastName}</Td>
-                    <Td>{entity.firstName}</Td>
-                    <Td>{entity.phone}</Td>
-                    <Td>{entity.email}</Td>
-                    <Td>{entity.paymentStatus}</Td>
-                  </Tr>)}
-                </Tbody>
-                {/* <Tfoot>
-                  <Tr>
-                    <Th>Name</Th>
-                    <Th>Phone number</Th>
-                    <Th>Email</Th>
-                  </Tr>
-                </Tfoot> */}
-              </Table>
-            </TableContainer>
-          </Flexbox>
-        }
+        <Flexbox>
+          <Text>Current/Capacity: {workshopConfidential.current}/{workshop.capacity}</Text>
+          <TableContainer>
+            <Table variant='simple'>
+              {/* <TableCaption>Workshop enrolled members details</TableCaption> */}
+              <Thead>
+                <Tr>
+                  <Th>Last Name</Th>
+                  <Th>First Name</Th>
+                  <Th>Phone number</Th>
+                  <Th>Email</Th>
+                  <Th>Payment status</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {workshopConfidential.enrolls.map(entity => <Tr key={entity.id}>
+                  <Td>{entity.lastName}</Td>
+                  <Td>{entity.firstName}</Td>
+                  <Td>{entity.phone}</Td>
+                  <Td>{entity.email}</Td>
+                  <Td>{entity.paymentStatus}</Td>
+                </Tr>)}
+              </Tbody>
+              {/* <Tfoot>
+                <Tr>
+                  <Th>Name</Th>
+                  <Th>Phone number</Th>
+                  <Th>Email</Th>
+                </Tr>
+              </Tfoot> */}
+            </Table>
+          </TableContainer>
+        </Flexbox>
       </ModalBody>
       <ModalFooter>
         <Button

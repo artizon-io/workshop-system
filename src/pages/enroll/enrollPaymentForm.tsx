@@ -5,6 +5,8 @@ import Logger from 'js-logger';
 import { useFormik } from 'formik';
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { getCookie } from 'utils/cookies';
+import { domain } from 'config/appConfig';
+import { useParams } from 'react-router-dom';
 
 
 interface Props extends  React.HTMLAttributes<HTMLDivElement> {
@@ -12,6 +14,8 @@ interface Props extends  React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const EnrollPaymentForm: FC<Props> = ({ ...props }) => {
+  const { enrollId, workshopId } = useParams();
+  
   const formik = useFormik({
     initialValues: {
       firstName: '',
@@ -27,8 +31,7 @@ export const EnrollPaymentForm: FC<Props> = ({ ...props }) => {
       const { error } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: `http://localhost:8080/workshop/`,
-          // return_url: "http://firebase-app.",
+          return_url: `${domain}/workshop/${workshopId}/enroll/${enrollId}/confirmation`,
         },
       });
   
@@ -60,7 +63,6 @@ export const EnrollPaymentForm: FC<Props> = ({ ...props }) => {
     // if (!cookie['stripeClientSecret'])
       throw Error('Stripe client secret token not present in site cookie');
 
-    // subscribe to changes in paymentIntent
     // stripe.retrievePaymentIntent(cookie['stripeClientSecret']).then(({ paymentIntent }) => {
     stripe.retrievePaymentIntent(window.localStorage['stripeClientSecret']).then(({ paymentIntent }) => {
       switch (paymentIntent.status) {

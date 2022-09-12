@@ -12,6 +12,7 @@ import { EnrollPaymentForm } from './enrollPaymentForm';
 import { getCookie, setCookie } from 'utils/cookies';
 import { Layout } from 'layout/layout';
 import { useStripeContext } from 'hooks/useStripeContext';
+import { EnrollSummary } from './enrollSummary';
 
 
 const StyledHome = styled.main`
@@ -28,7 +29,6 @@ const stripePromise = loadStripe(stripePublic);
 
 export const Enroll: FC<{}> = ({ ...props }) => {
   const { enrollId, workshopId } = useParams();
-  const workshop = useWorkshop(workshopId);
   const [isLoading, setIsLoading] = useState(true);
 
   // const {
@@ -69,21 +69,9 @@ export const Enroll: FC<{}> = ({ ...props }) => {
               clientSecret: window.localStorage['stripeClientSecret']
             }}
           >
-          <EnrollPaymentForm/>
-            {!!workshop &&
-              <Flexbox>
-                <Text>{workshop.title}</Text>
-                <Text>Description: {workshop.description}</Text>
-                <Text>Date: {workshop.datetime.toDate().toLocaleDateString()}</Text>
-                <Text>Time: {workshop.datetime.toDate().toLocaleTimeString()}</Text>
-                <Text>Duration: {workshop.duration} mins</Text>
-                <Text>Language: {workshop.language}</Text>
-                <Text>Capacity: {workshop.capacity}</Text>
-                <Text>Fee: HKD {workshop.fee}</Text>
-                <Text>Venue: {workshop.venue}</Text>
-              </Flexbox>
-            }
+            <EnrollPaymentForm/>
           </Elements>
+          <EnrollSummary/>
         </StyledHome>
       </Layout>
   );

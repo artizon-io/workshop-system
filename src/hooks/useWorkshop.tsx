@@ -5,8 +5,10 @@ import Logger from "js-logger";
 import { Workshop } from "types/workshop";
 
 
-export const useWorkshop = (workshopId: string) => {
+export const useWorkshop = (workshopId: string) : [Workshop | null, boolean, string | null] => {
   const [workshop, setWorkshop] = useState<Workshop>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string>(null);
 
   const {
     firestore,
@@ -17,12 +19,15 @@ export const useWorkshop = (workshopId: string) => {
     getDoc(doc(firestore, `/workshops/${workshopId}`))
       .then(snapshot => {
         setWorkshop(snapshot.data() as Workshop);
+        setIsLoading(false);
         Logger.info("Finish fetching workshops from server");
       })
       .catch(err => {
         Logger.error(err);
+        setIsLoading(false);
+        setError(error);
       });
   }, []);
 
-  return workshop;
+  return [workshop, isLoading, error];
 }

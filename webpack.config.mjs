@@ -3,6 +3,7 @@ import CopyPlugin from "copy-webpack-plugin";
 import { fileURLToPath } from "url";
 import NodePolyfillPlugin from 'node-polyfill-webpack-plugin';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
+import DotenvWebpackPlugin from "dotenv-webpack";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -85,6 +86,7 @@ export default function(env, argv) {
           "./index.html"
         ],
       }),
+      new DotenvWebpackPlugin()
     ].filter(Boolean)
   };
 }

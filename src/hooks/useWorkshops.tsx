@@ -6,8 +6,10 @@ import { collection } from "firebase/firestore";
 import Logger from "js-logger";
 
 
-export const useWorkshops = () => {
+export const useWorkshops = () : [Workshop[] | null, boolean, string | null] => {
   const [workshops, setWorkshops] = useState<Workshop[]>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string>(null);
 
   const {
     firestore,
@@ -22,12 +24,15 @@ export const useWorkshops = () => {
           temp.push({id: doc.id, ...doc.data()});
         });
         setWorkshops(temp);
+        setIsLoading(false);
         Logger.info("Finish fetching workshops from server");
       })
       .catch(err => {
         Logger.error(err);
+        setIsLoading(false);
+        setError(err);
       });
   }, []);
 
-  return workshops;
+  return [workshops, isLoading, error];
 }

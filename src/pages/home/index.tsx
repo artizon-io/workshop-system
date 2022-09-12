@@ -3,6 +3,7 @@ import styled from '@emotion/styled';
 import { WorkshopList } from 'components/workshopList';
 import { useWorkshops } from 'hooks/useWorkshops';
 import { Layout } from 'layout/layout';
+import { Skeleton } from '@chakra-ui/react';
 
 
 const StyledHome = styled.main`
@@ -14,12 +15,15 @@ const StyledHome = styled.main`
 
 
 export const Home: FC<{}> = ({ ...props }) => {
-  const workshops = useWorkshops();
+  const [workshops, isLoading, error] = useWorkshops();
 
   return (
     <Layout>
       <StyledHome {...props}>
-        <WorkshopList workshops={workshops} adminMode={false}/>
+        {isLoading
+          ? <Skeleton height='300px'/>
+          : <WorkshopList workshops={workshops} adminMode={false}/>
+        }
       </StyledHome>
     </Layout>
   );

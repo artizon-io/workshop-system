@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react';
 import styled from '@emotion/styled';
-import { Heading, Text, Button } from '@chakra-ui/react';
+import { Heading, Text, Button, Skeleton } from '@chakra-ui/react';
 import { WorkshopList } from 'components/workshopList';
 import { useWorkshops } from 'hooks/useWorkshops';
 import { WorkshopModalAdmin } from './workshopModalAdmin';
@@ -20,7 +20,7 @@ const StyledAdmin = styled.main`
 `;
 
 export const Admin: FC<{}> = ({ ...props }) => {
-  const workshops = useWorkshops();
+  const [workshops, isLoading, error] = useWorkshops();
   // const workshops = useWorkshopsRealtime();
   const [isWorkshopModalOpened, setIsWorkshopModalOpened] = useState(false);
 
@@ -34,7 +34,10 @@ export const Admin: FC<{}> = ({ ...props }) => {
             onClose={() => setIsWorkshopModalOpened(false)}
           />
         </div>
-        <WorkshopList workshops={workshops} adminMode={true}/>
+        {isLoading
+          ? <Skeleton height='300px'/>
+          : <WorkshopList workshops={workshops} adminMode={true}/>
+        }
       </StyledAdmin>
     </AdminLayout>
   );

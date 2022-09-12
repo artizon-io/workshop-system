@@ -154,7 +154,10 @@ const App : FC<{}> = ({}) => {
               {/* Layout not being able to consome context */}
               <Route path="/">
                 <Route index element={<Home/>}/>
-                <Route path="workshop/:workshopId/enroll/:enrollId" element={<Enroll/>}/>
+                <Route path="workshop/:workshopId/enroll/:enrollId">
+                  <Route index element={<Enroll/>}/>
+                  <Route path="confirmation" element={<Enroll/>}/>
+                </Route>
               </Route>
 
               <Route path="/admin">
