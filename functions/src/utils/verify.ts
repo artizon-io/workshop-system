@@ -1,6 +1,7 @@
 import * as functions from "firebase-functions";
 
 
+// Deprecated
 export const verifyAppCheck = (context : functions.https.CallableContext) => {
   // context.app will be undefined if the request doesn't include an
   // App Check token. (If the request includes an invalid App Check
@@ -14,6 +15,7 @@ export const verifyAppCheck = (context : functions.https.CallableContext) => {
   }
 }
 
+// Deprecated
 export const verifyLogin = (context : functions.https.CallableContext) => {
   if (!context.auth) {
     throw new functions.https.HttpsError(

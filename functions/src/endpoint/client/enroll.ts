@@ -1,53 +1,19 @@
 import * as functions from "firebase-functions";
-import { v4 as uuidv4 } from 'uuid';
-import { CloudTasksClient } from '@google-cloud/tasks';
 import * as admin from "firebase-admin";
-import { initStripe } from "../../utils/stripe";
 import * as express from "express";
-import * as cookieParser from "cookie-parser";
-import * as cors from "cors";
-import * as csrf from "csurf";
-import * as bodyParser from "body-parser";
-import { auth } from "../middleware/auth";
-import { appCheck } from "../middleware/appCheck";
-import { session } from "../middleware/session";
+import { genMiddleware } from "../middleware/genMiddleware";
+import { checkArgs } from "../../utils/checkArgs";
+import { checkDoc } from "../../utils/checkDoc";
 
 const app = express();
-
-app.use(cors({
-  origin: process.env.APP_DOMAIN
+app.use(genMiddleware({
+  corsDomain: "all"
 }));
 
-// app.use(auth);
-
-app.use(cookieParser());
-
-app.use(bodyParser.json({}));
-
-// app.use(csrf());
-
-app.use(appCheck);
-
-app.use(session);
-
 app.post("/", async (request, response) => {
-  if (!request.body.firstName)
-    return response.status(400).send("Missing argument firstName");
-  
-  if (!request.body.lastName)
-    return response.status(400).send("Missing argument lastName");
-
-  if (!request.body.phone)
-    return response.status(400).send("Missing argument phone");
-
-  if (!request.body.email)
-    return response.status(400).send("Missing argument email");
-
-  if (!request.body.enrollId)
-    return response.status(400).send("Missing argument enrollId");
-
-  if (!request.body.enrollId)
-    return response.status(400).send("Missing argument workshopId");
+  const error = checkArgs(request, response, ["firstName", "lastName", "phone", "email", "enrollId", "workshopId"]);
+  if (error)
+    return;
 
   const data = request.body as {
     firstName: string;
@@ -58,18 +24,31 @@ app.post("/", async (request, response) => {
     workshopId: string;
   };
 
-  if (!request.session.enrollId || request.session.enrollId !== data.enrollId)
-    return response.status(400).send(`User is not currently enrolled to this enroll with id ${data.enrollId}`);
+  // if (!request.session.enrollId || request.session.enrollId !== data.enrollId)
+  //   return response.status(400).send(`User is not currently enrolled to this enroll with id ${data.enrollId}`);
   
-  const docRef = await admin.firestore().doc(`/workshop-confidential/${data.workshopId}`);
-  const doc = (await docRef.get()).data();
-  if (!doc)
-    return response.status(400).send(`Cannot fetch workshop document with id ${data.workshopId}`);
-  
-  const enrolls = doc.enrolls;
+  const docRef = admin.firestore().doc(`/workshop-confidential/${data.workshopId}`);
+  let [doc, res] = checkDoc(request, response, await docRef.get(), {
+    current : "number",
+    enrolls : "object"
+    // enrolls : {
+      // firstName: "string",
+      // lastName: "string",
+      // phone: "string",
+      // email: "string",
+    //   paymentStatus: "string"
+    // }
+  });
+
+  if (res)
+    return;
+
+  const enrolls = doc!.enrolls;
   const enroll = enrolls[data.workshopId];
-  if (!enroll)
-    return response.status(400).send(`Cannot fetch enroll with id ${data.enrollId}`);
+  if (!enroll) {
+    functions.logger.info(`Cannot fetch enroll with id ${data.enrollId}`);
+    return response.sendStatus(500);
+  }
 
   enroll.firstName = data.firstName;
   enroll.lastName = data.lastName;
@@ -82,11 +61,13 @@ app.post("/", async (request, response) => {
     await docRef.update({
       enrolls
     });
-    return response.status(200).send(`Successfully enroll`);
+    return response.status(200).send({
+      message: `Successfully enrolled`
+    });
   } catch(err) {
     functions.logger.error(err);
-    return response.status(500).send(`Server error`);
+    return response.sendStatus(500);
   }
 });
 
-export const enroll = functions.region(process.env.APP_LOCATION).https.onRequest(app);
+export const enroll = functions.region('asia-east2').https.onRequest(app);

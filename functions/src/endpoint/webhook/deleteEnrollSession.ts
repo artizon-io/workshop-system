@@ -1,24 +1,47 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
+import { checkArgs } from "../../utils/checkArgs";
+import { checkDoc } from "../../utils/checkDoc";
 
 
-export const deleteEnrollSession = functions.region(process.env.APP_LOCATION).https.onRequest(async (request, response) => {
+export const deleteEnrollSession = functions.region('asia-east2').https.onRequest(async (request, response) => {
   const ref = admin.firestore().doc(`/workshop-confidential/${request.body.workshopId}`);
-  try {
-    await ref.update({
-      current: admin.firestore.FieldValue.increment(-1),
-      enrolls: admin.firestore.FieldValue.arrayRemove({
-        id: request.body.enrollId,
-        paymentStatus: 'unpaid'
-      })
-    });
-    functions.logger.info(`Successfully delete enroll session with ID ${request.body.enrollId} on workshop ${request.body.workshopId}`);
-    response.sendStatus(200);
+
+  if (checkArgs(request, response, ["workshopId", "enrollId"]))
     return;
 
-  } catch(err) {
-    functions.logger.error(`Fail to delete enroll session with ID ${request.body.enrollId} on workshop ${request.body.workshopId}`, err);
-    response.status(500).send('Server error');
+  const data = request.body as {
+    enrollId : string;
+    workshopId : string;
+  };
+
+  const res = await admin.firestore().runTransaction(async t => {
+    const [doc, res] = checkDoc(request, response, await t.get(ref), {
+      enrolls : "object"
+    })
+
+    if (res)
+      return res;
+
+    const enrolls = doc!.enrolls;
+    delete enrolls[data.enrollId];
+
+    try {
+      t.update(ref, {
+        current: admin.firestore.FieldValue.increment(-1),
+        enrolls
+      });
+    } catch(err) {
+      functions.logger.error(err);
+      return response.sendStatus(500);
+    }
+    return null;
+  });
+
+  if (res)
     return;
-  }
+
+  functions.logger.info(`Successfully delete enroll session with ID ${data.enrollId} on workshop ${data.workshopId}`);
+  response.sendStatus(200);
+  return;
 });

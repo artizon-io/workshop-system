@@ -1,32 +1,41 @@
 import * as functions from "firebase-functions";
-import { verifyAdmin, verifyAppCheck } from "../../utils/verify";
 import * as admin from "firebase-admin";
+import { genMiddleware } from "../middleware/genMiddleware";
+import * as express from "express";
+import { checkArgs } from "../../utils/checkArgs";
 
+const app = express();
+app.use(genMiddleware({
+  useAuth: true,
+  // useSession: true,
+  corsDomain: "all",
+  useAppCheck: true
+}));
 
-export const makeAdmin = functions.region(process.env.APP_LOCATION).https.onCall(async (data, context) => {
-  verifyAppCheck(context);
+// export const makeAdmin = functions.region('asia-east2').https.onCall(async (data, context) => {
+app.post("/", async (request, response) => {
+  let res;
 
-  verifyAdmin(context);
+  res = checkArgs(request, response, ["phoneNumber"])
+  if (res)
+    return;
 
-  if (!data.phoneNumber)
-    throw new functions.https.HttpsError(
-      'invalid-argument',
-      'Phone number missing'
-    );
+  const data = request.body as {
+    phoneNumber: string;
+  }
 
   try {
     const user = await admin.auth().getUserByPhoneNumber(data.phoneNumber);
     await admin.auth().setCustomUserClaims(user.uid, { admin: true });
 
-    return {
+    return response.status(200).send({
       message: `Successfully made ${data.phoneNumber} an admin`
-    };
+    });
 
   } catch(err) {
     functions.logger.error(err);
-    throw new functions.https.HttpsError(
-      'unknown',
-      'Unknown error has occurred'
-    )
+    return response.sendStatus(500);
   }
 });
+
+export const makeAdmin = functions.region('asia-east2').https.onRequest(app);
