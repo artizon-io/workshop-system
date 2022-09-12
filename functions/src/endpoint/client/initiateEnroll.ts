@@ -9,6 +9,8 @@ import * as cors from "cors";
 import * as csrf from "csurf";
 import * as bodyParser from "body-parser";
 import { auth } from "../middleware/auth";
+import { appCheck } from "../middleware/appCheck";
+import { session } from "../middleware/session";
 
 const app = express();
 
@@ -24,10 +26,11 @@ app.use(bodyParser.json({}));
 
 // app.use(csrf());
 
-// export const initiateEnroll = functions.region('asia-east2').https.onCall(async (data, context) => {
-app.post("/", async (request, response) => {
-  // verifyAppCheck(context);
+app.use(appCheck);
 
+app.use(session);
+
+app.post("/", async (request, response) => {
   let enrollId : string;
   let fee : number;
 
@@ -48,9 +51,14 @@ app.post("/", async (request, response) => {
 
       const workshopDoc = await t.get(admin.firestore().doc(`/workshops/${data.workshopId}`));
 
+      if (!workshopDoc.data()) {
+        hasError = true;
+        return response.status(400).send(`Workshop does not exist with id ${data.workshopId}`);
+      }
+
       functions.logger.info("Ready to retrieve capacity field");
 
-      const capacity = workshopDoc.data()?.capacity;
+      const capacity = workshopDoc.data()!.capacity;
       if (capacity == null) {  // === null || typeof === undefined
         hasError = true;
         functions.logger.error(`"Capacity" field does not exist on workshop with ID ${data.workshopId}`)
@@ -62,9 +70,15 @@ app.post("/", async (request, response) => {
       const workshopConfidentialDocRef = admin.firestore().doc(`/workshop-confidential/${data.workshopId}`);
       const workshopConfidentialDoc = await t.get(workshopConfidentialDocRef);
 
+      if (!workshopConfidentialDoc.data()) {
+        hasError = true;
+        functions.logger.error(`Workshop-confidential does not exist with id ${data.workshopId}`);
+        return response.status(500).send('Server error');
+      }
+
       functions.logger.info("Ready to get current field");
 
-      const current = workshopConfidentialDoc.data()?.current;
+      const current = workshopConfidentialDoc.data()!.current;
       if (current == null) {
         hasError = true;
         functions.logger.error(`"Current" field does not exist on workshop-confidential with ID ${data.workshopId}`)
@@ -77,7 +91,7 @@ app.post("/", async (request, response) => {
       }
 
       enrollId = uuidv4();
-      fee = workshopDoc.data()?.fee;
+      fee = workshopDoc.data()!.fee;
       if (fee == null) {
         hasError = true;
         functions.logger.error(`"Current" field does not exist on workshop-confidential with ID ${data.workshopId}`);
@@ -86,12 +100,24 @@ app.post("/", async (request, response) => {
 
       functions.logger.info("Ready to reserve a place for user");
 
+      if (!workshopDoc.data()!.enrolls[enrollId]) {
+        hasError = true;
+        functions.logger.error(`Newly generated enrollID ${enrollId} alreadly existed`);
+        return response.status(500).send('Server error');
+      }
+
+      const enrolls = workshopDoc.data()!.enrolls;
+      enrolls[enrollId] = {
+        paymentStatus: 'unpaid'
+      };
+
       t.update(workshopConfidentialDocRef, {
         current: current+1,
-        enrolls: admin.firestore.FieldValue.arrayUnion({
-          id: enrollId,
-          paymentStatus: 'unpaid'
-        })
+        // enrolls: admin.firestore.FieldValue.arrayUnion({
+        //   id: enrollId,
+        //   paymentStatus: 'unpaid'
+        // })
+        enrolls
       });
 
       return null;
@@ -99,6 +125,12 @@ app.post("/", async (request, response) => {
 
     if (hasError)
       return;
+
+    functions.logger.info("Updating session info");
+
+    // if (request.session.enrollId)
+      // free up previous session
+    request.session.enrollId = enrollId!;
 
     functions.logger.info("Appending cloud task to queue");
 

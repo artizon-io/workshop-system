@@ -9,6 +9,8 @@ import * as cors from "cors";
 import * as csrf from "csurf";
 import * as bodyParser from "body-parser";
 import { auth } from "../middleware/auth";
+import { appCheck } from "../middleware/appCheck";
+import { session } from "../middleware/session";
 
 const app = express();
 
@@ -24,10 +26,11 @@ app.use(bodyParser.json({}));
 
 // app.use(csrf());
 
-// export const initiateEnroll = functions.region('asia-east2').https.onCall(async (data, context) => {
-app.post("/", async (request, response) => {
-  // verifyAppCheck(context);
+app.use(appCheck);
 
+app.use(session);
+
+app.post("/", async (request, response) => {
   if (!request.body.firstName)
     return response.status(400).send("Missing argument firstName");
   
@@ -54,6 +57,9 @@ app.post("/", async (request, response) => {
     enrollId: string;
     workshopId: string;
   };
+
+  if (!request.session.enrollId || request.session.enrollId !== data.enrollId)
+    return response.status(400).send(`User is not currently enrolled to this enroll with id ${data.enrollId}`);
   
   const docRef = await admin.firestore().doc(`/workshop-confidential/${data.workshopId}`);
   const doc = (await docRef.get()).data();
