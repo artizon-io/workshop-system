@@ -4,6 +4,8 @@ declare global {
       STRIPE_SECRET: string;
       FIREBASE_CONFIG: string;
       SESSION_SECRET: string;
+      APP_DOMAIN: string;
+      APP_LOCATION: string;
     }
   }
 }

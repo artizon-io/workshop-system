@@ -2,7 +2,7 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
 
-export const createWorkshopConfidential = functions.region('asia-east2').firestore.document('/workshops/{id}')
+export const createWorkshopConfidential = functions.region(process.env.APP_LOCATION).firestore.document('/workshops/{id}')
 .onCreate(async (snapshot, context) => {
   try {
     await admin.firestore().doc(`workshop-confidential/${context.params.id}`).create({

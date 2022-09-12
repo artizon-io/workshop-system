@@ -13,7 +13,7 @@ import { auth } from "../middleware/auth";
 const app = express();
 
 app.use(cors({
-  origin: true  // any origin: to be change to custom domain during production
+  origin: process.env.APP_DOMAIN
 }));
 
 // app.use(auth);
@@ -30,6 +30,9 @@ app.post("/", async (request, response) => {
 
   let enrollId : string;
   let fee : number;
+
+  if (!request.body.workshopId)
+    return response.status(400).send("Missing argument workshopId");
 
   const data = request.body as {
     workshopId: string
@@ -50,7 +53,8 @@ app.post("/", async (request, response) => {
       const capacity = workshopDoc.data()?.capacity;
       if (capacity == null) {  // === null || typeof === undefined
         hasError = true;
-        return response.status(400).send(`"Capacity" field does not exist on workshop with ID ${data.workshopId}`);
+        functions.logger.error(`"Capacity" field does not exist on workshop with ID ${data.workshopId}`)
+        return response.status(500).send('Server error');
       }
 
       functions.logger.info("Ready to get workshop-confidential document");
@@ -63,7 +67,8 @@ app.post("/", async (request, response) => {
       const current = workshopConfidentialDoc.data()?.current;
       if (current == null) {
         hasError = true;
-        return response.status(400).send(`"Current" field does not exist on workshop-confidential with ID ${data.workshopId}`);
+        functions.logger.error(`"Current" field does not exist on workshop-confidential with ID ${data.workshopId}`)
+        return response.status(500).send('Server error');
       }
 
       if (current+1 >= capacity) {
@@ -75,7 +80,8 @@ app.post("/", async (request, response) => {
       fee = workshopDoc.data()?.fee;
       if (fee == null) {
         hasError = true;
-        return response.status(500).send(`"Fee" field does not exist on workshop with ID ${data.workshopId}`);
+        functions.logger.error(`"Current" field does not exist on workshop-confidential with ID ${data.workshopId}`);
+        return response.status(500).send('Server error');
       }
 
       functions.logger.info("Ready to reserve a place for user");
@@ -97,12 +103,11 @@ app.post("/", async (request, response) => {
     functions.logger.info("Appending cloud task to queue");
 
     const projectId = JSON.parse(process.env.FIREBASE_CONFIG).projectId;
-    const location = 'asia-east2';
 
     const tasksClient = new CloudTasksClient();
     const queuePath = tasksClient.queuePath(
       projectId,
-      location,  // location
+      process.env.APP_LOCATION,  // location
       'ttl'  // queue
     );
 
@@ -111,7 +116,7 @@ app.post("/", async (request, response) => {
       task: {
         httpRequest: {
           httpMethod: 'POST',
-          url: `https://${location}-${projectId}.cloudfunctions.net/deleteEnrollSession`,
+          url: `https://${process.env.APP_LOCATION}-${projectId}.cloudfunctions.net/deleteEnrollSession`,
           headers: {
             'Context-Type': 'application/json'
           },
@@ -121,7 +126,7 @@ app.post("/", async (request, response) => {
           })).toString('base64'),
         },
         scheduleTime: {
-          seconds: 15 * 60 + Date.now() / 1000
+          seconds: 15 * 60 + Date.now() / 1000  // TTL tasks execute in 15 minutes
         }
       },
     });
@@ -154,8 +159,8 @@ app.post("/", async (request, response) => {
 
   } catch(err) {
     functions.logger.error(err);
-    return response.status(500).send(`"Fee" field does not exist on workshop with ID ${data.workshopId}`);
+    return response.status(500).send('Server error');
   }
 });
 
-export const initiateEnroll = functions.region('asia-east2').https.onRequest(app);
+export const initiateEnroll = functions.region(process.env.APP_LOCATION).https.onRequest(app);

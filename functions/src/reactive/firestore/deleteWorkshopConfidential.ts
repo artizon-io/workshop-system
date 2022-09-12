@@ -2,7 +2,7 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
 
-export const deleteWorkshopConfidential = functions.region('asia-east2').firestore.document('/workshops/{id}')
+export const deleteWorkshopConfidential = functions.region(process.env.APP_LOCATION).firestore.document('/workshops/{id}')
 .onDelete(async (snapshot, context) => {
   try {
     await admin.firestore().doc(`workshop-confidential/${context.params.id}`).delete();

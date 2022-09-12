@@ -3,7 +3,7 @@ import { verifyAdmin, verifyAppCheck } from "../../utils/verify";
 import * as admin from "firebase-admin";
 
 
-export const makeAdmin = functions.region('asia-east2').https.onCall(async (data, context) => {
+export const makeAdmin = functions.region(process.env.APP_LOCATION).https.onCall(async (data, context) => {
   verifyAppCheck(context);
 
   verifyAdmin(context);

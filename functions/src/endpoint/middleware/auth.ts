@@ -5,17 +5,19 @@ export const auth = async (request : Request, response : Response, next : NextFu
   let hasError = false;
 
   if (!request.headers.authorization) {
-    response.status(400).send(`Missing authorization header`);
     hasError = true;
+    return response.status(400).send(`Missing authorization header`);
   }
 
   try {
     await admin.auth().verifyIdToken(request.headers.authorization as string);
   } catch(err) {
-    response.status(400).send(`Invalid Id token`); 
     hasError = true;
+    return response.status(400).send(`Invalid Id token`); 
   }
   
   if (!hasError)
     next();
+
+  return null;
 };
