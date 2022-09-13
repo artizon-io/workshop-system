@@ -7,5 +7,6 @@ export interface WorkshopConfidential {
     phone?: string;
     email?: string;
     paymentStatus: string;
+    paymentId?: string;
   }>
 }

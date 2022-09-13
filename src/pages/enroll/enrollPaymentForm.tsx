@@ -7,6 +7,8 @@ import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-
 import { getCookie } from 'utils/cookies';
 import { domain } from 'config/appConfig';
 import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import { appLocation, firebaseConfig, functionsDomain } from 'config/firebaseConfig';
 
 
 interface Props extends  React.HTMLAttributes<HTMLDivElement> {
@@ -23,16 +25,53 @@ export const EnrollPaymentForm: FC<Props> = ({ ...props }) => {
       phone: '',
       email: ''
     },
-    // validate,
+    validate: values => {
+      const errors : any = {};
+      if (!values.firstName) {
+        errors.firstName = 'Required';
+      }
+    
+      if (!values.lastName) {
+        errors.lastName = 'Required';
+      }
+    
+      if (!values.phone) {
+        errors.phone = 'Required';
+      }
+
+      if (!values.email) {
+        errors.email = 'Required';
+      }
+  
+      return errors;
+    },
     onSubmit: async data => {
       setIsSubmitting(true);
       Logger.info("Submitting form data:", data);
+      
+      axios
+        .post(`${functionsDomain}/enroll`, {
+          firstName: formik.values.firstName,
+          lastName: formik.values.lastName,
+          email: formik.values.email,
+          phone: '+852' + formik.values.phone,
+          enrollId: enrollId,
+          workshopId: workshopId
+        })
+        .then(res => {
+          Logger.info(res);
+        })
+        .catch(err => {
+          Logger.error(err);
+        });
 
       const { error } = await stripe.confirmPayment({
         elements,
         confirmParams: {
           return_url: `${domain}/workshop/${workshopId}/enroll/${enrollId}/confirmation`,
+          receipt_email: formik.values.email,
         },
+        redirect: "if_required"
       });
   
       // This point will only be reached if there is an immediate error when
@@ -63,6 +102,7 @@ export const EnrollPaymentForm: FC<Props> = ({ ...props }) => {
     // if (!cookie['stripeClientSecret'])
       throw Error('Stripe client secret token not present in site cookie');
 
+    // webhook
     // stripe.retrievePaymentIntent(cookie['stripeClientSecret']).then(({ paymentIntent }) => {
     stripe.retrievePaymentIntent(window.localStorage['stripeClientSecret']).then(({ paymentIntent }) => {
       switch (paymentIntent.status) {
@@ -95,11 +135,11 @@ export const EnrollPaymentForm: FC<Props> = ({ ...props }) => {
     <Flexbox as="form" onSubmit={formik.handleSubmit}>
       <InputGroup>
         <InputLeftAddon>First Name</InputLeftAddon>
-        <Input name="first-name" type={"text"} onChange={formik.handleChange} value={formik.values.firstName} disabled={isSubmitting} isInvalid={!!formik.errors.firstName}/>
+        <Input name="firstName" type={'text'} onChange={formik.handleChange} value={formik.values.firstName} disabled={isSubmitting} isInvalid={!!formik.errors.firstName}/>
       </InputGroup>
       <InputGroup>
         <InputLeftAddon>Last Name</InputLeftAddon>
-        <Input name="last-name" type={"text"} onChange={formik.handleChange} value={formik.values.firstName} disabled={isSubmitting} isInvalid={!!formik.errors.firstName}/>
+        <Input name="lastName" type={"text"} onChange={formik.handleChange} value={formik.values.lastName} disabled={isSubmitting} isInvalid={!!formik.errors.lastName}/>
       </InputGroup>
       <InputGroup>
         <InputLeftAddon>Phone Number</InputLeftAddon>

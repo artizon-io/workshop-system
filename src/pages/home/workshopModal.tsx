@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { setCookie } from 'utils/cookies';
 import { useStripeContext } from 'hooks/useStripeContext';
 import axios from 'axios';
-import { appLocation, firebaseConfig } from 'config/firebaseConfig';
+import { appLocation, firebaseConfig, functionsDomain } from 'config/firebaseConfig';
 
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
@@ -60,7 +60,7 @@ export const WorkshopModal: FC<Props> = ({
             onClick={() => {
               setIsWaitingForEnroll(true);
               axios
-                .post(`https://${appLocation}-${firebaseConfig.projectId}.cloudfunctions.net/initiateEnroll`, {
+                .post(`${functionsDomain}/initiateEnroll`, {
                   workshopId: workshop.id
                 })
               // httpsCallable<

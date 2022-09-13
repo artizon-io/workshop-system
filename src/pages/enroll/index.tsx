@@ -29,7 +29,6 @@ const stripePromise = loadStripe(stripePublic);
 
 export const Enroll: FC<{}> = ({ ...props }) => {
   const { enrollId, workshopId } = useParams();
-  const [isLoading, setIsLoading] = useState(true);
 
   // const {
   //   stripeClientSecret
@@ -40,11 +39,6 @@ export const Enroll: FC<{}> = ({ ...props }) => {
   //   Logger.debug(cookie);
   // }, [cookie]);
 
-  useEffect(() => {
-    
-    setIsLoading(false);
-  }, []);
-
   if (!window.localStorage['stripeClientSecret'])
   // if (!cookie['stripeClientSecret'])
   // if (!stripeClientSecret)
@@ -53,26 +47,18 @@ export const Enroll: FC<{}> = ({ ...props }) => {
     );
 
   return (
-    isLoading
-      ? <Spinner
-        thickness='4px'
-        speed='0.65s'
-        emptyColor='gray.200'
-        color='blue.500'
-        size='xl'
-        />
-      : <Layout>
-        <StyledHome {...props}>
-          <Elements stripe={stripePromise} options={{
-              // clientSecret: cookie['stripeClientSecret'],
-              // clientSecret: window.localStorage['stripeClientSecret'],
-              clientSecret: window.localStorage['stripeClientSecret']
-            }}
-          >
-            <EnrollPaymentForm/>
-          </Elements>
-          <EnrollSummary/>
-        </StyledHome>
-      </Layout>
+    <Layout>
+      <StyledHome {...props}>
+        <Elements stripe={stripePromise} options={{
+            // clientSecret: cookie['stripeClientSecret'],
+            // clientSecret: window.localStorage['stripeClientSecret'],
+            clientSecret: window.localStorage['stripeClientSecret']
+          }}
+        >
+          <EnrollPaymentForm/>
+        </Elements>
+        <EnrollSummary/>
+      </StyledHome>
+    </Layout>
   );
 }
