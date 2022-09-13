@@ -14,9 +14,7 @@ export const checkArgs = (request : Request, response : Response, args: string[]
   if (temp) {
     const message = `Missing arguments ${temp.join(', ')}`;
     functions.logger.info(message);
-    return response.status(400).send({
-      message
-    });
+    return response.status(400).send({message});
   }
 
   return null;

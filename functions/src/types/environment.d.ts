@@ -5,6 +5,8 @@ declare global {
       FIREBASE_CONFIG: string;
       SESSION_SECRET: string;
       APP_DOMAIN: string;
+      TEST_SECRET: string;
+      MODE: 'dev' | 'prod';
     }
   }
 }

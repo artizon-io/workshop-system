@@ -46,11 +46,7 @@ app.post("/", async (request, response) => {
     if (workshopConfidentialDoc!.current+1 >= workshopDoc!.capacity) {
       let message = `Workshop is full`
       functions.logger.info(message);
-      return [null, null,
-        response.status(400).send({
-          message
-        })
-      ];
+      return [null, null, response.status(400).send({message})];
     }
 
     const enrollId = uuidv4();

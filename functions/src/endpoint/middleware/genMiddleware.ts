@@ -2,16 +2,14 @@ import * as cookieParser from "cookie-parser";
 import * as cors from "cors";
 import * as csrf from "csurf";
 import * as bodyParser from "body-parser";
-import { auth } from "./auth";
-import { appCheck } from "./appCheck";
+import { auth, authMode } from "./auth";
 // import { session } from "./session";
 
 
-export const genMiddleware = ({useAuth = false, useSession = false, corsDomain = "app", useAppCheck = false} : {
-  useAuth?: boolean,
+export const genMiddleware = ({useAuth = false, useSession = false, corsDomain = "app"} : {
+  useAuth?: false | authMode,
   useSession?: boolean,
   corsDomain?: "all" | "app",
-  useAppCheck?: boolean
 }) => {
   let temp = [
     cors({
@@ -22,11 +20,9 @@ export const genMiddleware = ({useAuth = false, useSession = false, corsDomain =
     // csrf(),
   ];
   if (useAuth)
-    temp.push(auth);
+    temp.push(auth(useAuth));
   // if (useSession)
   //   temp.push(session);
-  if (useAppCheck)
-    temp.push(appCheck);
   
   return temp;
 }

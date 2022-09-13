@@ -6,10 +6,9 @@ import { checkArgs } from "../../utils/checkArgs";
 
 const app = express();
 app.use(genMiddleware({
-  useAuth: true,
+  useAuth: "admin",
   // useSession: true,
-  corsDomain: "all",
-  useAppCheck: true
+  corsDomain: "all"
 }));
 
 // export const makeAdmin = functions.region('asia-east2').https.onCall(async (data, context) => {

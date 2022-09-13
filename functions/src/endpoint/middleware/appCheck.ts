@@ -4,18 +4,18 @@ import * as functions from "firebase-functions"
 
 export const appCheck = async (request : Request, response : Response, next : NextFunction) => {
   if (!request.headers.authorization) {
-    functions.logger.info(`Missing authorization header`);
-    return response.status(400).send(`Missing authorization header`);
+    const message = `Missing authorization header`;
+    functions.logger.info(message);
+    return response.status(400).send({message});
   }
 
   try {
     await admin.appCheck().verifyToken(request.headers.authorization as string);
   } catch(err) {
-    functions.logger.info(`Invalid app check token`);
-    return response.status(400).send(`Invalid app check token`); 
+    const message = `Invalid app check token`;
+    functions.logger.info(message);
+    return response.status(400).send({message}); 
   }
   
-  next();
-
-  return null;
+  return next();
 };
