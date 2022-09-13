@@ -2,7 +2,6 @@ node_modules/
 assets/test/
 *.log
 *.env
-.README.md
 src/firebaseConfig.tsx
 src/stripeConfig.tsx
 public/
