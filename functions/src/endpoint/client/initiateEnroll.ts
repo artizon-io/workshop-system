@@ -131,7 +131,7 @@ app.post("/", async (request, response) => {
       workshopId: data.workshopId,
       enrollId
     },
-    application_fee_amount: (fee! * 0.034 + 2.35) * 100,  // stripe charge 3.4% + HKD2.35 per successful card charge
+    // application_fee_amount: (fee! * 0.034 + 2.35) * 100,  // stripe charge 3.4% + HKD2.35 per successful card charge
   });
 
   // response.cookie('stripeClientSecret', paymentIntent.client_secret, {

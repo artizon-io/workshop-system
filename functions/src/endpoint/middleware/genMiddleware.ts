@@ -13,10 +13,10 @@ export const genMiddleware = ({useAuth = false, useSession = false, corsDomain =
   corsDomain?: "all" | "app" | "gcp" | "stripe",
   useStripe?: boolean
 }) => {
-  let domain : true | string;
+  let domain : string;
   switch (corsDomain) {
     case "all":
-      domain = true
+      domain = "*"
       break;
     case "app":
       domain = process.env.APP_DOMAIN
