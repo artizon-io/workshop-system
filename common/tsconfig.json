@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "lib": ["ESNext"],
+    "moduleResolution": "Node"
+  },
+  // "include": ["*"],
+  "exclude": [
+    "node_modules"
+  ]
+}

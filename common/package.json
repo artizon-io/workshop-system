@@ -1,0 +1,17 @@
+{
+  "name": "common",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/mingsumsze/workshop-system.git",
+  "author": "Ming Sum Sze <mingsum.sam@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "peerDependencies": {
+    "firebase": "^9.9.4",
+    "yup": "^0.32.11"
+  },
+  "dependencies": {
+    "firebase": "^9.9.4",
+    "yup": "^0.32.11"
+  }
+}

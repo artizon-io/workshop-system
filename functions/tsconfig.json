@@ -1,10 +1,8 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "noImplicitReturns": true,
     "outDir": "lib",
     "sourceMap": true,
-    "strict": true,
     "target": "es2017",
     "skipLibCheck": true  // admin/node_modules/@google_cloud/firestore type declarations collide
                           // with @google-cloud/firestore
