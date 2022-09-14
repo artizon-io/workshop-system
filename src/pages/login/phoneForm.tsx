@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useImperativeHandle, useRef } from "react";
 import { Heading, Input, InputGroup, InputLeftAddon, Button, Text } from '@chakra-ui/react'
 import styled from "@emotion/styled";
-import HCaptcha from "@hcaptcha/react-hcaptcha";
+// import HCaptcha from "@hcaptcha/react-hcaptcha";
 // import { CaptchaRef } from "pages/login";
 
 

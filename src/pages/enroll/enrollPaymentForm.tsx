@@ -102,7 +102,6 @@ export const EnrollPaymentForm: FC<Props> = ({ ...props }) => {
     // if (!cookie['stripeClientSecret'])
       throw Error('Stripe client secret token not present in site cookie');
 
-    // webhook
     // stripe.retrievePaymentIntent(cookie['stripeClientSecret']).then(({ paymentIntent }) => {
     stripe.retrievePaymentIntent(window.localStorage['stripeClientSecret']).then(({ paymentIntent }) => {
       switch (paymentIntent.status) {

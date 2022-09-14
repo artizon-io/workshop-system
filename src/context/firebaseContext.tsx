@@ -8,6 +8,7 @@ import { AppCheck } from "firebase/app-check";
 import { FirebasePerformance } from "firebase/performance";
 
 
+// Deprecated
 export const FirebaseContext = React.createContext<{
   firebaseApp: FirebaseApp,
   firebaseAnalytics: Analytics,

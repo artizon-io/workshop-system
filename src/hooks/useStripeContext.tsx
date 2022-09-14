@@ -3,4 +3,4 @@ import React, { useContext } from "react";
 
 
 // Deprecated
-export const useStripeContext = () => useContext(StripeContext);
+// export const useStripeContext = () => useContext(StripeContext);

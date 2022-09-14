@@ -4,7 +4,7 @@ import { Button, Heading, Input, InputGroup, InputLeftAddon, Spinner, Text } fro
 import { Flexbox } from 'components/flexbox';
 import { useParams } from 'react-router-dom';
 import Logger from 'js-logger';
-import { useWorkshop } from 'hooks/useWorkshop';
+import { useWorkshop } from 'hooks/useWorkshopOnce';
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { EnrollPaymentForm } from './enrollPaymentForm';
 import { Layout } from 'layout/layout';

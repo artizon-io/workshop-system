@@ -86,7 +86,7 @@ export default function(env, argv) {
           "./index.html"
         ],
       }),
-      new DotenvWebpackPlugin()
+      // new DotenvWebpackPlugin()
     ].filter(Boolean)
   };
 }

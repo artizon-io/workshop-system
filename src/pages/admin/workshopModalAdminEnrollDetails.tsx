@@ -2,7 +2,7 @@ import React, { FC, useEffect, useRef, useState } from 'react';
 import { Heading, Text, Modal, ModalBody, ModalHeader, ModalFooter, ModalOverlay, ModalContent, ModalCloseButton, Button, ModalProps, Input, InputAddon, InputLeftAddon, InputGroup, SlideFade, Box, Collapse, Spinner, TableContainer, Table, TableCaption, Thead, Tr, Th, Tbody, Td, Tfoot } from '@chakra-ui/react';
 import { Workshop } from 'types/workshop';
 import { Flexbox } from 'components/flexbox';
-import { useWorkshopConfidentialRealtime } from 'hooks/useWorkshopConfidentialRealtime';
+import { useWorkshopConfidentialRealtime } from 'hooks/useWorkshopConfidential';
 
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
