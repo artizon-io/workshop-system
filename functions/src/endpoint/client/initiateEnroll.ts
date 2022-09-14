@@ -6,16 +6,19 @@ import * as express from "express";
 import { genMiddleware } from "../middleware/genMiddleware";
 import { checkArgs } from "../../utils/checkArgs";
 import { checkDoc } from "../../utils/checkDoc";
-import Stripe from "stripe";
+import { getStripe } from "../../utils/getStripe";
 
 const app = express();
 app.use(genMiddleware({
-  corsDomain: "all"
+  corsDomain: "all",
+  useSession: true
 }));
 
 app.post("/", async (request, response) => {
-  if (checkArgs(request, response, ["workshopId"]))
-    return;
+  functions.logger.info("Ready to check arguments");
+
+  checkArgs(request, response, ["workshopId"]);
+  if (response.headersSent) return response;
   
   const data = request.body as {
     workshopId: string
@@ -23,42 +26,40 @@ app.post("/", async (request, response) => {
 
   functions.logger.info("Ready to run transaction");
 
-  const [enrollId, fee, res] = await admin.firestore().runTransaction(async t => {
+  let enrollIdFee = await admin.firestore().runTransaction(async t => {
     functions.logger.info("Ready to get workshop document");
 
-    let [workshopDoc, res_1] = checkDoc(request, response, await t.get(admin.firestore().doc(`/workshops/${data.workshopId}`)), {
+    let workshopDoc = checkDoc(request, response, await t.get(admin.firestore().doc(`/workshops/${data.workshopId}`)), {
       capacity : "number",
       fee : "number",
     });
-    if (res_1)
-      return [null, null, res_1];
+    if (response.headersSent) return response;
 
     functions.logger.info("Ready to get workshop-confidential document");
 
     const workshopConfidentialDocRef = admin.firestore().doc(`/workshop-confidential/${data.workshopId}`);
-    let [workshopConfidentialDoc, res_2] = checkDoc(request, response, await t.get(workshopConfidentialDocRef), {
+    let workshopConfidentialDoc = checkDoc(request, response, await t.get(workshopConfidentialDocRef), {
       current : "number",
       enrolls : "object"
     });
-    if (res_2)
-      return [null, null, res_2];
+    if (response.headersSent) return response;
 
-    if (workshopConfidentialDoc!.current+1 >= workshopDoc!.capacity) {
+    if ((workshopConfidentialDoc as admin.firestore.DocumentData).current+1 > (workshopDoc as admin.firestore.DocumentData).capacity) {
       let message = `Workshop is full`
       functions.logger.info(message);
-      return [null, null, response.status(400).send({message})];
+      return response.status(400).send({message});
     }
 
     const enrollId = uuidv4();
 
     functions.logger.info("Ready to reserve a place for user");
 
-    const enrolls = workshopConfidentialDoc!.enrolls;
+    const enrolls = (workshopConfidentialDoc as admin.firestore.DocumentData).enrolls;
 
     // Just in case
     if (enrolls[enrollId]) {
       functions.logger.error(`Newly generated enrollID ${enrollId} alreadly existed`);
-      return [null, null, response.sendStatus(500)];
+      return response.sendStatus(500);
     }
 
     enrolls[enrollId] = {
@@ -74,17 +75,17 @@ app.post("/", async (request, response) => {
       enrolls
     });
 
-    return [enrollId, workshopDoc!.fee as number, null];
-  }) as [string | null, number | null, Response | null];
+    return [enrollId, (workshopDoc as admin.firestore.DocumentData).fee as number];
+  }) as [string, number] | Response;
 
-  if (res)
-    return;
+  if (response.headersSent) return response;
+  const [enrollId, fee] = enrollIdFee as [string, number];
 
   functions.logger.info("Updating session info");
 
   // if (request.session.enrollId)
-    // free up previous session
-  // request.session.enrollId = enrollId!;
+  //   free up previous session
+  request.session.enrollId = enrollId!;
 
   functions.logger.info("Appending cloud task to queue");
 
@@ -118,9 +119,7 @@ app.post("/", async (request, response) => {
 
   functions.logger.info("Creating stripe payment intents");
 
-  const stripe = new Stripe(process.env.STRIPE_SECRET, {
-    apiVersion: '2022-08-01'
-  });
+  const stripe = getStripe();
 
   const paymentIntent = await stripe.paymentIntents.create({
     amount: fee! * 100,
@@ -128,6 +127,11 @@ app.post("/", async (request, response) => {
     automatic_payment_methods: {
       enabled: true,
     },
+    metadata: {
+      workshopId: data.workshopId,
+      enrollId
+    },
+    application_fee_amount: (fee! * 0.034 + 2.35) * 100,  // stripe charge 3.4% + HKD2.35 per successful card charge
   });
 
   // response.cookie('stripeClientSecret', paymentIntent.client_secret, {

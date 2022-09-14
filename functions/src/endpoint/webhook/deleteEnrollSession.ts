@@ -2,28 +2,33 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import { checkArgs } from "../../utils/checkArgs";
 import { checkDoc } from "../../utils/checkDoc";
+import * as express from "express";
+import { genMiddleware } from "../middleware/genMiddleware";
 
+const app = express();
+app.use(genMiddleware({
+  corsDomain: "all"
+}));
 
-export const deleteEnrollSession = functions.region('asia-east2').https.onRequest(async (request, response) => {
+app.post('/', async (request, response) => {
   const ref = admin.firestore().doc(`/workshop-confidential/${request.body.workshopId}`);
 
-  if (checkArgs(request, response, ["workshopId", "enrollId"]))
-    return;
+  checkArgs(request, response, ["workshopId", "enrollId"])
+  if (response.headersSent) return response;
 
   const data = request.body as {
     enrollId : string;
     workshopId : string;
   };
 
-  const res = await admin.firestore().runTransaction(async t => {
-    const [doc, res] = checkDoc(request, response, await t.get(ref), {
+  await admin.firestore().runTransaction(async t => {
+    const doc = checkDoc(request, response, await t.get(ref), {
       enrolls : "object"
     })
 
-    if (res)
-      return res;
+    if (response.headersSent) return response;
 
-    const enrolls = doc!.enrolls;
+    const enrolls = (doc as admin.firestore.DocumentData).enrolls;
     delete enrolls[data.enrollId];
 
     try {
@@ -35,13 +40,13 @@ export const deleteEnrollSession = functions.region('asia-east2').https.onReques
       functions.logger.error(err);
       return response.sendStatus(500);
     }
-    return null;
+    return;
   });
 
-  if (res)
-    return;
+  if (response.headersSent) return response;
 
   functions.logger.info(`Successfully delete enroll session with ID ${data.enrollId} on workshop ${data.workshopId}`);
-  response.sendStatus(200);
-  return;
+  return response.sendStatus(200);
 });
+
+export const deleteEnrollSession = functions.region('asia-east2').https.onRequest(app);

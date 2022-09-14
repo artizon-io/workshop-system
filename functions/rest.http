@@ -4,7 +4,7 @@ POST https://asia-east2-workshop-system-24df0.cloudfunctions.net/initiateEnroll 
 content-type: application/json
 
 {
-  "workshopId": "test",
+  "workshopId": "test"
 }
 
 ### enroll
@@ -14,12 +14,26 @@ content-type: application/json
 
 {
   "workshopId": "test",
-  "enrollId": "test"
+  "enrollId": "a92d9e4c-4c3c-4dc5-8ac6-2a05d2d5f296",
+  "firstName": "Sam",
+  "lastName": "Sze",
+  "phone": "+85291480036",
+  "email": "mingsum.sam@gmail.com"
 }
 
-### makeAdmin
+### createAdmin
 
-POST https://asia-east2-workshop-system-24df0.cloudfunctions.net/makeAdmin HTTP/1.1
+POST https://asia-east2-workshop-system-24df0.cloudfunctions.net/createAdmin HTTP/1.1
+content-type: application/json
+authorization: {{$dotenv TEST_SECRET}}
+
+{
+  "phoneNumber": "+85296348097"
+}
+
+### deleteAdmin
+
+POST https://asia-east2-workshop-system-24df0.cloudfunctions.net/deleteAdmin HTTP/1.1
 content-type: application/json
 authorization: {{$dotenv TEST_SECRET}}
 

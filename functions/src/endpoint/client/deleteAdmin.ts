@@ -7,34 +7,33 @@ import { checkArgs } from "../../utils/checkArgs";
 const app = express();
 app.use(genMiddleware({
   useAuth: "admin",
-  // useSession: true,
   corsDomain: "all"
 }));
 
 // export const makeAdmin = functions.region('asia-east2').https.onCall(async (data, context) => {
 app.post("/", async (request, response) => {
-  let res;
-
-  res = checkArgs(request, response, ["phoneNumber"])
-  if (res)
-    return;
+  checkArgs(request, response, ["phoneNumber"])
+  if (response.headersSent) return response;
 
   const data = request.body as {
     phoneNumber: string;
   }
-
+  
   try {
     const user = await admin.auth().getUserByPhoneNumber(data.phoneNumber);
-    await admin.auth().setCustomUserClaims(user.uid, { admin: true });
-
-    return response.status(200).send({
-      message: `Successfully made ${data.phoneNumber} an admin`
-    });
+    admin.auth().deleteUser(user.uid);
 
   } catch(err) {
+    // functions.logger.error(err);
+    // return response.sendStatus(500);
+    const message = `User isn't an admin`;
     functions.logger.error(err);
-    return response.sendStatus(500);
+    return response.status(400).send({message});
   }
+
+  return response.status(200).send({
+    message: `Successfully delete admin ${data.phoneNumber}`
+  });
 });
 
-export const makeAdmin = functions.region('asia-east2').https.onRequest(app);
+export const deleteAdmin = functions.region('asia-east2').https.onRequest(app);

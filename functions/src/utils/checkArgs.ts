@@ -11,11 +11,10 @@ export const checkArgs = (request : Request, response : Response, args: string[]
     }
   });
 
-  if (temp) {
+  if (temp.length !== 0) {
     const message = `Missing arguments ${temp.join(', ')}`;
     functions.logger.info(message);
     return response.status(400).send({message});
   }
-
-  return null;
+  return;
 }

@@ -7,13 +7,13 @@ import { checkDoc } from "../../utils/checkDoc";
 
 const app = express();
 app.use(genMiddleware({
-  corsDomain: "all"
+  corsDomain: "all",
+  useSession: true
 }));
 
 app.post("/", async (request, response) => {
-  const error = checkArgs(request, response, ["firstName", "lastName", "phone", "email", "enrollId", "workshopId"]);
-  if (error)
-    return;
+  checkArgs(request, response, ["firstName", "lastName", "phone", "email", "enrollId", "workshopId"]);
+  if (response.headersSent) return response;
 
   const data = request.body as {
     firstName: string;
@@ -24,11 +24,14 @@ app.post("/", async (request, response) => {
     workshopId: string;
   };
 
-  // if (!request.session.enrollId || request.session.enrollId !== data.enrollId)
-  //   return response.status(400).send(`User is not currently enrolled to this enroll with id ${data.enrollId}`);
+  if (request.session.enrollId !== data.enrollId) {
+    const message = `User is not currently enrolled to ${data.enrollId}`;
+    functions.logger.info(message);
+    return response.status(400).send({message});
+  }
   
   const docRef = admin.firestore().doc(`/workshop-confidential/${data.workshopId}`);
-  let [doc, res] = checkDoc(request, response, await docRef.get(), {
+  let doc = checkDoc(request, response, await docRef.get(), {
     current : "number",
     enrolls : "object"
     // enrolls : {
@@ -39,14 +42,12 @@ app.post("/", async (request, response) => {
     //   paymentStatus: "string"
     // }
   });
+  if (response.headersSent) return response;
 
-  if (res)
-    return;
-
-  const enrolls = doc!.enrolls;
-  const enroll = enrolls[data.workshopId];
+  const enrolls = (doc as admin.firestore.DocumentData).enrolls;
+  const enroll = enrolls[data.enrollId];
   if (!enroll) {
-    functions.logger.info(`Cannot fetch enroll with id ${data.enrollId}`);
+    functions.logger.error(`Cannot fetch enroll with id ${data.enrollId}`);
     return response.sendStatus(500);
   }
 
@@ -55,7 +56,7 @@ app.post("/", async (request, response) => {
   enroll.phone = data.phone;
   enroll.email = data.email;
 
-  enrolls[data.workshopId] = enroll;
+  enrolls[data.enrollId] = enroll;
 
   try {
     await docRef.update({

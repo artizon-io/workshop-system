@@ -7,6 +7,7 @@ declare global {
       APP_DOMAIN: string;
       TEST_SECRET: string;
       MODE: 'dev' | 'prod';
+      STRIPE_ENDPOINT_SECRET: string;
     }
   }
 }
