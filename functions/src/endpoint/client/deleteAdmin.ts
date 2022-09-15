@@ -2,7 +2,8 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import { genMiddleware } from "../middleware/genMiddleware";
 import * as express from "express";
-import { checkArgs } from "../../utils/checkArgs";
+import { constructSchema } from "common/schema/utils";
+import { UserSchema } from "common/schema/user";
 
 const app = express();
 app.use(genMiddleware({
@@ -10,29 +11,30 @@ app.use(genMiddleware({
   corsDomain: "all"
 }));
 
-// export const makeAdmin = functions.region('asia-east2').https.onCall(async (data, context) => {
 app.post("/", async (request, response) => {
-  checkArgs(request, response, ["phoneNumber"])
-  if (response.headersSent) return response;
-
-  const data = request.body as {
-    phoneNumber: string;
+  try {
+    constructSchema({
+      phone: UserSchema.phone
+    }).validate(request.body);
+  } catch(err) {
+    functions.logger.error(err);
+    return response.status(400).send({message: `Invalid request body`});
   }
+
+  const data = request.body;
   
   try {
-    const user = await admin.auth().getUserByPhoneNumber(data.phoneNumber);
+    const user = await admin.auth().getUserByPhoneNumber(data.phone);
     admin.auth().deleteUser(user.uid);
 
   } catch(err) {
-    // functions.logger.error(err);
-    // return response.sendStatus(500);
     const message = `User isn't an admin`;
     functions.logger.error(err);
     return response.status(400).send({message});
   }
 
   return response.status(200).send({
-    message: `Successfully delete admin ${data.phoneNumber}`
+    message: `Successfully delete admin ${data.phone}`
   });
 });
 

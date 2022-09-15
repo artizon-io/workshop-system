@@ -19,6 +19,7 @@
     "@google-cloud/connect-firestore": "^2.0.2",
     "@google-cloud/tasks": "^3.0.2",
     "body-parser": "^1.20.0",
+    "common": "^1.0.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "csurf": "^1.11.0",
@@ -26,7 +27,8 @@
     "firebase-admin": "^11.0.1",
     "firebase-functions": "^3.23.0",
     "stripe": "^10.7.0",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.3",

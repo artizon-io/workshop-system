@@ -2,8 +2,8 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import { genMiddleware } from "../middleware/genMiddleware";
 import * as express from "express";
-import { UserSchema } from "common/schema/user";
-import { constructSchema } from "common/schema/utils";
+import { validateWorkshop, Workshop, WorkshopSchema, WorkshopWithId } from "common/schema/workshop";
+import { constructSchema, idSchema } from "common/schema/utils";
 
 
 const app = express();
@@ -15,7 +15,8 @@ app.use(genMiddleware({
 app.post("/", async (request, response) => {
   try {
     constructSchema({
-      phone: UserSchema.phone
+      id: idSchema,
+      ...WorkshopSchema
     }).validate(request.body);
   } catch(err) {
     functions.logger.error(err);
@@ -23,22 +24,19 @@ app.post("/", async (request, response) => {
   }
 
   const data = request.body;
-  
-  try {
-    const user = await admin.auth().createUser({
-      phoneNumber: data.phone
-    })
-    await admin.auth().setCustomUserClaims(user.uid, { admin: true });  
+  const id = data.id;
+  delete data.id;
 
+  try {  
+    await admin.firestore().doc(`/workshops/${id}`).update(data);
   } catch(err) {
-    const message = "User is already an admin";
     functions.logger.error(err);
-    return response.status(400).send({message});
+    return response.sendStatus(500);
   }
 
-  return response.status(200).send({
-    message: `Successfully made ${data.phone} an admin`
-  });
+  const message = `Successfully update workshop ${id}`;
+  functions.logger.log(message);
+  return response.status(200).send({message});
 });
 
-export const createAdmin = functions.region('asia-east2').https.onRequest(app);
+export const updateWorkshop = functions.region('asia-east2').https.onRequest(app);

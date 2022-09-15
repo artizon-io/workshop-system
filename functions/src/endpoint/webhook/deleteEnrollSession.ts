@@ -1,9 +1,9 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import { checkArgs } from "../../utils/checkArgs";
-import { checkDoc } from "../../utils/checkDoc";
 import * as express from "express";
 import { genMiddleware } from "../middleware/genMiddleware";
+import { constructSchema, idSchema } from "common/schema/utils";
+import { validateWorkshopConfidential } from "common/schema/workshopConfidential";
 
 const app = express();
 app.use(genMiddleware({
@@ -11,28 +11,38 @@ app.use(genMiddleware({
 }));
 
 app.post('/', async (request, response) => {
-  const ref = admin.firestore().doc(`/workshop-confidential/${request.body.workshopId}`);
+  try {
+    constructSchema({
+      workshopId: idSchema,
+      enrollId: idSchema
+    }).validate(request.body);
+  } catch(err) {
+    functions.logger.error(err);
+    return response.status(400).send({message: `Invalid request body`});
+  }
 
-  checkArgs(request, response, ["workshopId", "enrollId"])
-  if (response.headersSent) return response;
-
-  const data = request.body as {
-    enrollId : string;
-    workshopId : string;
-  };
+  const data = request.body;
 
   await admin.firestore().runTransaction(async t => {
-    const doc = checkDoc(request, response, await t.get(ref), {
-      enrolls : "object"
-    })
+    const doc = (await t.get(admin.firestore().doc(`/workshop-confidential/${data.workshopId}`))).data();
+    if (!doc) {
+      const message = `Workshop ${data.workshopId} doesn't exist`;
+      functions.logger.info(message);
+      return response.status(400).send({message});
+    }
 
-    if (response.headersSent) return response;
+    try {
+      validateWorkshopConfidential(doc);
+    } catch(err) {
+      functions.logger.error(err);
+      return response.sendStatus(500);
+    }
 
-    const enrolls = (doc as admin.firestore.DocumentData).enrolls;
+    const enrolls = doc.enrolls;
     delete enrolls[data.enrollId];
 
     try {
-      t.update(ref, {
+      t.update(admin.firestore().doc(`/workshop-confidential/${data.workshopId}`), {
         current: admin.firestore.FieldValue.increment(-1),
         enrolls
       });
@@ -40,12 +50,11 @@ app.post('/', async (request, response) => {
       functions.logger.error(err);
       return response.sendStatus(500);
     }
-    return;
   });
 
   if (response.headersSent) return response;
 
-  functions.logger.info(`Successfully delete enroll session with ID ${data.enrollId} on workshop ${data.workshopId}`);
+  functions.logger.info(`Successfully delete enroll ${data.enrollId} on workshop ${data.workshopId}`);
   return response.sendStatus(200);
 });
 

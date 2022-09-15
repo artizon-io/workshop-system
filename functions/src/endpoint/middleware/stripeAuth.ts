@@ -15,7 +15,7 @@ export const stripeAuth = async (request : Request, response : Response, next : 
   const stripe = getStripe();
 
   try {
-    let stripeEvent = stripe.webhooks.constructEvent(request.body, stripeSignature, process.env.STRIPE_ENDPOINT_SECRET);
+    let stripeEvent = stripe.webhooks.constructEvent(request.body, stripeSignature, process.env.MODE === "prod" ? process.env.STRIPE_ENDPOINT_SECRET : process.env.STRIPE_ENDPOINT_SECRET_TEST);
     request.stripeEvent = stripeEvent;
   } catch (err) {
     functions.logger.error(err);

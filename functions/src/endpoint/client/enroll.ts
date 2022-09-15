@@ -2,8 +2,8 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import * as express from "express";
 import { genMiddleware } from "../middleware/genMiddleware";
-import { checkArgs } from "../../utils/checkArgs";
-import { checkDoc } from "../../utils/checkDoc";
+import { constructSchema, idSchema } from "common/schema/utils";
+import { validateWorkshopConfidential, WorkshopConfidential, WorkshopConfidentialSchema } from "common/schema/workshopConfidential";
 
 const app = express();
 app.use(genMiddleware({
@@ -12,17 +12,21 @@ app.use(genMiddleware({
 }));
 
 app.post("/", async (request, response) => {
-  checkArgs(request, response, ["firstName", "lastName", "phone", "email", "enrollId", "workshopId"]);
-  if (response.headersSent) return response;
+  try {
+    constructSchema({
+      workshopId: idSchema,
+      enrollId: idSchema,
+      firstName: WorkshopConfidentialSchema.enrolls.firstName,
+      lastName: WorkshopConfidentialSchema.enrolls.lastName,
+      phone: WorkshopConfidentialSchema.enrolls.phone,
+      email: WorkshopConfidentialSchema.enrolls.email,
+    }).validate(request.body);
+  } catch(err) {
+    functions.logger.error(err);
+    return response.status(400).send({message: `Invalid request body`});
+  }
 
-  const data = request.body as {
-    firstName: string;
-    lastName: string;
-    phone: string;
-    email: string;
-    enrollId: string;
-    workshopId: string;
-  };
+  const data = request.body;
 
   if (request.session.enrollId !== data.enrollId) {
     const message = `User is not currently enrolled to ${data.enrollId}`;
@@ -30,24 +34,23 @@ app.post("/", async (request, response) => {
     return response.status(400).send({message});
   }
   
-  const docRef = admin.firestore().doc(`/workshop-confidential/${data.workshopId}`);
-  let doc = checkDoc(request, response, await docRef.get(), {
-    current : "number",
-    enrolls : "object"
-    // enrolls : {
-      // firstName: "string",
-      // lastName: "string",
-      // phone: "string",
-      // email: "string",
-    //   paymentStatus: "string"
-    // }
-  });
-  if (response.headersSent) return response;
+  const doc = (await admin.firestore().doc(`/workshop-confidential/${data.workshopId}`).get()).data();
+  if (!doc) {
+    const message = `Workshop ${data.workshopId} doesn't exist`;
+    functions.logger.info(message);
+    return response.status(400).send({message});
+  }
+  try {
+    validateWorkshopConfidential(doc);
+  } catch(err) {
+    functions.logger.error(err);
+    return response.sendStatus(500);
+  }
 
-  const enrolls = (doc as admin.firestore.DocumentData).enrolls;
+  const enrolls = doc.enrolls;
   const enroll = enrolls[data.enrollId];
   if (!enroll) {
-    functions.logger.error(`Cannot fetch enroll with id ${data.enrollId}`);
+    functions.logger.error(`Enroll ${data.enrollId} doesn't exist on workshop ${data.workshopId}`);
     return response.sendStatus(500);
   }
 
@@ -59,7 +62,7 @@ app.post("/", async (request, response) => {
   enrolls[data.enrollId] = enroll;
 
   try {
-    await docRef.update({
+    await admin.firestore().doc(`/workshop-confidential/${data.workshopId}`).update({
       enrolls
     });
     return response.status(200).send({
