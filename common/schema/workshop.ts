@@ -1,5 +1,6 @@
 import { Timestamp } from "firebase/firestore";
-import yup, { date, number, object, string } from "yup";
+import yup, { BaseSchema, date, number, object, string } from "yup";
+import { constructSchema, Schema } from "./utils";
 
 export interface Workshop {
   title: string;
@@ -13,10 +14,10 @@ export interface Workshop {
 }
 
 export interface WorkshopWithId extends Workshop {
-  id: string
+  id: string;
 }
 
-export const validateWorkshopConfidential = (data : any) => object({
+export const WorkshopSchema = {
   title: string().min(1),
   description: string().min(1),
   datetime: date().test({
@@ -30,4 +31,21 @@ export const validateWorkshopConfidential = (data : any) => object({
   capacity: number().positive(),
   fee: number().min(0),
   venue: string().min(1),
-}).validate(data);
+}
+
+export const validateWorkshop = (data: any) => {
+  const {
+    title, description, datetime, duration, language, capacity, fee, venue
+  } = WorkshopSchema;
+
+  return (constructSchema({
+    title,
+    description,
+    datetime,
+    duration,
+    language,
+    capacity,
+    fee,
+    venue,
+  })).validate(data);
+}

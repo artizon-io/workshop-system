@@ -11,6 +11,7 @@
     "yup": "^0.32.11"
   },
   "dependencies": {
+    "common": "^1.0.0",
     "firebase": "^9.9.4",
     "yup": "^0.32.11"
   }
