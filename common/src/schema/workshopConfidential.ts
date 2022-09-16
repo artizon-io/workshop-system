@@ -1,16 +1,15 @@
-import { BaseSchema, number, object, string } from "yup";
+import { array, BaseSchema, number, object, string } from "yup";
 import { UserSchema } from "./user";
-import { constructSchema } from "./utils";
 
 export interface WorkshopConfidential {
   current: number;
   enrolls: Array<{
-    id?: string;
+    id: string;
     firstName?: string;
     lastName?: string;
     phone?: string;
     email?: string;
-    paymentStatus?: "paid" | "unpaid";
+    paymentStatus: "paid" | "unpaid";
     stripePaymentId?: string;
   }>
 }
@@ -40,16 +39,16 @@ export const validateWorkshopConfidential = (data: any) => {
     }
   } = WorkshopConfidentialSchema;
 
-  return (constructSchema({
-    current,
-    enrolls: {
-      id,
-      firstName: firstName.optional(),
-      lastName: lastName.optional(),
-      phone: phone.optional(),
-      email: email.optional(),
-      paymentStatus,
-      stripePaymentId: stripePaymentId.optional()
-    }
+  return (object({
+    current: current.required(),
+    enrolls: array().of(object({
+      id: id.required(),
+      firstName: firstName.notRequired(),
+      lastName: lastName.notRequired(),
+      phone: phone.notRequired(),
+      email: email.notRequired(),
+      paymentStatus: paymentStatus.required(),
+      stripePaymentId: stripePaymentId.notRequired()
+    }))
   })).validate(data);
 }

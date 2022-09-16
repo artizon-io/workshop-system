@@ -1,6 +1,6 @@
 import { Timestamp } from "firebase/firestore";
-import { BaseSchema, date, number, object, string } from "yup";
-import { constructSchema, Schema } from "./utils";
+import { BaseSchema, date, mixed, number, object, string } from "yup";
+import { Schema } from "./utils";
 
 export interface Workshop {
   title: string;
@@ -20,9 +20,14 @@ export interface WorkshopWithId extends Workshop {
 export const WorkshopSchema = {
   title: string().min(1),
   description: string().min(1),
-  datetime: date().test({
+  datetime: mixed().test({
     test: (value, context) => {
-      if (!(value instanceof Timestamp))
+      // console.debug(`Value: ${value}, ${typeof value}`);
+      // if (!(value instanceof Timestamp))  // different firebase/firestore might be loaded, so couldn't rely on this
+      // See: https://stackoverflow.com/questions/53092547/instanceof-returns-false-for-same-class-after-serialization
+      if (!(value instanceof Object))
+        return context.createError();
+      if (value.constructor.name != "Timestamp")
         return context.createError();
       return true;
     }
@@ -39,14 +44,14 @@ export const validateWorkshop = (data: any) => {
     title, description, datetime, duration, language, capacity, fee, venue
   } = WorkshopSchema;
 
-  return (constructSchema({
-    title,
-    description,
-    datetime,
-    duration,
-    language,
-    capacity,
-    fee,
-    venue,
+  return (object({
+    title: title.required(),
+    datetime: datetime.required(),
+    description: description.required(),
+    duration: duration.required(),
+    language: language.required(),
+    capacity: capacity.required(),
+    fee: fee.required(),
+    venue: venue.required(),
   })).validate(data);
 }
