@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "lib": ["ESNext", "DOM"],
+    "moduleResolution": "Node",
+    "target": "ES6",
+    "strict": true,
+    "outDir": "build",
+    "module": "CommonJS"
+  },
+  "watchOptions": {
+    "excludeDirectories": [
+      "node_modules"
+    ]
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
