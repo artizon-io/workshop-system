@@ -3,8 +3,8 @@ import * as admin from "firebase-admin";
 import { genMiddleware } from "../middleware/genMiddleware";
 import * as express from "express";
 import { Workshop, validateWorkshop, WorkshopWithId } from "@mingsumsze/common"
-import { constructSchema, idSchema } from "@mingsumsze/common"
-import { string } from "yup";
+import { idSchema } from "@mingsumsze/common"
+import { object, string, ValidationError } from "yup";
 
 
 const app = express();
@@ -15,13 +15,13 @@ app.use(genMiddleware({
 
 app.post("/", async (request, response) => {
   try {
-    constructSchema({
-      id: idSchema
+    await object({
+      id: idSchema.required()
     }).validate(request.body);
-    validateWorkshop(request.body);
   } catch(err) {
-    functions.logger.error(err);
-    return response.status(400).send({message: `Invalid request body`});
+    const message = (err as ValidationError).message;
+    functions.logger.error(message);
+    return response.status(400).send({message});
   }
 
   const data = request.body;
@@ -33,7 +33,7 @@ app.post("/", async (request, response) => {
     return response.sendStatus(500);
   }
 
-  const message = `Successfully create workshop ${data.id}`;
+  const message = `Successfully delete workshop ${data.id}`;
   functions.logger.log(message);
   return response.status(200).send({message});
 });

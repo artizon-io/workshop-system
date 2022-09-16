@@ -2,7 +2,7 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import { genMiddleware } from "../middleware/genMiddleware";
 import * as express from "express";
-import { constructSchema } from "@mingsumsze/common"
+import { object, ValidationError } from "yup";
 import { UserSchema } from "@mingsumsze/common"
 
 const app = express();
@@ -13,12 +13,13 @@ app.use(genMiddleware({
 
 app.post("/", async (request, response) => {
   try {
-    constructSchema({
-      phone: UserSchema.phone
+    await object({
+      phone: UserSchema.phone.required()
     }).validate(request.body);
   } catch(err) {
-    functions.logger.error(err);
-    return response.status(400).send({message: `Invalid request body`});
+    const message = (err as ValidationError).message;
+    functions.logger.error(message);
+    return response.status(400).send({message});
   }
 
   const data = request.body;

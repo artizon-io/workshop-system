@@ -3,7 +3,8 @@ import * as admin from "firebase-admin";
 import { genMiddleware } from "../middleware/genMiddleware";
 import * as express from "express";
 import { validateWorkshop, Workshop, WorkshopSchema, WorkshopWithId } from "@mingsumsze/common"
-import { constructSchema, idSchema } from "@mingsumsze/common"
+import { idSchema } from "@mingsumsze/common"
+import { object, ValidationError } from "yup";
 
 
 const app = express();
@@ -14,18 +15,36 @@ app.use(genMiddleware({
 
 app.post("/", async (request, response) => {
   try {
-    constructSchema({
-      id: idSchema,
-      ...WorkshopSchema
+    const {
+      title, capacity, datetime, datetimeStr, description, duration, fee, language, venue
+    } = WorkshopSchema;
+    await object({
+      id: idSchema.required(),
+      title,  // by default notRequired()
+      capacity,
+      datetimeStr: datetimeStr.default('0'),
+      description,
+      duration,
+      fee,
+      language,
+      venue
     }).validate(request.body);
+    // validateWorkshop(request.body);
   } catch(err) {
-    functions.logger.error(err);
-    return response.status(400).send({message: `Invalid request body`});
+    const message = (err as ValidationError).message;
+    functions.logger.error(message);
+    return response.status(400).send({message});
   }
 
   const data = request.body;
+
   const id = data.id;
   delete data.id;
+
+  if (data.datetimeStr) {
+    data.datetime = admin.firestore.Timestamp.fromMillis(Date.parse(data.datetimeStr));
+    delete data.datetimeStr;
+  }
 
   try {  
     await admin.firestore().doc(`/workshops/${id}`).update(data);

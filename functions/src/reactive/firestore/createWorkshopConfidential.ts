@@ -1,6 +1,7 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import { validateWorkshopConfidential } from "@mingsumsze/common"
+import { ValidationError } from "yup";
 
 
 export const createWorkshopConfidential = functions.region('asia-east2').firestore.document('/workshops/{id}')
@@ -8,12 +9,13 @@ export const createWorkshopConfidential = functions.region('asia-east2').firesto
   try {
     const doc = {
       current: 0,
-      enrolls: {}
+      enrolls: []
     };
     try {
-      validateWorkshopConfidential(doc);
+      await validateWorkshopConfidential(doc);
     } catch(err) {
-      functions.logger.error(err);
+      const message = (err as ValidationError).message;
+      functions.logger.error(message);
       return;
     }
     await admin.firestore().doc(`workshop-confidential/${context.params.id}`).create(doc);

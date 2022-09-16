@@ -5,8 +5,9 @@ import * as admin from "firebase-admin";
 import * as express from "express";
 import { genMiddleware } from "../middleware/genMiddleware";
 import { getStripe } from "../../utils/getStripe";
-import { constructSchema, idSchema } from "@mingsumsze/common"
+import { idSchema, WorkshopConfidential } from "@mingsumsze/common"
 import { validateWorkshop } from "@mingsumsze/common"
+import { object, ValidationError } from "yup";
 
 const app = express();
 app.use(genMiddleware({
@@ -16,12 +17,13 @@ app.use(genMiddleware({
 
 app.post("/", async (request, response) => {
   try {
-    constructSchema({
-      workshopId: idSchema,
+    await object({
+      workshopId: idSchema.required(),
     }).validate(request.body);
   } catch(err) {
-    functions.logger.error(err);
-    return response.status(400).send({message: `Invalid request body`});
+    const message = (err as ValidationError).message;
+    functions.logger.error(message);
+    return response.status(400).send({message});
   }
 
   const data = request.body;
@@ -35,9 +37,10 @@ app.post("/", async (request, response) => {
     }
 
     try {
-      validateWorkshop(workshopDoc);
+      await validateWorkshop(workshopDoc);
     } catch(err) {
-      functions.logger.error(err);
+      const message = (err as ValidationError).message;
+      functions.logger.error(message);
       return response.sendStatus(500);
     }
 
@@ -56,21 +59,25 @@ app.post("/", async (request, response) => {
 
     const enrollId = uuidv4();
 
-    const enrolls = workshopConfidentialDoc.enrolls;
+    const enrolls = workshopConfidentialDoc.enrolls as WorkshopConfidential['enrolls'];
 
     // Just in case
-    if (enrolls[enrollId]) {
+    if (enrolls.some(enroll => enroll.id === enrollId)) {
       functions.logger.error(`Newly generated enrollID ${enrollId} already exists on workshop ${data.workshopId}`);
       return response.sendStatus(500);
     }
 
-    enrolls[enrollId] = {
-      paymentStatus: 'unpaid'
-    };
+    // enrolls.push({
+    //   id: enrollId,
+    //   paymentStatus: 'unpaid'
+    // });
 
     t.update(admin.firestore().doc(`/workshop-confidential/${data.workshopId}`), {
       current: admin.firestore.FieldValue.increment(1),
-      enrolls
+      enrolls: admin.firestore.FieldValue.arrayUnion({
+        id: enrollId,
+        paymentStatus: 'unpaid'
+      })
     });
 
     return [enrollId, workshopDoc.fee as number];
@@ -79,14 +86,14 @@ app.post("/", async (request, response) => {
   if (response.headersSent) return response;
   const [enrollId, fee] = enrollIdFee;
 
-  if (request.session.enrollId) {
-    try {  
-      await admin.firestore().doc(`/workshops/${data.workshopId}`).delete();
-    } catch(err) {
-      functions.logger.error(err);
-      return response.sendStatus(500);
-    }
-  }
+  // if (request.session.enrollId) {
+  //   try {  
+  //     await admin.firestore().doc(`/workshops/${data.workshopId}`).delete();
+  //   } catch(err) {
+  //     functions.logger.error(err);
+  //     return response.sendStatus(500);
+  //   }
+  // }
   request.session.enrollId = enrollId;
 
   const projectId = JSON.parse(`${process.env.FIREBASE_CONFIG}`).projectId;

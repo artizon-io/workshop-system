@@ -2,8 +2,9 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import * as express from "express";
 import { genMiddleware } from "../middleware/genMiddleware";
-import { constructSchema, idSchema } from "@mingsumsze/common"
+import { idSchema, WorkshopConfidential, WorkshopConfidentialSchema } from "@mingsumsze/common"
 import { validateWorkshopConfidential } from "@mingsumsze/common"
+import { object, ValidationError } from "yup";
 
 const app = express();
 app.use(genMiddleware({
@@ -12,13 +13,14 @@ app.use(genMiddleware({
 
 app.post('/', async (request, response) => {
   try {
-    constructSchema({
-      workshopId: idSchema,
-      enrollId: idSchema
+    await object({
+      workshopId: idSchema.required(),
+      enrollId: WorkshopConfidentialSchema.enrolls.id.required()
     }).validate(request.body);
   } catch(err) {
-    functions.logger.error(err);
-    return response.status(400).send({message: `Invalid request body`});
+    const message = (err as ValidationError).message;
+    functions.logger.error(message);
+    return response.status(400).send({message});
   }
 
   const data = request.body;
@@ -32,19 +34,21 @@ app.post('/', async (request, response) => {
     }
 
     try {
-      validateWorkshopConfidential(doc);
+      await validateWorkshopConfidential(doc);
     } catch(err) {
-      functions.logger.error(err);
+      const message = (err as ValidationError).message;
+      functions.logger.error(message);
       return response.sendStatus(500);
     }
 
-    const enrolls = doc.enrolls;
-    delete enrolls[data.enrollId];
+    const enrolls = doc.enrolls as WorkshopConfidential['enrolls'];
+    // delete enrolls[data.enrollId];
+    const enroll = enrolls.find(enroll => enroll.id === data.enrollId);
 
     try {
       t.update(admin.firestore().doc(`/workshop-confidential/${data.workshopId}`), {
         current: admin.firestore.FieldValue.increment(-1),
-        enrolls
+        enrolls: admin.firestore.FieldValue.arrayRemove(enroll)
       });
     } catch(err) {
       functions.logger.error(err);

@@ -2,8 +2,9 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import * as express from "express";
 import { genMiddleware } from "../middleware/genMiddleware";
-import { constructSchema, idSchema } from "@mingsumsze/common"
+import { idSchema } from "@mingsumsze/common"
 import { validateWorkshopConfidential, WorkshopConfidential, WorkshopConfidentialSchema } from "@mingsumsze/common"
+import { object, ValidationError } from "yup";
 
 const app = express();
 app.use(genMiddleware({
@@ -13,17 +14,18 @@ app.use(genMiddleware({
 
 app.post("/", async (request, response) => {
   try {
-    constructSchema({
-      workshopId: idSchema,
-      enrollId: idSchema,
-      firstName: WorkshopConfidentialSchema.enrolls.firstName,
-      lastName: WorkshopConfidentialSchema.enrolls.lastName,
-      phone: WorkshopConfidentialSchema.enrolls.phone,
-      email: WorkshopConfidentialSchema.enrolls.email,
+    await object({
+      workshopId: idSchema.required(),
+      enrollId: WorkshopConfidentialSchema.enrolls.id.required(),
+      firstName: WorkshopConfidentialSchema.enrolls.firstName.required(),
+      lastName: WorkshopConfidentialSchema.enrolls.lastName.required(),
+      phone: WorkshopConfidentialSchema.enrolls.phone.required(),
+      email: WorkshopConfidentialSchema.enrolls.email.required(),
     }).validate(request.body);
   } catch(err) {
-    functions.logger.error(err);
-    return response.status(400).send({message: `Invalid request body`});
+    const message = (err as ValidationError).message;
+    functions.logger.error(message);
+    return response.status(400).send({message});
   }
 
   const data = request.body;
@@ -41,14 +43,15 @@ app.post("/", async (request, response) => {
     return response.status(400).send({message});
   }
   try {
-    validateWorkshopConfidential(doc);
+    await validateWorkshopConfidential(doc);
   } catch(err) {
-    functions.logger.error(err);
+    const message = (err as ValidationError).message;
+    functions.logger.error(message);
     return response.sendStatus(500);
   }
 
-  const enrolls = doc.enrolls;
-  const enroll = enrolls[data.enrollId];
+  const enrolls = doc.enrolls as WorkshopConfidential['enrolls'];
+  const enroll = enrolls.find(enroll => enroll.id === data.enrollId);
   if (!enroll) {
     functions.logger.error(`Enroll ${data.enrollId} doesn't exist on workshop ${data.workshopId}`);
     return response.sendStatus(500);
@@ -59,7 +62,7 @@ app.post("/", async (request, response) => {
   enroll.phone = data.phone;
   enroll.email = data.email;
 
-  enrolls[data.enrollId] = enroll;
+  // enrolls[data.enrollId] = enroll;
 
   try {
     await admin.firestore().doc(`/workshop-confidential/${data.workshopId}`).update({
