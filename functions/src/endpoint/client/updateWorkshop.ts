@@ -2,8 +2,8 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import { genMiddleware } from "../middleware/genMiddleware";
 import * as express from "express";
-import { validateWorkshop, Workshop, WorkshopSchema, WorkshopWithId } from "common/schema/workshop";
-import { constructSchema, idSchema } from "common/schema/utils";
+import { validateWorkshop, Workshop, WorkshopSchema, WorkshopWithId } from "@mingsumsze/common"
+import { constructSchema, idSchema } from "@mingsumsze/common"
 
 
 const app = express();

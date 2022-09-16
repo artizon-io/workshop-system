@@ -1,6 +1,6 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import { validateWorkshopConfidential } from "common/schema/workshopConfidential";
+import { validateWorkshopConfidential } from "@mingsumsze/common"
 
 
 export const createWorkshopConfidential = functions.region('asia-east2').firestore.document('/workshops/{id}')

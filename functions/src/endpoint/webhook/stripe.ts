@@ -3,7 +3,8 @@ import * as admin from "firebase-admin";
 import * as express from "express";
 import { genMiddleware } from "../middleware/genMiddleware";
 import { paymentIntent } from "../../types/paymentIntent";
-import { validateWorkshopConfidential } from "common/schema/workshopConfidential";
+import { validateWorkshopConfidential } from "@mingsumsze/common"
+import { validateStripeMetadata } from "../../types/stripeMetadata";
 
 const app = express();
 app.use(genMiddleware({
@@ -21,6 +22,13 @@ app.post("/", async (request, response) => {
     case 'payment_intent.succeeded':
       paymentIntent = stripeEvent.data.object as paymentIntent;
       functions.logger.info(`PaymentIntent for ${paymentIntent.amount} was successful`);
+
+      try {
+        validateStripeMetadata(paymentIntent.metadata);
+      } catch(err) {
+        response.sendStatus(500);
+        return functions.logger.error(err);
+      }
 
       [workshopId, enrollId] = [paymentIntent.metadata.workshopId, paymentIntent.metadata.enrollId];
 

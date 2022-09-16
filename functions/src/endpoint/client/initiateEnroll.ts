@@ -5,8 +5,8 @@ import * as admin from "firebase-admin";
 import * as express from "express";
 import { genMiddleware } from "../middleware/genMiddleware";
 import { getStripe } from "../../utils/getStripe";
-import { constructSchema, idSchema } from "common/schema/utils";
-import { validateWorkshop } from "common/schema/workshop";
+import { constructSchema, idSchema } from "@mingsumsze/common"
+import { validateWorkshop } from "@mingsumsze/common"
 
 const app = express();
 app.use(genMiddleware({
@@ -89,7 +89,7 @@ app.post("/", async (request, response) => {
   }
   request.session.enrollId = enrollId;
 
-  const projectId = JSON.parse(process.env.FIREBASE_CONFIG).projectId;
+  const projectId = JSON.parse(`${process.env.FIREBASE_CONFIG}`).projectId;
   const tasksClient = new CloudTasksClient();
   const queuePath = tasksClient.queuePath(
     projectId,

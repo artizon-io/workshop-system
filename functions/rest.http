@@ -25,20 +25,20 @@ content-type: application/json
 
 POST https://asia-east2-workshop-system-24df0.cloudfunctions.net/createAdmin HTTP/1.1
 content-type: application/json
-authorization: {{$dotenv TEST_SECRET}}
+authorization: {{$dotenv SECRET}}
 
 {
-  "phoneNumber": "+85296348097"
+  "phone": "+85296348097"
 }
 
 ### deleteAdmin
 
 POST https://asia-east2-workshop-system-24df0.cloudfunctions.net/deleteAdmin HTTP/1.1
 content-type: application/json
-authorization: {{$dotenv TEST_SECRET}}
+authorization: {{$dotenv SECRET}}
 
 {
-  "phoneNumber": "+85296348097"
+  "phone": "+85296348097"
 }
 
 ### deleteEnrollSession

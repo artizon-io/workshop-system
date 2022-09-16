@@ -5,7 +5,7 @@ import { Firestore } from "@google-cloud/firestore";
 
 // See https://expressjs.com/en/resources/middleware/session.html
 export const session = expressSession({
-  secret: process.env.SESSION_SECRET,
+  secret: `${process.env.SESSION_SECRET}`,
   store: new FirestoreStore({
     dataset: new Firestore(),
     kind: 'express-sessions',

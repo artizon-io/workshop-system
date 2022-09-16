@@ -19,7 +19,7 @@ export const genMiddleware = ({useAuth = false, useSession = false, corsDomain =
       domain = "*"
       break;
     case "app":
-      domain = process.env.APP_DOMAIN
+      domain = `${process.env.APP_DOMAIN}`
       break;
     case "stripe":
       domain = ""

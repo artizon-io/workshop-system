@@ -14,8 +14,8 @@ export const auth = (mode : authMode) =>
       return response.status(400).send({message});
     }
 
-    if (process.env.MODE === 'dev') {
-      if (process.env.SECRET === request.headers.authorization)
+    if (`${process.env.MODE}` === 'dev') {
+      if (`${process.env.SECRET}` === request.headers.authorization)
         return next();
     }
 

@@ -2,7 +2,7 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import { genMiddleware } from "../middleware/genMiddleware";
 import * as express from "express";
-import { validateWorkshop, Workshop, WorkshopSchema } from "common/schema/workshop";
+import { validateWorkshop, Workshop, WorkshopSchema } from "@mingsumsze/common"
 import { object } from "yup";
 
 
