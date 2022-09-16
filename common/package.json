@@ -1,6 +1,6 @@
 {
   "name": "@mingsumsze/common",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "main": "dist/index.js",
   "repository": "https://github.com/mingsumsze/workshop-system/tree/main/common",
   "author": "Ming Sum Sze <mingsum.sam@gmail.com>",
