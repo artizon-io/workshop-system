@@ -32,6 +32,17 @@ export const WorkshopSchema = {
       return true;
     }
   }),
+  datetimeStr: string().test({
+    test: (value, context) => {
+      const result = Date.parse(value as string);
+      // console.debug(result);
+      // console.debug(new Date(result).toISOString());
+      if (isNaN(result))
+        return context.createError();
+      else
+        return true;
+    }
+  }),
   duration: number().positive(),
   language: string().min(1),
   capacity: number().positive(),

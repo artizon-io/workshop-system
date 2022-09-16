@@ -1,0 +1,11 @@
+*
+
+!dist/**/*
+
+!types/**/*
+
+!package.json
+!yarn.lock
+
+!README.md
+!CHANGELOG.md

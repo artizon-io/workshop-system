@@ -22,4 +22,4 @@ export type Schema = {[field: string]: BaseSchema | Schema};
 //   return object(temp);
 // }
 
-export const idSchema = string().uuid();
+export const idSchema = string().matches(/^[a-z0-9]{20}$/i);
