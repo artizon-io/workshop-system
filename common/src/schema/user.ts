@@ -1,5 +1,5 @@
-import { string } from "yup";
+import { string } from "zod";
 
-export const UserSchema = {
-  phone: string().matches(/^\+852\d{8}$/)
+export const UserSchemaLibrary = {
+  phone: string().regex(/^\+852\d{8}$/)
 }

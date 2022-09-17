@@ -1,3 +1,4 @@
+import { WorkshopConfidentialSchema } from "@mingsumsze/common";
 import { number, object, string } from "yup";
 
 export interface stripeMetadata {
@@ -7,5 +8,5 @@ export interface stripeMetadata {
 
 export const validateStripeMetadata = (data : any) => object({
   workshopId: string().uuid(),
-  enrollId: string().uuid()
+  enrollId: WorkshopConfidentialSchema.enrolls.id
 }).validate(data);

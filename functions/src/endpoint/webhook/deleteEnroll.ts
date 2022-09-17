@@ -62,4 +62,4 @@ app.post('/', async (request, response) => {
   return response.sendStatus(200);
 });
 
-export const deleteEnrollSession = functions.region('asia-east2').https.onRequest(app);
+export const deleteEnroll = functions.region('asia-east2').https.onRequest(app);

@@ -1,54 +1,30 @@
-import { array, BaseSchema, number, object, string } from "yup";
-import { UserSchema } from "./user";
+import { array, number, object, string, infer as zInfer } from "zod";
+import { UserSchemaLibrary } from "./user";
 
-export interface WorkshopConfidential {
-  current: number;
-  enrolls: Array<{
-    id: string;
-    firstName?: string;
-    lastName?: string;
-    phone?: string;
-    email?: string;
-    paymentStatus: "paid" | "unpaid";
-    stripePaymentId?: string;
-  }>
-}
+export type WorkshopConfidential = zInfer<typeof WorkshopConfidentialSchema>;
 
-export interface WorkshopConfidentialWithId extends WorkshopConfidential {
-  id: string;
-}
-
-export const WorkshopConfidentialSchema = {
-  current: number().integer().min(0),
+export const WorkshopConfidentialSchemaLibrary = {
+  current: number().int().min(0),
   enrolls: {
     id: string().uuid(),
     firstName: string(),
     lastName: string(),
-    phone: UserSchema.phone,
+    phone: UserSchemaLibrary.phone,
     email: string().email(),
-    paymentStatus: string().matches(/(paid)|(unpaid)/),
+    paymentStatus: string().regex(/(paid)|(unpaid)/),
     stripePaymentId: string().uuid(),
   }
 };
 
-export const validateWorkshopConfidential = (data: any) => {
-  const {
-    current, 
-    enrolls: {
-      id, firstName, lastName, phone, email, paymentStatus, stripePaymentId
-    }
-  } = WorkshopConfidentialSchema;
-
-  return (object({
-    current: current.required(),
-    enrolls: array().of(object({
-      id: id.required(),
-      firstName: firstName.notRequired(),
-      lastName: lastName.notRequired(),
-      phone: phone.notRequired(),
-      email: email.notRequired(),
-      paymentStatus: paymentStatus.required(),
-      stripePaymentId: stripePaymentId.notRequired()
-    }))
-  })).validate(data);
-}
+export const WorkshopConfidentialSchema = object({
+  current: WorkshopConfidentialSchemaLibrary.current,
+  enrolls: array(object({
+    id: WorkshopConfidentialSchemaLibrary.enrolls.id,
+    firstName: WorkshopConfidentialSchemaLibrary.enrolls.firstName.optional(),
+    lastName: WorkshopConfidentialSchemaLibrary.enrolls.lastName.optional(),
+    phone: WorkshopConfidentialSchemaLibrary.enrolls.phone.optional(),
+    email: WorkshopConfidentialSchemaLibrary.enrolls.email.optional(),
+    paymentStatus: WorkshopConfidentialSchemaLibrary.enrolls.paymentStatus,
+    stripePaymentId: WorkshopConfidentialSchemaLibrary.enrolls.stripePaymentId
+  }))
+});

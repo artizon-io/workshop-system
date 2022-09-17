@@ -3,8 +3,9 @@ import * as admin from "firebase-admin";
 import * as express from "express";
 import { genMiddleware } from "../middleware/genMiddleware";
 import { paymentIntent } from "../../types/paymentIntent";
-import { validateWorkshopConfidential } from "@mingsumsze/common"
+import { validateWorkshopConfidential, WorkshopConfidential } from "@mingsumsze/common"
 import { validateStripeMetadata } from "../../types/stripeMetadata";
+import { ValidationError } from "yup";
 
 const app = express();
 app.use(genMiddleware({
@@ -24,10 +25,11 @@ app.post("/", async (request, response) => {
       functions.logger.info(`PaymentIntent for ${paymentIntent.amount} was successful`);
 
       try {
-        validateStripeMetadata(paymentIntent.metadata);
+        await validateStripeMetadata(paymentIntent.metadata);
       } catch(err) {
+        const message = (err as ValidationError).message;
         response.sendStatus(500);
-        return functions.logger.error(err);
+        return functions.logger.error(message);
       }
 
       [workshopId, enrollId] = [paymentIntent.metadata.workshopId, paymentIntent.metadata.enrollId];
@@ -47,13 +49,14 @@ app.post("/", async (request, response) => {
           return response.sendStatus(500);
         }
   
-        const enrolls = doc.enrolls;
-        if (!enrolls[enrollId]) {
+        const enrolls = doc.enrolls as WorkshopConfidential['enrolls'];
+        const enroll = enrolls.find(enroll => enroll.id === enrollId);
+        if (!enroll) {
           const message = `Enroll ${enrollId} doesn't exist on workshop ${workshopId}`;
           return functions.logger.error(message);
   
         } else {
-          enrolls[enrollId].paymentStatus = 'paid';
+          enroll.paymentStatus = 'paid';
          
           try {
             t.update(admin.firestore().doc(`/workshop-confidential/${workshopId}`), {

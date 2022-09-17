@@ -11,7 +11,8 @@ export { enroll } from "./endpoint/client/enroll";
 export { createAdmin } from "./endpoint/client/createAdmin";
 export { deleteAdmin } from "./endpoint/client/deleteAdmin";
 
-export { deleteEnrollSession } from "./endpoint/webhook/deleteEnrollSession";
+export { deleteEnroll } from "./endpoint/webhook/deleteEnroll";
+export { deleteSession } from "./endpoint/webhook/deleteSession"
 export { stripe } from "./endpoint/webhook/stripe";
 
 export { createWorkshopConfidential } from "./reactive/firestore/createWorkshopConfidential";

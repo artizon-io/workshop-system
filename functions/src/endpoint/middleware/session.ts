@@ -1,15 +1,20 @@
 import * as expressSession from "express-session";
 import { FirestoreStore } from '@google-cloud/connect-firestore';
 import { Firestore } from "@google-cloud/firestore";
+import { v4 as uuid } from "uuid";
+
+
+export const sessionStore = new FirestoreStore({
+  dataset: new Firestore(),
+  kind: 'express-sessions',
+});
 
 
 // See https://expressjs.com/en/resources/middleware/session.html
 export const session = expressSession({
   secret: `${process.env.SESSION_SECRET}`,
-  store: new FirestoreStore({
-    dataset: new Firestore(),
-    kind: 'express-sessions',
-  }),
+  genid: () => uuid(),
+  store: sessionStore,
   saveUninitialized: false,
   resave: false,
   name: "__session",  // See https://stackoverflow.com/questions/72634189/how-to-properly-use-express-session-on-firebase-cloud-functions
@@ -20,4 +25,5 @@ export const session = expressSession({
     // secure: true,  // HTTPS only
     sameSite: "strict",  // mitigate CSRF (prevent cookie from transmitted in cross-site-request)
   },
+  unset: 'destroy'  // wipe record from db when req.session = null is invoked
 });

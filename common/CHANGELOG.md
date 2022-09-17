@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.0] - 2022-09-17
+- Use `zod` instead of yup to provide type inference
+- Change `*Schema` to `*SchemaLibrary` for providing schemas for individual fields
+- Remove `*WithId` typescript interfaces
+- Move dependencies to peer dependencies
+
 ## [1.1.0] - 2022-09-16
 Limit `idSchema` to only firestore native id
 

@@ -1,47 +1,19 @@
 import { Timestamp } from "firebase/firestore";
-import { BaseSchema, date, mixed, number, object, string } from "yup";
-import { Schema } from "./utils";
+import { date, number, object, string, instanceof as zInstanceof, infer as zInfer } from "zod";
 
-export interface Workshop {
-  title: string;
-  description: string;
-  datetime: Timestamp;
-  duration: number;
-  language: string;
-  capacity: number;
-  fee: number;
-  venue: string;
-}
+export type Workshop = zInfer<typeof WorkshopSchema>;
 
-export interface WorkshopWithId extends Workshop {
-  id: string;
-}
-
-export const WorkshopSchema = {
+export const WorkshopSchemaLibrary = {
   title: string().min(1),
   description: string().min(1),
-  datetime: mixed().test({
-    test: (value, context) => {
-      // console.debug(`Value: ${value}, ${typeof value}`);
-      // if (!(value instanceof Timestamp))  // different firebase/firestore might be loaded, so couldn't rely on this
-      // See: https://stackoverflow.com/questions/53092547/instanceof-returns-false-for-same-class-after-serialization
-      if (!(value instanceof Object))
-        return context.createError();
-      if (value.constructor.name != "Timestamp")
-        return context.createError();
-      return true;
-    }
-  }),
-  datetimeStr: string().test({
-    test: (value, context) => {
-      const result = Date.parse(value as string);
-      // console.debug(result);
-      // console.debug(new Date(result).toISOString());
-      if (isNaN(result))
-        return context.createError();
-      else
-        return true;
-    }
+  datetime: zInstanceof(Timestamp),
+  datetimeStr: string().refine(val => {
+    const result = Date.parse(val);
+    // console.debug(result);
+    // console.debug(new Date(result).toISOString());
+    return !isNaN(result);
+  }, {
+    message: "String is not in valid ISO datetime format"
   }),
   duration: number().positive(),
   language: string().min(1),
@@ -50,19 +22,13 @@ export const WorkshopSchema = {
   venue: string().min(1),
 }
 
-export const validateWorkshop = (data: any) => {
-  const {
-    title, description, datetime, duration, language, capacity, fee, venue
-  } = WorkshopSchema;
-
-  return (object({
-    title: title.required(),
-    datetime: datetime.required(),
-    description: description.required(),
-    duration: duration.required(),
-    language: language.required(),
-    capacity: capacity.required(),
-    fee: fee.required(),
-    venue: venue.required(),
-  })).validate(data);
-}
+export const WorkshopSchema = object({
+  title: WorkshopSchemaLibrary.title,
+  datetime: WorkshopSchemaLibrary.datetime,
+  description: WorkshopSchemaLibrary.description,
+  duration: WorkshopSchemaLibrary.duration,
+  language: WorkshopSchemaLibrary.language,
+  capacity: WorkshopSchemaLibrary.capacity,
+  fee: WorkshopSchemaLibrary.fee,
+  venue: WorkshopSchemaLibrary.venue,
+});
