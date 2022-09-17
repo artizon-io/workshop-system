@@ -6,14 +6,18 @@
   "private": true,
   "scripts": {
     "build": "tsc",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "test": "jest"
   },
   "dependencies": {
+    "@mingsumsze/common": "^2.1.0",
     "firebase": "^9.10.0",
+    "jest": "^29.0.3",
     "uuid": "^9.0.0",
-    "yup": "^0.32.11"
+    "zod": "^3.19.1"
   },
   "devDependencies": {
+    "@types/jest": "^29.0.3",
     "@types/uuid": "^8.3.4",
     "ts-loader": "^9.3.1",
     "typescript": "^4.8.2",
