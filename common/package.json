@@ -1,6 +1,6 @@
 {
   "name": "@mingsumsze/common",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "main": "dist/index.js",
   "repository": "https://github.com/mingsumsze/workshop-system/tree/main/common",
   "author": "Ming Sum Sze <mingsum.sam@gmail.com>",
@@ -24,5 +24,6 @@
   "peerDependencies": {
     "firebase": "^9.10.0",
     "zod": "^3.19.1"
-  }
+  },
+  "bundledDependencies": []
 }
