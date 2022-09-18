@@ -1,17 +1,23 @@
 {
   "compilerOptions": {
-    "esModuleInterop": true,
-    "lib": ["ESNext"],
+    // Purely for linting
     "moduleResolution": "Node",
     "strict": true,
-    "target": "ES6",
+    
+    // Webpack/ts-loader will respect these options
     "declarationDir": "types",
-    "declaration": true
+    "declaration": true,
+    
+    // Webpack/ts-loader won't respect these options
+    "lib": ["ESNext", "DOM"],
+    "target": "ES6",
+    "module": "CommonJS"
   },
+  // Webpack/ts-loader won't respect these options
   "include": [
     "src"
   ],
   "exclude": [
     "node_modules"
-  ]
+  ],
 }
