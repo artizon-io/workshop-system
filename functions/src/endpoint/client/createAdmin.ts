@@ -1,45 +1,41 @@
-import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import { genMiddleware } from "../middleware/genMiddleware";
-import * as express from "express";
-import { UserSchema } from "@mingsumsze/common"
-import { object, ValidationError } from "yup";
+import { UserSchemaLibrary, WorkshopSchemaLibrary } from "@mingsumsze/common"
+import { object, string, ZodError } from "zod";
+import { TRPCError } from "@trpc/server";
+import { authMiddleware } from "../middleware/auth";
+import { createRouter } from "./trpcUtil";
 
+export const createAdmin = createRouter()
+  .middleware(authMiddleware)
+  .mutation('', {
+    meta: {
+      auth: "admin",
+      appCheck: false
+    },
+    input: object({
+      phone: UserSchemaLibrary.phone
+    }),
+    resolve: async ({ input, ctx, type }) => {
+      try {
+        const user = await admin.auth().createUser({
+          phoneNumber: input.phone
+        })
+        await admin.auth().setCustomUserClaims(user.uid, { admin: true });  
 
-const app = express();
-app.use(genMiddleware({
-  useAuth: "admin",
-  corsDomain: "all"
-}));
+      } catch(err) {
+        // https://trpc.io/docs/v9/error-handling#error-codes
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "User is already an admin",
+          cause: err
+        })
+      }
 
-app.post("/", async (request, response) => {
-  try {
-    await object({
-      phone: UserSchema.phone.required()
-    }).validate(request.body);
-  } catch(err) {
-    const message = (err as ValidationError).message;
-    functions.logger.error(message);
-    return response.status(400).send({message});
-  }
-
-  const data = request.body;
-  
-  try {
-    const user = await admin.auth().createUser({
-      phoneNumber: data.phone
+      return {
+        message: `Successfully made ${input.phone} an admin`
+      };
+    },
+    output: object({
+      message: string()
     })
-    await admin.auth().setCustomUserClaims(user.uid, { admin: true });  
-
-  } catch(err) {
-    const message = "User is already an admin";
-    functions.logger.error(err);
-    return response.status(400).send({message});
-  }
-
-  return response.status(200).send({
-    message: `Successfully made ${data.phone} an admin`
   });
-});
-
-export const createAdmin = functions.region('asia-east2').https.onRequest(app);

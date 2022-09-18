@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
     "module": "commonjs",
+    "esModuleInterop": true,
     "outDir": "lib",
     "sourceMap": true,
     "target": "es2017",
     "strict": true,
-    "skipLibCheck": true  // admin/node_modules/@google_cloud/firestore type declarations collide
-                          // with @google-cloud/firestore
-                          // See https://github.com/firebase/firebase-admin-node/issues/734
+    // "skipLibCheck": true  // admin/node_modules/@google_cloud/firestore type declarations collide
+    //                       // with @google-cloud/firestore
+    //                       // See https://github.com/firebase/firebase-admin-node/issues/734
   },
   "compileOnSave": true,
   "include": [

@@ -1,42 +1,39 @@
-import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import { genMiddleware } from "../middleware/genMiddleware";
-import * as express from "express";
-import { object, ValidationError } from "yup";
-import { UserSchema } from "@mingsumsze/common"
+import { idSchema, UserSchemaLibrary, WorkshopSchemaLibrary } from "@mingsumsze/common"
+import { object, string, ZodError } from "zod";
+import { TRPCError } from "@trpc/server";
+import { authMiddleware } from "../middleware/auth";
+import { createRouter } from "./trpcUtil";
 
-const app = express();
-app.use(genMiddleware({
-  useAuth: "admin",
-  corsDomain: "all"
-}));
 
-app.post("/", async (request, response) => {
-  try {
-    await object({
-      phone: UserSchema.phone.required()
-    }).validate(request.body);
-  } catch(err) {
-    const message = (err as ValidationError).message;
-    functions.logger.error(message);
-    return response.status(400).send({message});
-  }
+export const deleteAdmin = createRouter()
+  .middleware(authMiddleware)
+  .mutation('', {
+    meta: {
+      auth: "admin",
+      appCheck: false
+    },
+    input: object({
+      phone: UserSchemaLibrary.phone
+    }),
+    resolve: async ({ input, ctx, type }) => {
+      try {
+        const user = await admin.auth().getUserByPhoneNumber(input.phone);
+        admin.auth().deleteUser(user.uid);
 
-  const data = request.body;
-  
-  try {
-    const user = await admin.auth().getUserByPhoneNumber(data.phone);
-    admin.auth().deleteUser(user.uid);
+      } catch(err) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `User ${input.phone} isn't an admin`,
+          cause: err
+        });
+      }
 
-  } catch(err) {
-    const message = `User isn't an admin`;
-    functions.logger.error(err);
-    return response.status(400).send({message});
-  }
-
-  return response.status(200).send({
-    message: `Successfully delete admin ${data.phone}`
+      return {
+        message: `Successfully delete admin ${input.phone}`
+      };
+    },
+    output: object({
+      message: string(),
+    })
   });
-});
-
-export const deleteAdmin = functions.region('asia-east2').https.onRequest(app);

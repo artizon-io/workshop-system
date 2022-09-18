@@ -1,3 +1,3 @@
-import { string } from "yup";
+import { string } from "zod";
 
 export const sessionIdSchema = string().uuid();

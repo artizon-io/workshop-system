@@ -1,4 +1,4 @@
-import * as expressSession from "express-session";
+import expressSession from "express-session";
 import { FirestoreStore } from '@google-cloud/connect-firestore';
 import { Firestore } from "@google-cloud/firestore";
 import { v4 as uuid } from "uuid";

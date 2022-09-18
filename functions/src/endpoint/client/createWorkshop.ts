@@ -1,58 +1,57 @@
-import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import { genMiddleware } from "../middleware/genMiddleware";
-import * as express from "express";
-import { validateWorkshop, Workshop, WorkshopSchema } from "@mingsumsze/common"
-import { object, ValidationError } from "yup";
+import { idSchema, UserSchemaLibrary, WorkshopSchemaLibrary } from "@mingsumsze/common"
+import { object, string, ZodError } from "zod";
+import { TRPCError } from "@trpc/server";
+import { authMiddleware } from "../middleware/auth";
+import { createRouter } from "./trpcUtil";
 
+const {
+  title, capacity, datetime, datetimeStr, description, duration, fee, language, venue
+} = WorkshopSchemaLibrary;
 
-const app = express();
-app.use(genMiddleware({
-  useAuth: "admin",
-  corsDomain: "all"
-}));
-
-app.post("/", async (request, response) => {
-  try {
-    const {
-      title, capacity, datetime, datetimeStr, description, duration, fee, language, venue
-    } = WorkshopSchema;
-    await object({
-      title: title.required(),
-      capacity: capacity.required(),
-      datetimeStr: datetimeStr.required(),
-      description: description.required(),
-      duration: duration.required(),
-      fee: fee.required(),
-      language: language.required(),
-      venue: venue.required()
-    }).validate(request.body);
-  } catch(err) {
-    const message = (err as ValidationError).message;
-    functions.logger.error(message);
-    return response.status(400).send({message});
-  }
-
-  const data = request.body;
-
-  data.datetime = admin.firestore.Timestamp.fromMillis(Date.parse(data.datetimeStr));
-  delete data.datetimeStr;
-
-  let id : string;
-  try {  
-    const docRef = await admin.firestore().collection(`/workshops`).add(data);
-    id = docRef.id;
-  } catch(err) {
-    functions.logger.error(err);
-    return response.sendStatus(500);
-  }
-
-  const message = `Successfully create workshop ${id}`;
-  functions.logger.log(message);
-  return response.status(200).send({
-    message,
-    workshopId: id
+export const createWorkshop = createRouter()
+  .middleware(authMiddleware)
+  .mutation('', {
+    meta: {
+      auth: "admin",
+      appCheck: false
+    },
+    input: object({
+      title,
+      capacity,
+      datetimeStr,
+      description,
+      duration,
+      fee,
+      language,
+      venue
+    }),
+    resolve: async ({ input, ctx, type }) => {
+      const data = {
+        datetime: admin.firestore.Timestamp.fromMillis(Date.parse(input.datetimeStr)),
+        ...input,
+        datetimeStr: undefined
+      };
+    
+      let id : string;
+      try {  
+        const docRef = await admin.firestore().collection(`/workshops`).add(data);
+        id = docRef.id;
+      } catch(err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Fail to create workshop",
+          cause: err
+        });
+      }
+    
+      return {
+        message: `Successfully create workshop ${id}`,
+        workshopId: id
+      };
+    },
+    output: object({
+      message: string(),
+      workshopId: idSchema
+    })
   });
-});
-
-export const createWorkshop = functions.region('asia-east2').https.onRequest(app);

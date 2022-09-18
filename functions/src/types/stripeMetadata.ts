@@ -1,12 +1,12 @@
-import { WorkshopConfidentialSchema } from "@mingsumsze/common";
-import { number, object, string } from "yup";
+import { WorkshopConfidentialSchemaLibrary } from "@mingsumsze/common";
+import { number, object, string } from "zod";
 
 export interface stripeMetadata {
   workshopId: string;
   enrollId: string;
 }
 
-export const validateStripeMetadata = (data : any) => object({
+export const StripeMetadataSchema = object({
   workshopId: string().uuid(),
-  enrollId: WorkshopConfidentialSchema.enrolls.id
-}).validate(data);
+  enrollId: WorkshopConfidentialSchemaLibrary.enrolls.id
+});

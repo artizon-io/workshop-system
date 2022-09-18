@@ -1,26 +1,41 @@
-import { NextFunction, Request, Response } from "express";
-import * as functions from "firebase-functions";
+import * as admin from "firebase-admin";
+import { MiddlewareFunction } from "@trpc/server/dist/declarations/src/internals/middlewares";
+import { TRPCError } from "@trpc/server";
 import { getStripe } from "../../utils/getStripe";
 
 
-
-export const stripeAuth = async (request : Request, response : Response, next : NextFunction) => {
-  const stripeSignature = request.headers['stripe-signature'] as string;
-  if (!stripeSignature) {
-    const message = "stripe-signature missing from request header";
-    functions.logger.info(message)
-    return response.status(400).send({message});
-  }
-
+export const stripeAuthMiddleware : MiddlewareFunction<any, any, any> = async ({ ctx, next, path, rawInput, type, meta }) => {
+  if (!ctx.stripeSignature)
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: `Missing stripe signature`,
+    });
+    
   const stripe = getStripe();
 
+  let stripeEvent;
   try {
-    let stripeEvent = stripe.webhooks.constructEvent(request.body, stripeSignature, `${process.env.MODE}` === "prod" ? `${process.env.STRIPE_ENDPOINT_SECRET}` : `${process.env.STRIPE_ENDPOINT_SECRET_TEST}`);
-    request.stripeEvent = stripeEvent;
+    stripeEvent = stripe.webhooks.constructEvent(
+      rawInput as string,  // same as request.body
+      ctx.stripeSignature,
+      `${process.env.MODE}` === "prod"
+        ? `${process.env.STRIPE_ENDPOINT_SECRET}`
+        : `${process.env.STRIPE_ENDPOINT_SECRET_TEST}`
+    );
   } catch (err) {
-    functions.logger.error(err);
-    return response.sendStatus(500);
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: `Fail to construct stripe event object`,
+      cause: err
+    });
   }
 
-  return next();
+  // Context swapping
+  // See: https://trpc.io/docs/v9/middlewares#context-swapping
+  return next({
+    ctx: {
+      ...ctx,
+      stripeEvent
+    }
+  });
 }

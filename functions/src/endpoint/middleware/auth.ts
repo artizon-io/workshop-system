@@ -1,49 +1,53 @@
-import { NextFunction, Request, Response } from "express";
 import * as admin from "firebase-admin";
-import * as functions from "firebase-functions";
-import { appCheck } from "./appCheck";
+import { MiddlewareFunction } from "@trpc/server/dist/declarations/src/internals/middlewares";
+import { TRPCError } from "@trpc/server";
 
 
-export type authMode = "admin" | "user";
+export const authMiddleware : MiddlewareFunction<any, any, any> = async ({ ctx, next, path, rawInput, type, meta }) => {
+  if (!meta?.auth)
+    return next();
 
-export const auth = (mode : authMode) =>
-  async (request : Request, response : Response, next : NextFunction) => {
-    if (!request.headers.authorization) {
-      const message = `Missing authorization header`;
-      functions.logger.info(message);
-      return response.status(400).send({message});
-    }
+  // superuser mode for testing in dev mode
+  if (`${process.env.MODE}` === 'dev' && `${process.env.SECRET}` === ctx.authorization)
+    return next();
 
-    if (`${process.env.MODE}` === 'dev') {
-      if (`${process.env.SECRET}` === request.headers.authorization)
-        return next();
-    }
+  switch(meta.auth) {
+    case "admin":
+    case "user":
+      let id;
+      try {
+        id = await admin.auth().verifyIdToken(ctx.authorization);
+      } catch(err) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: `Invalid Id token`,
+          cause: err
+        });
+      }
+      if (meta.auth === "user") break;
 
-    switch (mode) {
-      case "admin":
-      case "user":
-        let id;
-        try {
-          id = await admin.auth().verifyIdToken(request.headers.authorization as string);
-        } catch(err) {
-          const message = `Invalid Id token`;
-          functions.logger.info(message);
-          return response.status(400).send({message}); 
-        }
-        if (mode === "user") break;
+      const user = await admin.auth().getUser(id.uid);
+      if (!user.customClaims?.admin)
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: `Not an admin`,
+        });
 
-        const user = await admin.auth().getUser(id.uid);
-        if (!user.customClaims?.admin) {
-          const message = `Not enough permission`;
-          functions.logger.info(message);
-          return response.status(400).send({message});
-        }
-        break;
+      break;
+  }
 
-      default:
-        functions.logger.info(`Unknown authMode ${mode}`);
-        return response.sendStatus(500);
-    }
+  if (!meta.appCheck)
+    return next();
 
-    return appCheck(request, response, next);
-  };
+  try {
+    await admin.appCheck().verifyToken(ctx.authorization);
+  } catch(err) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: `Invalid app check token`,
+      cause: err
+    });
+  }
+
+  return next();
+}

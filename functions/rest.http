@@ -1,5 +1,22 @@
 ### createWorkshop
 
+POST https://asia-east2-workshop-system-24df0.cloudfunctions.net/api/createWorkshop HTTP/1.1
+content-type: application/json
+authorization: {{$dotenv SECRET}}
+
+{
+  "title": "test",
+  "description": "test",
+  "venue": "test",
+  "capacity": 120,
+  "fee": 20,
+  "duration": 60,
+  "language": "eng",
+  "datetimeStr": "2022-09-16T14:30+0800"
+}
+
+### createWorkshop
+
 POST https://asia-east2-workshop-system-24df0.cloudfunctions.net/createWorkshop HTTP/1.1
 content-type: application/json
 authorization: {{$dotenv SECRET}}

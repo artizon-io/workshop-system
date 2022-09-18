@@ -1,80 +1,86 @@
-import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import * as express from "express";
-import { genMiddleware } from "../middleware/genMiddleware";
-import { idSchema } from "@mingsumsze/common"
-import { validateWorkshopConfidential, WorkshopConfidential, WorkshopConfidentialSchema } from "@mingsumsze/common"
-import { object, ValidationError } from "yup";
+import { idSchema, UserSchemaLibrary, WorkshopConfidentialSchema, WorkshopConfidentialSchemaLibrary, WorkshopSchemaLibrary } from "@mingsumsze/common"
+import { object, string, ZodError } from "zod";
+import { TRPCError } from "@trpc/server";
+import { authMiddleware } from "../middleware/auth";
+import { validate } from "../../utils/validate";
+import { createRouter } from "./trpcUtil";
 
-const app = express();
-app.use(genMiddleware({
-  corsDomain: "all",
-  useSession: true
-}));
 
-app.post("/", async (request, response) => {
-  try {
-    await object({
-      workshopId: idSchema.required(),
-      enrollId: WorkshopConfidentialSchema.enrolls.id.required(),
-      firstName: WorkshopConfidentialSchema.enrolls.firstName.required(),
-      lastName: WorkshopConfidentialSchema.enrolls.lastName.required(),
-      phone: WorkshopConfidentialSchema.enrolls.phone.required(),
-      email: WorkshopConfidentialSchema.enrolls.email.required(),
-    }).validate(request.body);
-  } catch(err) {
-    const message = (err as ValidationError).message;
-    functions.logger.error(message);
-    return response.status(400).send({message});
-  }
+export const enroll = createRouter()
+  .middleware(authMiddleware)
+  .mutation('', {
+    meta: {
+      auth: "user",
+      appCheck: true
+    },
+    input: object({
+      workshopId: idSchema,
+      enrollId: WorkshopConfidentialSchemaLibrary.enrolls.id,
+      firstName: WorkshopConfidentialSchemaLibrary.enrolls.firstName,
+      lastName: WorkshopConfidentialSchemaLibrary.enrolls.lastName,
+      phone: WorkshopConfidentialSchemaLibrary.enrolls.phone,
+      email: WorkshopConfidentialSchemaLibrary.enrolls.email,
+    }),
+    resolve: async ({ input, ctx, type }) => {
+      if (
+        ctx.session.enrollInfo?.workshopId !== input.workshopId ||
+        ctx.session.enrollInfo?.enrollId !== input.enrollId
+      )
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `User is not currently enrolled to ${input.enrollId} on workshop ${input.workshopId}`
+        });
 
-  const data = request.body;
-
-  if (request.session.enrollId !== data.enrollId) {
-    const message = `User is not currently enrolled to ${data.enrollId}`;
-    functions.logger.info(message);
-    return response.status(400).send({message});
-  }
-  
-  const doc = (await admin.firestore().doc(`/workshop-confidential/${data.workshopId}`).get()).data();
-  if (!doc) {
-    const message = `Workshop ${data.workshopId} doesn't exist`;
-    functions.logger.info(message);
-    return response.status(400).send({message});
-  }
-  try {
-    await validateWorkshopConfidential(doc);
-  } catch(err) {
-    const message = (err as ValidationError).message;
-    functions.logger.error(message);
-    return response.sendStatus(500);
-  }
-
-  const enrolls = doc.enrolls as WorkshopConfidential['enrolls'];
-  const enroll = enrolls.find(enroll => enroll.id === data.enrollId);
-  if (!enroll) {
-    functions.logger.error(`Enroll ${data.enrollId} doesn't exist on workshop ${data.workshopId}`);
-    return response.sendStatus(500);
-  }
-
-  enroll.firstName = data.firstName;
-  enroll.lastName = data.lastName;
-  enroll.phone = data.phone;
-  enroll.email = data.email;
-
-  // enrolls[data.enrollId] = enroll;
-
-  try {
-    await admin.firestore().doc(`/workshop-confidential/${data.workshopId}`).update({
-      enrolls
-    });
-    return response.status(200).send({
-      message: `Successfully enrolled`
-    });
-  } catch(err) {
-    functions.logger.error(err);
-    return response.sendStatus(500);
-  }
-});
-
-export const enroll = functions.region('asia-east2').https.onRequest(app);
+      const doc = (await admin.firestore().doc(`/workshop-confidential/${input.workshopId}`).get()).data();
+      if (!doc)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `Workshop ${input.workshopId} doesn't exist`
+        });
+    
+      const {data, issues} = validate(
+        WorkshopConfidentialSchema,
+        doc
+      );
+    
+      if (issues)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Workshop ${input.workshopId} doc incorrect schema`,
+          cause: issues
+        });
+      
+      const enrolls = data.enrolls;
+      const enroll = enrolls.find(enroll => enroll.id === input.enrollId);
+      if (!enroll)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `Enroll ${input.enrollId} doesn't exist on workshop ${input.workshopId}`,
+          cause: issues
+        });
+    
+      enroll.firstName = input.firstName;
+      enroll.lastName = input.lastName;
+      enroll.phone = input.phone;
+      enroll.email = input.email;
+    
+      try {
+        await admin.firestore().doc(`/workshop-confidential/${input.workshopId}`).update({
+          enrolls
+        });
+        return {
+          message: `Successfully enrolled`
+        }
+      } catch(err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Fail to update workshop-confidential ${input.workshopId}`,
+          cause: err
+        });
+      }
+    },
+    output: object({
+      message: string(),
+    })
+  });
