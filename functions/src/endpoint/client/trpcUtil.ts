@@ -13,13 +13,13 @@ export const createRouter = () => trpc.router<Context, Meta>();  // for creating
 
 // Request context: populating the context object for the "middlewares" of tRPC
 // The app's context - is generated for each incoming request
-export async function createContext(opts?: trpcExpress.CreateExpressContextOptions) {
+export async function createContext(opts: trpcExpress.CreateExpressContextOptions) {
   // Create your context based on the request object
   // Will be available as `ctx` in all your resolvers
 
   return {
-    session: opts?.req.headers.session as unknown as SessionData & Session,
-    authorization: opts?.req.headers.authorization,
+    session: opts.req.session,
+    authorization: opts.req.headers.authorization,
   };
 }
 

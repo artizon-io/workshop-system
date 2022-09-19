@@ -22,7 +22,7 @@ content-type: application/json
 authorization: {{$dotenv SECRET}}
 
 {
-  "id": "2DRgbvxaCBwBBMOTcp07",
+  "id": "mg7ljWUVPE9i2I6Z0tKW",
   "title": "test new"
 }
 
@@ -33,7 +33,7 @@ content-type: application/json
 authorization: {{$dotenv SECRET}}
 
 {
-  "id": "LI7ztvwGV9OPth3OMvuC"
+  "id": "mg7ljWUVPE9i2I6Z0tKW"
 }
 
 ### initiateEnroll
@@ -42,7 +42,7 @@ POST https://asia-east2-workshop-system-24df0.cloudfunctions.net/api/initiateEnr
 content-type: application/json
 
 {
-  "workshopId": "hyXOFX5xRcNXtfXmbedK"
+  "workshopId": "lPPucTISB36s9MaGlrqp"
 }
 
 ### enroll
@@ -51,8 +51,7 @@ POST https://asia-east2-workshop-system-24df0.cloudfunctions.net/api/enroll HTTP
 content-type: application/json
 
 {
-  "workshopId": "hyXOFX5xRcNXtfXmbedK",
-  "enrollId": "046a1ced-96a3-433a-9243-638a584e855c",
+  "workshopId": "lPPucTISB36s9MaGlrqp",
   "firstName": "test",
   "lastName": "test",
   "phone": "+85200000000",

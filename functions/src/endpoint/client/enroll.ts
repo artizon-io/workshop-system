@@ -10,25 +10,22 @@ import * as functions from "firebase-functions";
 export const enroll = createRouter()
   .mutation('', {
     meta: {
-      auth: "user",
       appCheck: false
     },
     input: object({
       workshopId: idSchema,
-      enrollId: WorkshopConfidentialSchemaLibrary.enrolls.id,
       firstName: WorkshopConfidentialSchemaLibrary.enrolls.firstName,
       lastName: WorkshopConfidentialSchemaLibrary.enrolls.lastName,
       phone: WorkshopConfidentialSchemaLibrary.enrolls.phone,
       email: WorkshopConfidentialSchemaLibrary.enrolls.email,
     }),
     resolve: async ({ input, ctx, type }) => {
-      if (
-        ctx.session.enrollInfo?.workshopId !== input.workshopId ||
-        ctx.session.enrollInfo?.enrollId !== input.enrollId
-      )
+      console.debug("Session", ctx.session);
+
+      if (!(ctx.session.enrollInfo?.workshopId === input.workshopId))
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: `User is not currently enrolled to ${input.enrollId} on workshop ${input.workshopId}`
+          message: `User is not currently enrolled to workshop ${input.workshopId}`
         });
 
       const doc = (await admin.firestore().doc(`/workshop-confidential/${input.workshopId}`).get()).data();
@@ -49,13 +46,15 @@ export const enroll = createRouter()
           code: "INTERNAL_SERVER_ERROR",
         });
       }
+
+      const enrollId = ctx.session.enrollInfo.enrollId;
       
       const enrolls = data.enrolls;
-      const enroll = enrolls.find(enroll => enroll.id === input.enrollId);
+      const enroll = enrolls.find(enroll => enroll.id === enrollId);
       if (!enroll)
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: `Enroll ${input.enrollId} doesn't exist on workshop ${input.workshopId}`,
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Enroll ${enrollId} doesn't exist on workshop ${input.workshopId}`,
           cause: issues
         });
     

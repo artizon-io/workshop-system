@@ -14,7 +14,6 @@ import * as functions from "firebase-functions";
 export const initiateEnroll = createRouter()
   .mutation('', {
     meta: {
-      auth: "user",
       appCheck: false
     },
     input: object({
@@ -22,6 +21,8 @@ export const initiateEnroll = createRouter()
     }),
     resolve: async ({ input, ctx, type }) => {
       const [enrollId, fee, stripeClientSecret] = await admin.firestore().runTransaction(async t => {
+        console.debug("Session", ctx.session);
+
         const workshopDoc = (await t.get(admin.firestore().doc(`/workshops/${input.workshopId}`))).data();
         if (!workshopDoc)
           throw new TRPCError({
@@ -72,7 +73,7 @@ export const initiateEnroll = createRouter()
         const stripe = getStripe();
     
         const paymentIntent = await stripe.paymentIntents.create({
-          amount: fee! * 100,
+          amount: data.fee * 100,
           currency: "hkd",
           automatic_payment_methods: {
             enabled: true,
@@ -112,13 +113,18 @@ export const initiateEnroll = createRouter()
         );
       }
 
-      sessionStore.set(ctx.session.id, {
-        enrollInfo: {
-          workshopId: input.workshopId,
-          enrollId,
-        },
-        cookie: ctx.session.cookie
-      });
+      ctx.session.enrollInfo = {
+        workshopId: input.workshopId,
+        enrollId,
+      }
+
+      // sessionStore.set(ctx.session.id, {
+      //   ...ctx.session,
+      //   enrollInfo: {
+      //     workshopId: input.workshopId,
+      //     enrollId,
+      //   },
+      // });
       await createTask(
         'deleteSession',  // endpoint
         {  // payload
@@ -140,13 +146,11 @@ export const initiateEnroll = createRouter()
     
       return {
         message: "Success",
-        enrollId: enrollId,
         stripeClientSecret
       };
     },
     output: object({
       message: string(),
-      enrollId: WorkshopConfidentialSchemaLibrary.enrolls.id,
       stripeClientSecret: any()
     })
   });

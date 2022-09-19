@@ -2,9 +2,13 @@ import { SessionData } from "express-session"
 
 declare module 'express-session' {
   interface SessionData {
-    readonly enrollInfo?: {
-      readonly workshopId: string;
-      readonly enrollId: string;
+    // readonly enrollInfo?: {
+    //   readonly workshopId: string;
+    //   readonly enrollId: string;
+    // };
+    enrollInfo?: {
+      workshopId: string;
+      enrollId: string;
     };
   }
 }

@@ -19,7 +19,7 @@
   "dependencies": {
     "@google-cloud/connect-firestore": "^2.0.2",
     "@google-cloud/tasks": "^3.0.2",
-    "@mingsumsze/common": "4.5.1",
+    "@mingsumsze/common": "4.8.0",
     "body-parser": "^1.20.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",

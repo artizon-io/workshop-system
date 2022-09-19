@@ -490,10 +490,10 @@
     protobufjs "^7.0.0"
     yargs "^16.2.0"
 
-"@mingsumsze/common@4.5.1":
-  version "4.5.1"
-  resolved "https://registry.yarnpkg.com/@mingsumsze/common/-/common-4.5.1.tgz#6826177ed6fcfc432037bb7bca46e4a3fda69c61"
-  integrity sha512-ROL8exPZGj7NpW/sLHUXx3/yzBDsr109UNx86C5eTx8jnMJb3P0jz+RXIhXCQBu4DGkgg1TGg5kmwZn725nXag==
+"@mingsumsze/common@4.8.0":
+  version "4.8.0"
+  resolved "https://registry.yarnpkg.com/@mingsumsze/common/-/common-4.8.0.tgz#dc393eb10bcc369e1ef390ef791b780f53009d86"
+  integrity sha512-lT+qSxty9sUEDG4a4yNN+xobVh8cVlJF6en3F9qLREcknQk40VRzCImSQM/IAx4jeMBq4oKFtRfWsdFpFWSW1A==
 
 "@panva/asn1.js@^1.0.0":
   version "1.0.0"

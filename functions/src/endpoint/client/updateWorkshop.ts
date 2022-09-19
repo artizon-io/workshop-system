@@ -36,25 +36,9 @@ export const updateWorkshop = createRouter()
       //   ...input,
       //   id: undefined
       // };
-      const {
-        title,
-        capacity,
-        datetime,
-        description,
-        duration,
-        fee,
-        language,
-        venue,
-      } = input;
       const data = {
-        title,
-        capacity,
-        datetime,
-        description,
-        duration,
-        fee,
-        language,
-        venue
+        ...input,
+        id: undefined
       };
 
       try {  

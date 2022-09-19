@@ -1,6 +1,9 @@
 import * as admin from "firebase-admin";
 try {
   admin.initializeApp();
+  admin.firestore().settings({
+    ignoreUndefinedProperties: true
+  });
 } catch(err) {
   admin.app();
 }
