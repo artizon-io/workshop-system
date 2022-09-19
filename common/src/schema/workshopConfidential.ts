@@ -12,7 +12,7 @@ export const WorkshopConfidentialSchemaLibrary = {
     phone: UserSchemaLibrary.phone,
     email: string().email(),
     paymentStatus: string().regex(/(paid)|(unpaid)/),
-    stripePaymentId: string().uuid(),
+    stripePaymentId: string().regex(/pi_[a-zA-Z0-9]{24}/),
   }
 };
 

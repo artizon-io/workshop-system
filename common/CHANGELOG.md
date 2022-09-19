@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [4.8.0] - 2022-09-19
+Change stripe payment Id schema
+
+## [4.7.0] - 2022-09-19
+Fix transformer deserialization missing return
+
+## [4.6.1] - 2022-09-19
+Fix transformer deserialization missing return
+
+## [4.6.0] - 2022-09-19
+Transformer stops JSON stringifying / parsing and rely on consumer's implementation
+
 ## [4.5.1] - 2022-09-19
 Add debugging info in transformer
 

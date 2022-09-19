@@ -1,9 +1,14 @@
-import { Timestamp } from "firebase/firestore";
-import { deserialize } from "superjson";
+import { Timestamp } from "firebase-admin/firestore";
+// import { Timestamp } from "firebase/firestore";
 
 type DataTransformer = {
   serialize(object: any): any;
   deserialize(object: any): any;
+};
+
+type CombinedDataTransformer = {
+  input: DataTransformer;
+  output: DataTransformer;
 };
 
 // superjson.registerCustom<any, string>(
@@ -41,25 +46,39 @@ type DataTransformer = {
 
 // export const getTransformer = () => superjson;
 
-const transformer : DataTransformer = {
-  serialize: (v) => {
-    console.debug("Serializing", v);
-    if (v.datetime == null)
-      return JSON.stringify(v);
-    else
-      return JSON.stringify({
-        ...v,
-        datetime: v.datetime.toDate().toISOString()
-      });
-  },
-  deserialize: (v) => {
-    console.debug("Deserializing", v);
-    const data = JSON.parse(v);
-    if (data.datetime == null)
+const createTransformer = (type: "input" | "output") : DataTransformer => {
+  return {
+    serialize: (v) => {
+      console.debug("Serializing", v);
+      if (v.datetime == null)
+        return v;
+        // return JSON.stringify(v);
+      else
+        return {
+          ...v,
+          datetime: v.datetime.toDate().toISOString()  
+        }
+        // return JSON.stringify({
+        //   ...v,
+        //   datetime: v.datetime.toDate().toISOString()
+        // });
+    },
+    deserialize: (v) => {
+      console.debug("Deserializing", v);
+      const data = v;
+      // const data = JSON.parse(v);
+      if (data.datetime == null)
+        data;
+      else
+        data.datetime = Timestamp.fromDate(new Date(data.datetime));
       return data;
-    else
-      data.datetime = Timestamp.fromDate(new Date(data.datetime))
+    }
   }
 }
 
-export const getTransformer = () => transformer;
+const combinedTransformer : CombinedDataTransformer = {
+  input: createTransformer("input"),
+  output: createTransformer("output")
+};
+
+export const getTransformer = () => combinedTransformer;
