@@ -2,12 +2,11 @@ import * as admin from "firebase-admin";
 import { idSchema, UserSchemaLibrary, WorkshopSchemaLibrary } from "@mingsumsze/common"
 import { object, string, ZodError } from "zod";
 import { TRPCError } from "@trpc/server";
-import { authMiddleware } from "../middleware/auth";
 import { createRouter } from "./trpcUtil";
+import * as functions from "firebase-functions";
 
 
 export const deleteWorkshop = createRouter()
-  .middleware(authMiddleware)
   .mutation('', {
     meta: {
       auth: "admin",
@@ -23,7 +22,6 @@ export const deleteWorkshop = createRouter()
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: `Workshop ${input.id} doesn't exist`,
-          cause: err
         });
       }
     

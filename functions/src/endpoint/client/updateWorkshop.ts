@@ -2,16 +2,15 @@ import * as admin from "firebase-admin";
 import { idSchema, UserSchemaLibrary, WorkshopConfidential, WorkshopConfidentialSchema, WorkshopConfidentialSchemaLibrary, WorkshopSchema, WorkshopSchemaLibrary } from "@mingsumsze/common"
 import { any, object, string, ZodError } from "zod";
 import { TRPCError } from "@trpc/server";
-import { authMiddleware } from "../middleware/auth";
 import { createRouter } from "./trpcUtil";
+import * as functions from "firebase-functions";
 
 
 const {
-  title, capacity, datetime, datetimeStr, description, duration, fee, language, venue
+  title, capacity, datetime, description, duration, fee, language, venue
 } = WorkshopSchemaLibrary;
 
 export const updateWorkshop = createRouter()
-  .middleware(authMiddleware)
   .mutation('', {
     meta: {
       auth: "admin",
@@ -21,7 +20,7 @@ export const updateWorkshop = createRouter()
       id: idSchema,
       title: title.optional(),
       capacity: capacity.optional(),
-      datetimeStr: datetimeStr.optional(),
+      datetime: datetime.optional(),
       description: description.optional(),
       duration: duration.optional(),
       fee: fee.optional(),
@@ -30,21 +29,40 @@ export const updateWorkshop = createRouter()
     }),
     resolve: async ({ input, ctx, type }) => {
       const id = input.id;
+      // const data = {
+      //   datetime: input.datetimeStr
+      //     ? admin.firestore.Timestamp.fromMillis(Date.parse(input.datetimeStr))
+      //     : undefined,
+      //   ...input,
+      //   id: undefined
+      // };
+      const {
+        title,
+        capacity,
+        datetime,
+        description,
+        duration,
+        fee,
+        language,
+        venue,
+      } = input;
       const data = {
-        datetime: input.datetimeStr
-          ? admin.firestore.Timestamp.fromMillis(Date.parse(input.datetimeStr))
-          : undefined,
-        ...input,
-        id: undefined
+        title,
+        capacity,
+        datetime,
+        description,
+        duration,
+        fee,
+        language,
+        venue
       };
 
       try {  
         await admin.firestore().doc(`/workshops/${id}`).update(data);
       } catch(err) {
+        functions.logger.error(`Fail to update workshop ${id}`, err)
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: `Fail to update workshop ${id}`,
-          cause: err
         });
       }
 

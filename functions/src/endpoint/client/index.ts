@@ -1,4 +1,4 @@
-import * as trpc from '@trpc/server';
+import * as trpc from "@trpc/server";
 import * as trpcExpress from '@trpc/server/adapters/express';
 import express from "express";
 import * as functions from "firebase-functions";
@@ -10,11 +10,65 @@ import { enroll } from './enroll';
 import { initiateEnroll } from './intiateEnroll';
 import { createContext, createRouter } from './trpcUtil';
 import { updateWorkshop } from './updateWorkshop';
+import * as admin from "firebase-admin";
+import { TRPCError } from '@trpc/server';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import { session } from '../middleware/session';
+import { getTransformer } from "@mingsumsze/common";
 
 
 const app = express();
 
 const appRouter = createRouter()
+  .transformer(getTransformer())
+  .middleware(async ({ ctx, next, path, rawInput, type, meta }) => {
+    if (!meta?.auth)
+      return next();
+  
+    // superuser mode for testing in dev mode
+    if (`${process.env.MODE}` === 'dev' && `${process.env.SECRET}` === ctx.authorization)
+      return next();
+  
+    switch(meta.auth) {
+      case "admin":
+      case "user":
+        let id;
+        try {
+          id = await admin.auth().verifyIdToken(`${ctx.authorization}`);
+        } catch(err) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: `Invalid Id token`,
+          });
+        }
+        if (meta.auth === "user") break;
+  
+        const user = await admin.auth().getUser(id.uid);
+        if (!user.customClaims?.admin)
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: `Not an admin`,
+          });
+  
+        break;
+    }
+  
+    if (!meta.appCheck)
+      return next();
+  
+    try {
+      await admin.appCheck().verifyToken(`${ctx.authorization}`);
+    } catch(err) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: `Invalid app check token`,
+      });
+    }
+  
+    return next();
+  })
   .merge('createAdmin', createAdmin)
   .merge('createWorkshop', createWorkshop)
   .merge('deleteAdmin', deleteAdmin)
@@ -23,10 +77,11 @@ const appRouter = createRouter()
   .merge('initiateEnroll', initiateEnroll)
   .merge('updateWorkshop', updateWorkshop);
 
-// app.use(genMiddleware({
-//   useAuth: "admin",
-//   corsDomain: "all"
-// }));
+
+app.use(cors({ origin: "*" }));
+app.use(cookieParser());
+app.use(bodyParser.json({}));
+app.use(session);
 app.use(
   '/',
   trpcExpress.createExpressMiddleware({

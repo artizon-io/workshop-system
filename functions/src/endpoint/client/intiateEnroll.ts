@@ -2,20 +2,20 @@ import * as admin from "firebase-admin";
 import { idSchema, UserSchemaLibrary, WorkshopConfidential, WorkshopConfidentialSchema, WorkshopConfidentialSchemaLibrary, WorkshopSchema, WorkshopSchemaLibrary } from "@mingsumsze/common"
 import { any, object, string, ZodError } from "zod";
 import { TRPCError } from "@trpc/server";
-import { authMiddleware } from "../middleware/auth";
 import { validate } from "../../utils/validate";
 import { v4 as uuid } from 'uuid';
 import { getStripe } from "../../utils/getStripe";
 import { createTask } from "../../utils/createTask";
 import { createRouter } from "./trpcUtil";
+import { sessionStore } from "../middleware/session";
+import * as functions from "firebase-functions";
 
 
 export const initiateEnroll = createRouter()
-  .middleware(authMiddleware)
   .mutation('', {
     meta: {
       auth: "user",
-      appCheck: true
+      appCheck: false
     },
     input: object({
       workshopId: idSchema,
@@ -34,31 +34,32 @@ export const initiateEnroll = createRouter()
           workshopDoc
         );
       
-        if (issues)
+        if (issues) {
+          functions.logger.error(`Workshop ${input.workshopId} doc incorrect schema`, issues);
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: `Workshop ${input.workshopId} doc incorrect schema`,
-            cause: issues
           });
+        }
     
         const workshopConfidentialDoc = (await t.get(admin.firestore().doc(`/workshop-confidential/${input.workshopId}`))).data();
-        if (!workshopConfidentialDoc)
+        if (!workshopConfidentialDoc) {
+          functions.logger.error(`Workshop confidential ${input.workshopId} doesn't exist`);
           throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: `Workshop confidential ${input.workshopId} doesn't exist`
+            code: "INTERNAL_SERVER_ERROR"
           });
+        }
     
         const {data: cData, issues: cIssues} = validate(
           WorkshopConfidentialSchema,
           workshopConfidentialDoc
         );
       
-        if (cIssues)
+        if (cIssues) {
+          functions.logger.error(`Workshop confidential ${input.workshopId} doc incorrect schema`, cIssues)
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: `Workshop confidential ${input.workshopId} doc incorrect schema`,
-            cause: cIssues
           });
+        }
     
         if (cData.current+1 > data.capacity)
           throw new TRPCError({
@@ -111,7 +112,13 @@ export const initiateEnroll = createRouter()
         );
       }
 
-      ctx.session.enrollId = enrollId;
+      sessionStore.set(ctx.session.id, {
+        enrollInfo: {
+          workshopId: input.workshopId,
+          enrollId,
+        },
+        cookie: ctx.session.cookie
+      });
       await createTask(
         'deleteSession',  // endpoint
         {  // payload

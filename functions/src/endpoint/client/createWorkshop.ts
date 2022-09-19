@@ -1,47 +1,33 @@
 import * as admin from "firebase-admin";
-import { idSchema, UserSchemaLibrary, WorkshopSchemaLibrary } from "@mingsumsze/common"
+import { idSchema, UserSchemaLibrary, WorkshopSchema, WorkshopSchemaLibrary } from "@mingsumsze/common"
 import { object, string, ZodError } from "zod";
 import { TRPCError } from "@trpc/server";
-import { authMiddleware } from "../middleware/auth";
 import { createRouter } from "./trpcUtil";
-
-const {
-  title, capacity, datetime, datetimeStr, description, duration, fee, language, venue
-} = WorkshopSchemaLibrary;
+import * as functions from "firebase-functions";
 
 export const createWorkshop = createRouter()
-  .middleware(authMiddleware)
   .mutation('', {
     meta: {
       auth: "admin",
       appCheck: false
     },
-    input: object({
-      title,
-      capacity,
-      datetimeStr,
-      description,
-      duration,
-      fee,
-      language,
-      venue
-    }),
+    input: WorkshopSchema,
     resolve: async ({ input, ctx, type }) => {
-      const data = {
-        datetime: admin.firestore.Timestamp.fromMillis(Date.parse(input.datetimeStr)),
-        ...input,
-        datetimeStr: undefined
-      };
+      // const data = {
+      //   datetime: admin.firestore.Timestamp.fromMillis(Date.parse(input.datetimeStr)),
+      //   ...input,
+      //   datetimeStr: undefined
+      // };
+      const data = input;
     
       let id : string;
       try {  
         const docRef = await admin.firestore().collection(`/workshops`).add(data);
         id = docRef.id;
       } catch(err) {
+        functions.logger.error("Fail to create workshop", err);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Fail to create workshop",
-          cause: err
         });
       }
     

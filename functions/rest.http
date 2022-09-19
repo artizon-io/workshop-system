@@ -12,29 +12,12 @@ authorization: {{$dotenv SECRET}}
   "fee": 20,
   "duration": 60,
   "language": "eng",
-  "datetimeStr": "2022-09-16T14:30+0800"
-}
-
-### createWorkshop
-
-POST https://asia-east2-workshop-system-24df0.cloudfunctions.net/createWorkshop HTTP/1.1
-content-type: application/json
-authorization: {{$dotenv SECRET}}
-
-{
-  "title": "test",
-  "description": "test",
-  "venue": "test",
-  "capacity": 120,
-  "fee": 20,
-  "duration": 60,
-  "language": "eng",
-  "datetimeStr": "2022-09-16T14:30+0800"
+  "datetime": "2022-09-16T14:30+0800"
 }
 
 ### updateWorkshop
 
-POST https://asia-east2-workshop-system-24df0.cloudfunctions.net/updateWorkshop HTTP/1.1
+POST https://asia-east2-workshop-system-24df0.cloudfunctions.net/api/updateWorkshop HTTP/1.1
 content-type: application/json
 authorization: {{$dotenv SECRET}}
 
@@ -45,7 +28,7 @@ authorization: {{$dotenv SECRET}}
 
 ### deleteWorkshop
 
-POST https://asia-east2-workshop-system-24df0.cloudfunctions.net/deleteWorkshop HTTP/1.1
+POST https://asia-east2-workshop-system-24df0.cloudfunctions.net/api/deleteWorkshop HTTP/1.1
 content-type: application/json
 authorization: {{$dotenv SECRET}}
 
@@ -55,7 +38,7 @@ authorization: {{$dotenv SECRET}}
 
 ### initiateEnroll
 
-POST https://asia-east2-workshop-system-24df0.cloudfunctions.net/initiateEnroll HTTP/1.1
+POST https://asia-east2-workshop-system-24df0.cloudfunctions.net/api/initiateEnroll HTTP/1.1
 content-type: application/json
 
 {
@@ -64,7 +47,7 @@ content-type: application/json
 
 ### enroll
 
-POST https://asia-east2-workshop-system-24df0.cloudfunctions.net/enroll HTTP/1.1
+POST https://asia-east2-workshop-system-24df0.cloudfunctions.net/api/enroll HTTP/1.1
 content-type: application/json
 
 {
@@ -78,7 +61,7 @@ content-type: application/json
 
 ### createAdmin
 
-POST https://asia-east2-workshop-system-24df0.cloudfunctions.net/createAdmin HTTP/1.1
+POST https://asia-east2-workshop-system-24df0.cloudfunctions.net/api/createAdmin HTTP/1.1
 content-type: application/json
 authorization: {{$dotenv SECRET}}
 
@@ -88,20 +71,10 @@ authorization: {{$dotenv SECRET}}
 
 ### deleteAdmin
 
-POST https://asia-east2-workshop-system-24df0.cloudfunctions.net/deleteAdmin HTTP/1.1
+POST https://asia-east2-workshop-system-24df0.cloudfunctions.net/api/deleteAdmin HTTP/1.1
 content-type: application/json
 authorization: {{$dotenv SECRET}}
 
 {
   "phone": "+85296348097"
-}
-
-### deleteEnrollSession
-
-POST https://asia-east2-workshop-system-24df0.cloudfunctions.net/deleteEnrollSession HTTP/1.1
-content-type: application/json
-
-{
-  "workshopId": "hyXOFX5xRcNXtfXmbedK",
-  "enrollId": "046a1ced-96a3-433a-9243-638a584e855c"
 }

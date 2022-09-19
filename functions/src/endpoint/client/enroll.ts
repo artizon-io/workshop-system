@@ -2,17 +2,16 @@ import * as admin from "firebase-admin";
 import { idSchema, UserSchemaLibrary, WorkshopConfidentialSchema, WorkshopConfidentialSchemaLibrary, WorkshopSchemaLibrary } from "@mingsumsze/common"
 import { object, string, ZodError } from "zod";
 import { TRPCError } from "@trpc/server";
-import { authMiddleware } from "../middleware/auth";
 import { validate } from "../../utils/validate";
 import { createRouter } from "./trpcUtil";
+import * as functions from "firebase-functions";
 
 
 export const enroll = createRouter()
-  .middleware(authMiddleware)
   .mutation('', {
     meta: {
       auth: "user",
-      appCheck: true
+      appCheck: false
     },
     input: object({
       workshopId: idSchema,
@@ -44,12 +43,12 @@ export const enroll = createRouter()
         doc
       );
     
-      if (issues)
+      if (issues) {
+        functions.logger.error(`Workshop ${input.workshopId} doc incorrect schema`, issues); 
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: `Workshop ${input.workshopId} doc incorrect schema`,
-          cause: issues
         });
+      }
       
       const enrolls = data.enrolls;
       const enroll = enrolls.find(enroll => enroll.id === input.enrollId);
@@ -73,10 +72,9 @@ export const enroll = createRouter()
           message: `Successfully enrolled`
         }
       } catch(err) {
+        functions.logger.error(`Fail to update workshop-confidential ${input.workshopId}`, err);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: `Fail to update workshop-confidential ${input.workshopId}`,
-          cause: err
         });
       }
     },

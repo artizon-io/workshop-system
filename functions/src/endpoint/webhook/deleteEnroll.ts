@@ -4,11 +4,13 @@ import { any, object, string, ZodError } from "zod";
 import { TRPCError } from "@trpc/server";
 import { validate } from "../../utils/validate";
 import { createRouter } from "./trpcUtil";
+import * as functions from "firebase-functions";
 
 
 export const deleteEnroll = createRouter()
   .mutation('', {
     meta: {
+      stripe: false
     },
     input: object({
       workshopId: idSchema,
@@ -28,12 +30,12 @@ export const deleteEnroll = createRouter()
           doc
         );
       
-        if (issues)
+        if (issues) {
+          functions.logger.error(`Workshop confidential ${input.workshopId} doc incorrect schema`, issues)
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: `Workshop confidential ${input.workshopId} doc incorrect schema`,
-            cause: issues
           });
+        }
     
         const enrolls = data.enrolls;
         const enroll = enrolls.find(enroll => enroll.id === input.enrollId);
@@ -44,10 +46,9 @@ export const deleteEnroll = createRouter()
             enrolls: admin.firestore.FieldValue.arrayRemove(enroll)
           });
         } catch(err) {
+          functions.logger.error(`Fail to update workshop-confidential ${input.workshopId}`, issues)
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: `Fail to update workshop-confidential ${input.workshopId}`,
-            cause: issues
           });
         }
       });

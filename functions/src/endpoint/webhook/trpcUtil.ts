@@ -4,6 +4,7 @@ import * as trpcExpress from '@trpc/server/adapters/express';
 
 export interface Meta {
   // cors: string;
+  stripe: boolean;
 }
 
 export const createRouter = () => trpc.router<Context, Meta>();

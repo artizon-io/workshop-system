@@ -2,11 +2,9 @@ import * as admin from "firebase-admin";
 import { UserSchemaLibrary, WorkshopSchemaLibrary } from "@mingsumsze/common"
 import { object, string, ZodError } from "zod";
 import { TRPCError } from "@trpc/server";
-import { authMiddleware } from "../middleware/auth";
-import { createRouter } from "./trpcUtil";
+import { Context, createRouter, Meta } from "./trpcUtil";
 
 export const createAdmin = createRouter()
-  .middleware(authMiddleware)
   .mutation('', {
     meta: {
       auth: "admin",
@@ -27,7 +25,6 @@ export const createAdmin = createRouter()
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "User is already an admin",
-          cause: err
         })
       }
 

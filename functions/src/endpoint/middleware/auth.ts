@@ -3,51 +3,57 @@ import { MiddlewareFunction } from "@trpc/server/dist/declarations/src/internals
 import { TRPCError } from "@trpc/server";
 
 
-export const authMiddleware : MiddlewareFunction<any, any, any> = async ({ ctx, next, path, rawInput, type, meta }) => {
-  if (!meta?.auth)
-    return next();
+// Deprecated. Wait until tRPC v10 rolls out! (proper support for procedure-level middleware)
 
-  // superuser mode for testing in dev mode
-  if (`${process.env.MODE}` === 'dev' && `${process.env.SECRET}` === ctx.authorization)
-    return next();
+// export const authMiddleware = async <
+//   TContext extends { authorization: string },
+//   TMeta extends { auth?: "admin" | "user"; appCheck: boolean }
+// >({ ctx, next, path, rawInput, type, meta } : Parameters<MiddlewareFunction<TContext, TContext, TMeta>>[number]) : ReturnType<MiddlewareFunction<TContext, TContext, TMeta>> => {
+// export const authMiddleware : MiddlewareFunction<any, any, any> = async ({ ctx, next, path, rawInput, type, meta }) => {
+//   if (!meta?.auth)
+//     return next();
 
-  switch(meta.auth) {
-    case "admin":
-    case "user":
-      let id;
-      try {
-        id = await admin.auth().verifyIdToken(ctx.authorization);
-      } catch(err) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: `Invalid Id token`,
-          cause: err
-        });
-      }
-      if (meta.auth === "user") break;
+//   // superuser mode for testing in dev mode
+//   if (`${process.env.MODE}` === 'dev' && `${process.env.SECRET}` === ctx.authorization)
+//     return next();
 
-      const user = await admin.auth().getUser(id.uid);
-      if (!user.customClaims?.admin)
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: `Not an admin`,
-        });
+//   switch(meta.auth) {
+//     case "admin":
+//     case "user":
+//       let id;
+//       try {
+//         id = await admin.auth().verifyIdToken(`${ctx.authorization}`);
+//       } catch(err) {
+//         throw new TRPCError({
+//           code: "UNAUTHORIZED",
+//           message: `Invalid Id token`,
+//           cause: err
+//         });
+//       }
+//       if (meta.auth === "user") break;
 
-      break;
-  }
+//       const user = await admin.auth().getUser(id.uid);
+//       if (!user.customClaims?.admin)
+//         throw new TRPCError({
+//           code: "UNAUTHORIZED",
+//           message: `Not an admin`,
+//         });
 
-  if (!meta.appCheck)
-    return next();
+//       break;
+//   }
 
-  try {
-    await admin.appCheck().verifyToken(ctx.authorization);
-  } catch(err) {
-    throw new TRPCError({
-      code: "UNAUTHORIZED",
-      message: `Invalid app check token`,
-      cause: err
-    });
-  }
+//   if (!meta.appCheck)
+//     return next();
 
-  return next();
-}
+//   try {
+//     await admin.appCheck().verifyToken(`${ctx.authorization}`);
+//   } catch(err) {
+//     throw new TRPCError({
+//       code: "UNAUTHORIZED",
+//       message: `Invalid app check token`,
+//       cause: err
+//     });
+//   }
+
+//   return next();
+// }

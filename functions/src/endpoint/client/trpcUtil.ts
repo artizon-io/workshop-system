@@ -1,5 +1,7 @@
 import * as trpc from '@trpc/server';
 import * as trpcExpress from '@trpc/server/adapters/express';
+import session, { Session, SessionData } from 'express-session';
+import { Timestamp } from "firebase-admin/firestore";
 
 
 export interface Meta {
@@ -15,10 +17,9 @@ export async function createContext(opts?: trpcExpress.CreateExpressContextOptio
   // Create your context based on the request object
   // Will be available as `ctx` in all your resolvers
 
-  const session = opts?.req.headers.session;
-
   return {
-    session,
+    session: opts?.req.headers.session as unknown as SessionData & Session,
+    authorization: opts?.req.headers.authorization,
   };
 }
 

@@ -9,7 +9,6 @@ export const sessionStore = new FirestoreStore({
   kind: 'express-sessions',
 });
 
-
 // See https://expressjs.com/en/resources/middleware/session.html
 export const session = expressSession({
   secret: `${process.env.SESSION_SECRET}`,
