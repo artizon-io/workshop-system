@@ -1,6 +1,6 @@
 {
   "name": "@mingsumsze/common",
-  "version": "4.6.1",
+  "version": "4.7.0",
   "main": "dist/index.js",
   "repository": "https://github.com/mingsumsze/workshop-system/tree/main/common",
   "author": "Ming Sum Sze <mingsum.sam@gmail.com>",
@@ -13,6 +13,7 @@
   "dependencies": {},
   "devDependencies": {
     "firebase": "^9.10.0",
+    "firebase-admin": "^11.0.1",
     "node-polyfill-webpack-plugin": "^2.0.1",
     "terser-webpack-plugin": "^5.3.6",
     "ts-loader": "^9.3.1",
@@ -23,6 +24,7 @@
   },
   "peerDependencies": {
     "firebase": "^9.10.0",
+    "firebase-admin": "^11.0.1",
     "zod": "^3.19.1"
   },
   "bundledDependencies": []
