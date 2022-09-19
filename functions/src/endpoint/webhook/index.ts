@@ -68,4 +68,5 @@ app.use(
 
 export type AppRouter = typeof appRouter;
 
-export default functions.region('asia-east2').https.onRequest(app);
+export default functions.runWith({ secrets: ["STRIPE_ENDPOINT_SECRET", "STRIPE_ENDPOINT_SECRET_TEST"] })
+  .region('asia-east2').https.onRequest(app);

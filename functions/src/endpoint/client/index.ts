@@ -92,4 +92,5 @@ app.use(
 
 export type AppRouter = typeof appRouter;  // To be imported by client
 
-export default functions.region('asia-east2').https.onRequest(app);
+export default functions.runWith({ secrets: ["STRIPE_SECRET", "STRIPE_SECRET_TEST", "SECRET", "SESSION_SECRET"] })
+  .region('asia-east2').https.onRequest(app);
