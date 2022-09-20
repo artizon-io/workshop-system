@@ -77,8 +77,11 @@ const appRouter = createRouter()
   .merge('initiateEnroll', initiateEnroll)
   .merge('updateWorkshop', updateWorkshop);
 
-
-app.use(cors({ origin: "*" }));
+// See https://stackoverflow.com/questions/24687313/what-exactly-does-the-access-control-allow-credentials-header-do
+app.use(cors({
+  origin: "*",
+  // credentials: true
+}));
 app.use(cookieParser());
 app.use(bodyParser.json({}));
 app.use(session);

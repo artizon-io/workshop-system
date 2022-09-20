@@ -145,7 +145,7 @@ export const initiateEnroll = createRouter()
       );
     
       return {
-        message: "Success",
+        message: `Successfully enrolled to workshop ${input.workshopId}`,
         stripeClientSecret
       };
     },

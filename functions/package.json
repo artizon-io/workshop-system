@@ -9,7 +9,8 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "clean": "rm -rf lib"
+    "clean": "rm -rf lib",
+    "trpc:watch": "tsc --watch --project tsconfig.trpc.json"
   },
   "private": true,
   "engines": {
