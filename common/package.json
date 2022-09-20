@@ -8,6 +8,7 @@
   "types": "types/index.d.ts",
   "scripts": {
     "build": "yarn clean && webpack build",
+    "dev": "webpack --watch",
     "clean": "rm -rf dist types"
   },
   "dependencies": {},

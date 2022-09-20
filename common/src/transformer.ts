@@ -49,14 +49,14 @@ type CombinedDataTransformer = {
 const createTransformer = (type: "input" | "output") : DataTransformer => {
   return {
     serialize: (v) => {
-      console.debug("Serializing", v);
+      // console.debug("Serializing", v);
       if (v.datetime == null)
         return v;
         // return JSON.stringify(v);
       else
         return {
           ...v,
-          datetime: v.datetime.toDate().toISOString()  
+          datetime: v.datetime.toDate().toISOString()
         }
         // return JSON.stringify({
         //   ...v,
@@ -64,7 +64,7 @@ const createTransformer = (type: "input" | "output") : DataTransformer => {
         // });
     },
     deserialize: (v) => {
-      console.debug("Deserializing", v);
+      // console.debug("Deserializing", v);
       const data = v;
       // const data = JSON.parse(v);
       if (data.datetime == null)
