@@ -5,7 +5,9 @@
     "target": "ES6",
     "strict": true,
     "outDir": "build",
-    "module": "CommonJS"
+    "module": "CommonJS",
+    "esModuleInterop": true,
+    "importsNotUsedAsValues": "remove",
   },
   "watchOptions": {
     "excludeDirectories": [

@@ -4,6 +4,9 @@ import { v4 as uuid } from 'uuid';
 import { ZodError } from "zod";
 
 
+const STRIPE_PAYMENT_ID = 'pi_fjdieif192fjeiJDIFJS29DJ';
+
+
 test('WorkshopSchema fit', () => {
   expect(() =>
     WorkshopSchema.parse({
@@ -57,11 +60,11 @@ test('WorkshopConfidentialSchema fit', () => {
       enrolls: [{
         id: uuid(),
         paymentStatus: 'paid',
-        stripePaymentId: uuid()
+        stripePaymentId: STRIPE_PAYMENT_ID
       }, {
         id: uuid(),
         paymentStatus: 'unpaid',
-        stripePaymentId: uuid()
+        stripePaymentId: STRIPE_PAYMENT_ID
       }]
     } as WorkshopConfidential)
   ).not.toThrowError();
@@ -73,11 +76,11 @@ test('WorkshopConfidentialSchema unfit - missing fields', () => {
       current: 120,
       enrolls: [{
         paymentStatus: 'paid',
-        stripePaymentId: uuid()
+        stripePaymentId: STRIPE_PAYMENT_ID
       }, {
         id: uuid(),
         paymentStatus: 'unpaid',
-        stripePaymentId: uuid()
+        stripePaymentId: STRIPE_PAYMENT_ID
       }]
     })
   ).toThrowError();
@@ -90,11 +93,11 @@ test('WorkshopConfidentialSchema unfit - incorrect format', () => {
       enrolls: [{
         id: '29DJdhud839fHDFNAPWI2',
         paymentStatus: 'paid',
-        stripePaymentId: uuid()
+        stripePaymentId: STRIPE_PAYMENT_ID
       }, {
         id: uuid(),
         paymentStatus: 'unpaid',
-        stripePaymentId: uuid()
+        stripePaymentId: STRIPE_PAYMENT_ID
       }]
     })
   ).toThrowError();
