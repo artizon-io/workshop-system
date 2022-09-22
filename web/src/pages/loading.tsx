@@ -1,0 +1,24 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { styled } from '@stitches/react';
+import type * as Stitches from '@stitches/react';
+import { motion } from 'framer-motion';
+
+type StyledLoadingVariants = Stitches.VariantProps<typeof StyledLoading>
+
+const StyledLoading = styled('main', {
+  
+});
+
+interface Props extends React.ComponentProps<typeof StyledLoading> {
+  
+};
+
+const Loading: React.FC<Props> = ({ ...props }) => {
+  return (
+    <StyledLoading {...props}>
+      
+    </StyledLoading>
+  );
+};
+
+export default Loading;

@@ -4,11 +4,12 @@
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
     "moduleResolution": "Node",
-    "target": "ES6",
-    "baseUrl": "./src",
+    "module": "ESNext",
+    "target": "ESNext",
+    "strict": true,
     "paths": {
-      "*": ["*"],
-      "schema": ["common/schema"]
+      "@*": ["./src/*"],
+      "@artizon/design-system": ["./node_modules/@artizon/design-system/src"]
     }
   },
   "include": [

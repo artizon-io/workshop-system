@@ -1,7 +1,7 @@
 node_modules/
 assets/test/
 *.log
-*.env
 src/firebaseConfig.tsx
 src/stripeConfig.tsx
 public/
+.env

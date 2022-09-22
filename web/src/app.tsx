@@ -1,91 +1,85 @@
 import React, { FC, ReactElement, ReactNode, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { ChakraProvider, useToast, Text } from '@chakra-ui/react';
 import { Auth, ConfirmationResult, getAuth, RecaptchaVerifier, signInWithPhoneNumber, User, UserCredential } from "firebase/auth";
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
-import Login from 'pages/login';
-import { Home } from 'pages/home';
-import { Admin } from 'pages/admin';
-import { AdminManagement } from 'pages/adminManagement';
 import Logger from 'js-logger';
-import { Enroll } from 'pages/enroll';
-import { useConfigedToast } from 'hooks/useConfigedToast';
-import { Loading } from 'pages/loading';
 import { useUser } from 'reactfire';
-
-
-// To be make Logger.OFF at production
-Logger.useDefaults({
-  defaultLevel: Logger.TRACE,
-  formatter: function (messages, context) {
-    messages.unshift(`[${context.level.name}]`)
-  }
-});
+import Loading from '@pages/loading';
+import Landing from '@pages/landing';
+import Workshops from '@pages/workshops';
+import WorkshopEnroll from '@pages/workshopEnroll';
+import WorkshopEnrollComplete from '@pages/workshopEnrollComplete';
+import AdminUserManagement from '@pages/adminUserManagement';
+import Admin from '@pages/admin';
+import NotFound from '@pages/notFound';
+import AdminLayout from '@layout/adminLayout';
+import Layout from '@layout/layout';
+import Login from '@pages/login';
+import { AnimatePresence } from 'framer-motion';
 
 
 const App : FC<{}> = ({}) => {
   const user = useUser();
-  const toast = useConfigedToast();
   const [isAdmin, setIsAdmin] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isFetchingAuthClaim, setIsFetchingAuthClaim] = useState(true);
 
   useEffect(() => {
-    (async () => {
-      switch (user.status) {
-        case 'error':
-          toast({
-            status: "error",
-            description: "Error occurred when fetching user status"
-          })
-          Logger.error(user.error)
-          setIsLoading(false);
-          break;
-        case 'loading':
-          setIsLoading(true);
-          break;
-        case 'success':
-          if (user.data)
-            await checkIsAdmin(user.data);
-          setIsLoading(false);
-          break;
-      }
-    })();
+    switch (user.status) {
+      case 'loading':
+        Logger.info('Fetching user auth claim');
+        setIsFetchingAuthClaim(true);
+        break;
+      case 'error':
+        Logger.info('Fail to fetch user', user.error)
+        setIsFetchingAuthClaim(false);
+        break;
+      case 'success':  // success !== hasUser
+        if (user.data) {
+          Logger.info("User data", user.data);
+          checkIsAdmin(user.data)
+            .then(() => setIsAdmin(true))
+            .catch(err => Logger.info(err));
+        }
+        setIsFetchingAuthClaim(false);
+        break;
+    }
   }, [user]);
 
   const checkIsAdmin = async (user : User) : Promise<void> => {
     const idToken = await user.getIdTokenResult(true);  // force refresh
-    if (idToken.claims.admin)
-      setIsAdmin(true);
+    if (!idToken.claims.admin)
+      throw Error('User isn\' admin');
   }
 
-  const adminConditionalRender = (elem : ReactElement) : ReactNode => {
-    if (isLoading)
-      return <Loading/>;
-
-    else if (!isAdmin)
-      return <Navigate to="/admin/login"/>;
-
-    else
-      return elem;
-  }
+  if (isFetchingAuthClaim)
+    return <Loading/>;
 
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/">
-          <Route index element={<Home/>}/>
-          <Route path="workshop/:workshopId/enroll/:enrollId">
-            <Route index element={<Enroll/>}/>
-            <Route path="confirmation" element={<Enroll/>}/>
+          <Route index element={<Landing/>}/>
+
+          <Route path="workshop" element={<Layout/>}>
+            <Route index element={<Workshops/>}/>
+            <Route path=":workshopId/enroll">
+              <Route index element={<WorkshopEnroll/>}/>
+              <Route path="complete" element={<WorkshopEnrollComplete/>}/>
+            </Route>
           </Route>
+
+          {isAdmin &&
+          <Route path="admin" element={<AdminLayout/>}>
+            <Route index element={<Admin/>}/>  
+            <Route path="user-management" element={<AdminUserManagement/>}/>
+          </Route>
+          }
+
+          <Route path="*" element={<NotFound/>}/>
         </Route>
 
-        <Route path="/admin">
-          <Route index element={adminConditionalRender(<Admin/>)}/>  
-          <Route path="login" element={adminConditionalRender(<Login/>)}/>
-          <Route path="admin-management" element={adminConditionalRender(<AdminManagement/>)}/>
-        </Route>
+        {/* For testing */}
+        <Route path="/login" element={<Login/>}/>
 
-        <Route path="*" element={<Text>Not Found</Text>}/>
       </Routes>
     </BrowserRouter>
   );

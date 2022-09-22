@@ -1,8 +1,6 @@
-import React, { FC, StrictMode } from 'react';
-import { appCheckSiteKey, firebaseConfig } from "config/firebaseConfig";
+import React, { FC } from 'react';
 import { AnalyticsProvider, AppCheckProvider, AuthProvider, FirebaseAppProvider, FirestoreProvider, FunctionsProvider, useFirebaseApp, useInitAnalytics, useInitAppCheck, useInitAuth, useInitFirestore, useInitFunctions } from "reactfire";
 import { enableMultiTabIndexedDbPersistence, getFirestore } from "firebase/firestore";
-import { useConfigedToast } from "hooks/useConfigedToast";
 import { getAuth } from "firebase/auth";
 import { getFunctions } from "firebase/functions";
 import { getAnalytics } from "firebase/analytics";
@@ -11,7 +9,6 @@ import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 
 export const FirebaseServices : FC<React.HTMLAttributes<HTMLDivElement>> = ({children}) => {
   const firebaseApp = useFirebaseApp();
-  const toast = useConfigedToast();
 
   // const firestore = useInitFirestore(async firebaseApp => {
   //   const firestore = getFirestore(firebaseApp);
@@ -26,9 +23,6 @@ export const FirebaseServices : FC<React.HTMLAttributes<HTMLDivElement>> = ({chi
   //       case 'unimplemented':
   //         // The current browser does not support all of the
   //         // features required to enable persistence
-  //         toast({
-  //           description: "Your browser version is incompatible. Be aware that the website might behave unexpectedly."
-  //         })
   //         break;
   //     }
   //   }
@@ -36,18 +30,9 @@ export const FirebaseServices : FC<React.HTMLAttributes<HTMLDivElement>> = ({chi
   // });
   const firestore = getFirestore(firebaseApp);
 
-  // const appCheck = useInitAppCheck(async firebaseApp => {
-  //   globalThis.FIREBASE_APPCHECK_DEBUG_TOKEN = window.location.hostname === "localhost";
-  //   const appCheck = initializeAppCheck(firebaseApp, {
-  //     provider: new ReCaptchaV3Provider(appCheckSiteKey),
-
-  //     isTokenAutoRefreshEnabled: true,  // automatically refreshes App Check tokens as needed
-  //   }); 
-  //   return appCheck;
-  // });
-  globalThis.FIREBASE_APPCHECK_DEBUG_TOKEN = window.location.hostname === "localhost";
+  window.FIREBASE_APPCHECK_DEBUG_TOKEN = import.meta.env.DEV;
   const appCheck = initializeAppCheck(firebaseApp, {
-    provider: new ReCaptchaV3Provider(appCheckSiteKey),
+    provider: new ReCaptchaV3Provider(`${import.meta.env.VITE_FIREBASE_APPCHECK_SITE_KEY}`),
 
     isTokenAutoRefreshEnabled: true,  // automatically refreshes App Check tokens as needed
   });

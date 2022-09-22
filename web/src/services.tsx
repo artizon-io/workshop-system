@@ -1,7 +1,7 @@
-import React, { FC, ReactElement, ReactNode, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { ChakraProvider, useToast } from '@chakra-ui/react';
-import { QueryClient, QueryClientProvider, useQueryClient } from 'react-query';
+import React, { FC } from 'react';
+import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
+import { StyleProvider } from "@artizon/design-system";
 
 
 const queryClient = new QueryClient();
@@ -9,10 +9,10 @@ const queryClient = new QueryClient();
 export const Services : FC<React.HTMLAttributes<HTMLDivElement>> = ({children}) => {
   return (
     <QueryClientProvider client={queryClient}>
-      <ChakraProvider>
-        {window.location.hostname === 'localhost' && <ReactQueryDevtools/>}
+      <StyleProvider>
+        {/* {!import.meta.env.PROD && <ReactQueryDevtools/>} */}
         {children}
-      </ChakraProvider>
+      </StyleProvider>
     </QueryClientProvider>
   );
 }
