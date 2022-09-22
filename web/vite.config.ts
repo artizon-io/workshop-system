@@ -29,6 +29,14 @@ export default defineConfig({
         replacement: path.resolve(__dirname, 'src/layout'),
       },
       {
+        find: /@components/,
+        replacement: path.resolve(__dirname, 'src/components'),
+      },
+      {
+        find: /@assets/,
+        replacement: path.resolve(__dirname, 'assets'),
+      },
+      {
         find: /@artizon\/design-system/,
         replacement: path.resolve(__dirname, 'node_modules/@artizon/design-system/src'),
       },
@@ -57,6 +65,10 @@ export default defineConfig({
       {
         find: /^react$/,
         replacement: path.resolve(__dirname, 'node_modules/react'),
+      },
+      {
+        find: /^react-dom$/,
+        replacement: path.resolve(__dirname, 'node_modules/react-dom'),
       },
     ]
   }
