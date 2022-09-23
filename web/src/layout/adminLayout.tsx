@@ -10,7 +10,7 @@ import Logo from '@components/logo';
 type StyledAdminLayoutVariants = Stitches.VariantProps<typeof StyledAdminLayout>
 
 const StyledAdminLayout = styled('div', {
-
+  margin: '200px 100px'
 });
 
 interface Props extends React.ComponentProps<typeof StyledAdminLayout> {
