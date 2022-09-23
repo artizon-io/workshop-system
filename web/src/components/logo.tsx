@@ -17,6 +17,7 @@ const StyledLogo = styled(motion.a, {
   gap: '10px',
   borderRadius: '26px',
   padding: '12px 26px',
+  backgroundColor: '$gray1000',
   $$shadowColor: 'rgba(0, 0, 0, 10%)',
   boxShadow: '0 0 30px 1px $$shadowColor',
   transition: 'color 0.2s, background-color 0.2s',
@@ -59,15 +60,6 @@ const variants : Variants = {
 }
 
 const wheelVariants : Variants = {
-  whileHover: () => ({
-    rotate: 360,
-    transition: {
-      type: 'spring',
-      damping: 50,
-      stiffness: 150,
-      mass: 1
-    }
-  })
 };
 
 const Logo: React.FC<Props> = ({ ...props }) => {
@@ -95,7 +87,7 @@ const Logo: React.FC<Props> = ({ ...props }) => {
     stiffness: 200,  // control the degree of the "shakiness"
     mass: 1  // control the momentum
   });
-  const rotateFactor = useTransform(scrollYVelocity, val => val);  // do noting
+  const rotateFactor = useTransform(scrollYVelocity, val => val/5);
   const rotate = useMotionValue(0);
 
   const prevFrame = useRef<number>(0);
@@ -114,11 +106,10 @@ const Logo: React.FC<Props> = ({ ...props }) => {
 
       variants={variants}
       whileHover="whileHover"
-      >
+    >
       <h1>Workshop</h1>
       <motion.div
         // animate={controls}
-
         variants={wheelVariants}
         style={{
           rotate

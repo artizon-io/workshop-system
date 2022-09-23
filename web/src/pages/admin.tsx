@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { styled } from '@artizon/design-system';
 import type * as Stitches from '@stitches/react';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useSpring } from 'framer-motion';
 import WorkshopCard from '@components/workshopCard';
 
 type StyledAdminVariants = Stitches.VariantProps<typeof StyledAdmin>
@@ -19,13 +19,16 @@ interface Props extends React.ComponentProps<typeof StyledAdmin> {
 const Admin: React.FC<Props> = ({ ...props }) => {
   return (
     <StyledAdmin {...props}>
-      <WorkshopCard/>
-      <WorkshopCard/>
-      <WorkshopCard/>
-      <WorkshopCard/>
-      <WorkshopCard/>
-      <WorkshopCard/>
-      <WorkshopCard/>
+      <WorkshopCard workshopId={"someId"}/>
+      <WorkshopCard workshopId={"someId"}/>
+      <WorkshopCard workshopId={"someId"}/>
+      <WorkshopCard workshopId={"someId"}/>
+      <WorkshopCard workshopId={"someId"}/>
+      <WorkshopCard workshopId={"someId"}/>
+      <WorkshopCard workshopId={"someId"}/>
+      <WorkshopCard workshopId={"someId"}/>
+      <WorkshopCard workshopId={"someId"}/>
+      <WorkshopCard workshopId={"someId"}/>
     </StyledAdmin>
   );
 };

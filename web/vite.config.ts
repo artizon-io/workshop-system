@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import path from 'path';
+import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   logLevel: 'info',
@@ -14,6 +15,14 @@ export default defineConfig({
       ]
     }
   },
+  plugins: [
+    react({
+      // Exclude storybook stories
+      // exclude: /\.stories\.(t|j)sx?$/,
+      // Only .tsx files
+      include: '**/*.tsx'
+    })
+  ],
   resolve: {
     alias: [
       // "@*": path.resolve(__dirname, './src/*')
