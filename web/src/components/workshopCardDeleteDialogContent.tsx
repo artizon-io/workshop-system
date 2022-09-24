@@ -16,14 +16,14 @@ const StyledWorkshopCardDeleteDialogContent = styled(motion.div, {
   zIndex: 3000,
 
   backgroundColor: '$gray950',
-  borderRadius: '20px',
-  padding: '50px',
+  borderRadius: '23px',
+  padding: '50px 40px 30px 40px',
   display: 'flex',
   flexDirection: 'column',
   gap: '30px',
   '& > .title': {
     fontFamily: '$firacode',
-    fontSize: '22px',
+    fontSize: '20px',
     color: '$gray050',
     fontWeight: 400
   },
@@ -92,7 +92,6 @@ const WorkshopCardDeleteDialogContent: React.FC<Props> = React.forwardRef(({ clo
     >
       <AlertDialogTitle className='title'>Delete Workshop</AlertDialogTitle>
       <AlertDialogDescription className='description'>You sure you want to delete this workshop?</AlertDialogDescription>
-      <span></span>
       <div className='footer'>
         <AlertDialogCancel asChild={true}>
           <motion.button className="btn cancelbtn" onClick={close}

@@ -19,16 +19,16 @@ interface Props extends React.ComponentProps<typeof StyledAdmin> {
 const Admin: React.FC<Props> = ({ ...props }) => {
   return (
     <StyledAdmin {...props}>
-      <WorkshopCard workshopId={"someId"}/>
-      <WorkshopCard workshopId={"someId"}/>
-      <WorkshopCard workshopId={"someId"}/>
-      <WorkshopCard workshopId={"someId"}/>
-      <WorkshopCard workshopId={"someId"}/>
-      <WorkshopCard workshopId={"someId"}/>
-      <WorkshopCard workshopId={"someId"}/>
-      <WorkshopCard workshopId={"someId"}/>
-      <WorkshopCard workshopId={"someId"}/>
-      <WorkshopCard workshopId={"someId"}/>
+      <WorkshopCard workshopId={"someId"} role='admin'/>
+      <WorkshopCard workshopId={"someId"} role='admin'/>
+      <WorkshopCard workshopId={"someId"} role='admin'/>
+      <WorkshopCard workshopId={"someId"} role='admin'/>
+      <WorkshopCard workshopId={"someId"} role='admin'/>
+      <WorkshopCard workshopId={"someId"} role='admin'/>
+      <WorkshopCard workshopId={"someId"} role='admin'/>
+      <WorkshopCard workshopId={"someId"} role='admin'/>
+      <WorkshopCard workshopId={"someId"} role='admin'/>
+      <WorkshopCard workshopId={"someId"} role='admin'/>
     </StyledAdmin>
   );
 };

@@ -16,7 +16,7 @@ interface Props extends React.ComponentProps<typeof StyledLoading> {
 const Loading: React.FC<Props> = ({ ...props }) => {
   return (
     <StyledLoading {...props}>
-      
+      <h1>Loading</h1>
     </StyledLoading>
   );
 };
