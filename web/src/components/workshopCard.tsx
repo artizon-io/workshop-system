@@ -5,6 +5,10 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { BiTime, BiStopwatch } from 'react-icons/bi';
 import { MdDateRange, MdAttachMoney } from 'react-icons/md';
 import { IoLanguage, IoLocationSharp, IoClose } from 'react-icons/io5';
+import WorkshopDeleteDialog from './workshopCardDeleteDialogContent';
+import { AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogOverlay, AlertDialogPortal, AlertDialogTitle, AlertDialogTrigger, Root as AlertDialogRoot } from '@radix-ui/react-alert-dialog';
+import WorkshopCardDeleteDialogOverlay from './workshopCardDeleteDialogOverlay';
+import WorkshopCardDeleteDialogContent from './workshopCardDeleteDialogContent';
 
 type StyledWorkshopCardVariants = Stitches.VariantProps<typeof StyledWorkshopCard>
 
@@ -85,6 +89,7 @@ const StyledWorkshopCard = styled(motion.div, {
     color: '$gray900',
     padding: '12px 20px',
     borderRadius: '15px',
+    fontSize: '14px',
     display: 'inline-block',
     textAlign: 'center'
   },
@@ -94,17 +99,18 @@ const StyledWorkshopCard = styled(motion.div, {
   '& > .bottom > .editbtn': {
     background: '$gray300',
   },
-  '& > .deletebtn': {
+  '& .deletebtn': {
     position: 'absolute',
     top: '-5px',
     right: '-5px',
+    zIndex: 500,
     width: '30px',
     height: '30px',
-    zIndex: 500,
     cursor: 'pointer',
     borderRadius: '50%',
     color: '$gray1000',
-    backgroundColor: '$gray800',
+    // backgroundColor: '$red500sss',
+    backgroundColor: '$gray700',
     $$shadowColor: 'rgba(233, 233, 233, 0.8)',
     boxShadow: '0 0 5px 1px $$shadowColor',
     padding: '5px',
@@ -117,6 +123,7 @@ interface Props extends React.ComponentProps<typeof StyledWorkshopCard> {
 
 const WorkshopCard: React.FC<Props> = ({ workshopId, ...props }) => {
   const [onHover, setOnHover] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   return (
     <StyledWorkshopCard {...props}
@@ -135,9 +142,9 @@ const WorkshopCard: React.FC<Props> = ({ workshopId, ...props }) => {
           }
         }
       }}
-      whileHover={{
-        scale: 1.03
-      }}
+      // whileHover={{
+      //   scale: 1.03
+      // }}
       viewport={{
         margin: '-50px 0px 0px 0px'
       }}
@@ -202,33 +209,51 @@ const WorkshopCard: React.FC<Props> = ({ workshopId, ...props }) => {
           Edit
         </motion.a>
       </div>
-      <AnimatePresence>
-      {onHover &&
-        <motion.button className='deletebtn'
-          initial={{
-            scale: 0
-          }}
-          animate={{
-            scale: 1
-          }}
-          transition={{
-            type: 'spring',
-            stiffness: 200
-          }}
-          exit={{
-            scale: 0
-          }}
-          whileHover={{
-            scale: 1.2
-          }}
-          whileTap={{
-            scale: 1.1
-          }}
-        >
-          <IoClose style={{ fontSize: '20px' }}/>
-        </motion.button>
-      }
-      </AnimatePresence>
+      <AlertDialogRoot>
+        {onHover &&
+        <AlertDialogTrigger asChild={true}>
+          <motion.button className='deletebtn'
+            onClick={() => setDialogOpen(true)}
+            initial={{
+              opacity: 0,
+              scale: 0
+            }}
+            animate={{
+              opacity: 1,
+              scale: 1
+            }}
+            transition={{
+              scale: {
+                type: 'spring',
+                stiffness: 100
+              },
+            }}
+            exit={{
+              opacity: 0,
+              scale: 0
+            }}
+            whileHover={{
+              scale: 1.2
+            }}
+            whileTap={{
+              scale: 1.1
+            }}
+          >
+            <IoClose style={{ fontSize: '20px' }}/>
+          </motion.button>
+        </AlertDialogTrigger>
+        }
+        <AnimatePresence>
+          {dialogOpen &&
+          <AlertDialogPortal forceMount={true}>
+            <WorkshopCardDeleteDialogOverlay close={() => setDialogOpen(false)}/>
+            <AlertDialogContent asChild={true}>
+              <WorkshopCardDeleteDialogContent close={() => setDialogOpen(false)}/>
+            </AlertDialogContent>
+          </AlertDialogPortal>
+          }
+        </AnimatePresence>
+      </AlertDialogRoot>
     </StyledWorkshopCard>
   );
 };
