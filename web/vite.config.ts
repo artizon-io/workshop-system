@@ -27,6 +27,10 @@ export default defineConfig({
     alias: [
       // "@*": path.resolve(__dirname, './src/*')
       {
+        find: /@styleProvider/,
+        replacement: path.resolve(__dirname, 'src/styleProvider'),
+      },
+      {
         find: /@pages/,
         replacement: path.resolve(__dirname, 'src/pages'),
         // customResolver: (source, importer, options) => {
@@ -50,39 +54,43 @@ export default defineConfig({
         replacement: path.resolve(__dirname, 'assets'),
       },
       {
-        find: /@artizon\/design-system/,
-        replacement: path.resolve(__dirname, 'node_modules/@artizon/design-system/src'),
-      },
-      // @artizon/design-system
-      {
         find: /@fonts/,
-        replacement: path.resolve(__dirname, 'node_modules/@artizon/design-system/fonts'),
+        replacement: path.resolve(__dirname, 'fonts'),
       },
-      {
-        find: /@styleProvider/,
-        replacement: path.resolve(__dirname, 'node_modules/@artizon/design-system/src/styleProvider'),
-      },
-      {
-        find: /@button/,
-        replacement: path.resolve(__dirname, 'node_modules/@artizon/design-system/src/button'),
-      },
-      {
-        find: /@nav/,
-        replacement: path.resolve(__dirname, 'node_modules/@artizon/design-system/src/nav'),
-      },
-      {
-        find: /@input/,
-        replacement: path.resolve(__dirname, 'node_modules/@artizon/design-system/src/input'),
-      },
-      // Such that same instance of React is used
-      {
-        find: /^react$/,
-        replacement: path.resolve(__dirname, 'node_modules/react'),
-      },
-      {
-        find: /^react-dom$/,
-        replacement: path.resolve(__dirname, 'node_modules/react-dom'),
-      },
+      // {
+      //   find: /@artizon\/design-system/,
+      //   replacement: path.resolve(__dirname, 'node_modules/@artizon/design-system/src'),
+      // },
+      // @artizon/design-system
+      // {
+      //   find: /@fonts/,
+      //   replacement: path.resolve(__dirname, 'node_modules/@artizon/design-system/fonts'),
+      // },
+      // {
+      //   find: /@styleProvider/,
+      //   replacement: path.resolve(__dirname, 'node_modules/@artizon/design-system/src/styleProvider'),
+      // },
+      // {
+      //   find: /@button/,
+      //   replacement: path.resolve(__dirname, 'node_modules/@artizon/design-system/src/button'),
+      // },
+      // {
+      //   find: /@nav/,
+      //   replacement: path.resolve(__dirname, 'node_modules/@artizon/design-system/src/nav'),
+      // },
+      // {
+      //   find: /@input/,
+      //   replacement: path.resolve(__dirname, 'node_modules/@artizon/design-system/src/input'),
+      // },
+      // // Such that same instance of React is used
+      // {
+      //   find: /^react$/,
+      //   replacement: path.resolve(__dirname, 'node_modules/react'),
+      // },
+      // {
+      //   find: /^react-dom$/,
+      //   replacement: path.resolve(__dirname, 'node_modules/react-dom'),
+      // },
     ]
   }
 });

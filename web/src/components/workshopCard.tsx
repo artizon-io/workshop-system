@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { styled } from '@artizon/design-system';
+import { styled } from '@styleProvider';
 import type * as Stitches from '@stitches/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { BiTime, BiStopwatch } from 'react-icons/bi';
@@ -56,10 +56,10 @@ const StyledWorkshopCard = styled(motion.div, {
     fontSize: '22px',
     fontWeight: 400
   },
-  '& > .left > .subtitle': {
+  '& > .left > .body > p': {
     fontFamily: '$inter',
     color: '$gray650',
-    fontSize: '15px',
+    fontSize: '16px',
     fontWeight: 300,
     lineHeight: 1.8,
   },
@@ -67,7 +67,7 @@ const StyledWorkshopCard = styled(motion.div, {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    gap: '5px',
+    gap: '10px',
     justifyContent: 'space-between'
   },
   '& > .left > .body > .field': {
@@ -156,6 +156,15 @@ const WorkshopCard: React.FC<Props> = ({ workshopId, role, ...props }) => {
           }
         }
       }}
+      exit={{
+        opacity: 0,
+        scale: 0.8,
+        transition: {
+          opacity: {
+            duration: 0.2
+          }
+        }
+      }}
       // whileHover={{
       //   scale: 1.03
       // }}
@@ -170,8 +179,8 @@ const WorkshopCard: React.FC<Props> = ({ workshopId, role, ...props }) => {
       </div>
       <div className="left">
         <h1 className='title'>Workshop</h1>
-        <h2 className='subtitle'>A fantastic workshop hosted in Hong Kong. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</h2>
         <div className="body">
+          <p>A fantastic workshop hosted in Hong Kong. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
           <span></span>
           <span className='location field'>
             <IoLocationSharp style={{ fontSize: '20px' }}/>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { styled, keyframes } from '@artizon/design-system';
+import { styled, keyframes } from '@styleProvider';
 import type * as Stitches from '@stitches/react';
 import { AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogOverlay, AlertDialogPortal, AlertDialogTitle, AlertDialogTrigger, Root as AlertDialogRoot } from '@radix-ui/react-alert-dialog';
 import { motion } from 'framer-motion';

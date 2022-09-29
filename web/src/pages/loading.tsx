@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { styled } from '@artizon/design-system';
+import { styled } from '@styleProvider';
 import type * as Stitches from '@stitches/react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
@@ -10,8 +10,9 @@ type StyledLoadingVariants = Stitches.VariantProps<typeof StyledLoading>
 const StyledLoading = styled(motion.main, {
   display: 'flex',
   flexDirection: 'column',
-  gap: '20px',
+  justifyContent: 'center',
   alignItems: 'center',
+  gap: '20px',
   '& > span > svg': {
     color: '$gray600'
   },

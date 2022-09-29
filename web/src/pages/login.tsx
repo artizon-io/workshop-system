@@ -1,18 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { styled } from '@artizon/design-system';
+import { styled } from '@styleProvider';
 import type * as Stitches from '@stitches/react';
-import { PhoneOTPLogin } from '@artizon/design-system';
+import LoginForm from '@components/login';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, redirect, useNavigate } from 'react-router-dom';
 import { ConfirmationResult, RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 import { useAuth, useSigninCheck } from 'reactfire';
 
 type StyledLoginVariants = Stitches.VariantProps<typeof StyledLogin>
 
 const StyledLogin = styled('main', {
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center'
 });
 
 interface Props extends React.ComponentProps<typeof StyledLogin> {
@@ -41,7 +38,7 @@ const Login: React.FC<Props> = ({ ...props }) => {
   useEffect(() => {
     switch(showLogin) {
       case false:
-        setTimeout(() => navigate('/admin'), 2000);
+        setTimeout(() => redirect('/admin'), 2000);
         break;
     }
   }, [showLogin]);
@@ -69,14 +66,12 @@ const Login: React.FC<Props> = ({ ...props }) => {
 
   return (
     <StyledLogin {...props}>
-      <AnimatePresence>
-        {showLogin
-        && <PhoneOTPLogin
-          submitPhone={submitPhone}
-          submitOtp={submitOtp}
-        />
-        }
-      </AnimatePresence>
+      {showLogin
+      && <LoginForm
+        submitPhone={submitPhone}
+        submitOtp={submitOtp}
+      />
+      }
     </StyledLogin>
   );
 };

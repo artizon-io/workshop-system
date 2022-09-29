@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { styled, keyframes } from '@artizon/design-system';
+import { styled, keyframes } from '@styleProvider';
 import type * as Stitches from '@stitches/react';
 import { IoSettingsSharp } from "react-icons/io5";
 import { motion, useAnimationControls, useAnimationFrame, useMotionValue, useScroll, useSpring, useTransform, useVelocity, Variants } from 'framer-motion';
@@ -101,7 +101,7 @@ const Logo: React.FC<Props> = ({ ...props }) => {
   });
 
   return (
-    <StyledLogo {...props} to="/"
+    <StyledLogo {...props}
       // onHoverStart={startSpin}
       // onHoverEnd={stopSpin}
 

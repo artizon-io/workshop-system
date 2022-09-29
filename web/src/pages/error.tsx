@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { styled } from '@artizon/design-system';
+import { styled } from '@styleProvider';
 import type * as Stitches from '@stitches/react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';

@@ -19,6 +19,7 @@
   "dependencies": {
     "@artizon/zod-formik-adapter": "^1",
     "@radix-ui/react-alert-dialog": "^1.0.0",
+    "@radix-ui/react-popover": "^1.0.0",
     "@stitches/react": "^1.2.8",
     "@stripe/react-stripe-js": "^1.10.0",
     "@stripe/stripe-js": "^1.35.0",

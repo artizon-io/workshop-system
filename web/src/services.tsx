@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
-import { StyleProvider } from "@artizon/design-system";
+import StyleProvider from "@styleProvider";
 import { BrowserRouter } from 'react-router-dom';
 
 
