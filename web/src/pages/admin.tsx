@@ -9,7 +9,8 @@ type StyledAdminVariants = Stitches.VariantProps<typeof StyledAdmin>
 const StyledAdmin = styled('main', {
   display: 'flex',
   flexDirection: 'column',
-  gap: '40px'
+  gap: '40px',
+  marginTop: '250px'
 });
 
 interface Props extends React.ComponentProps<typeof StyledAdmin> {

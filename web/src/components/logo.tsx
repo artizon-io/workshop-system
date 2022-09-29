@@ -3,15 +3,16 @@ import { styled, keyframes } from '@artizon/design-system';
 import type * as Stitches from '@stitches/react';
 import { IoSettingsSharp } from "react-icons/io5";
 import { motion, useAnimationControls, useAnimationFrame, useMotionValue, useScroll, useSpring, useTransform, useVelocity, Variants } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 type StyledLogoVariants = Stitches.VariantProps<typeof StyledLogo>
 
-const spinning = keyframes({
-  '0%': { transform: 'rotate(0deg)' },
-  '100%': { transform: 'rotate(360deg)' },
-});
+// const spinning = keyframes({
+//   '0%': { transform: 'rotate(0deg)' },
+//   '100%': { transform: 'rotate(360deg)' },
+// });
 
-const StyledLogo = styled(motion.a, {
+const StyledLogo = styled(motion(Link), {
   display: 'flex',
   alignItems: 'center',
   gap: '10px',
@@ -59,8 +60,8 @@ const variants : Variants = {
   }
 }
 
-const wheelVariants : Variants = {
-};
+// const wheelVariants : Variants = {
+// };
 
 const Logo: React.FC<Props> = ({ ...props }) => {
 
@@ -100,7 +101,7 @@ const Logo: React.FC<Props> = ({ ...props }) => {
   });
 
   return (
-    <StyledLogo {...props} href="#"
+    <StyledLogo {...props} to="/"
       // onHoverStart={startSpin}
       // onHoverEnd={stopSpin}
 
@@ -110,7 +111,8 @@ const Logo: React.FC<Props> = ({ ...props }) => {
       <h1>Workshop</h1>
       <motion.div
         // animate={controls}
-        variants={wheelVariants}
+        // variants={wheelVariants}
+
         style={{
           rotate
         }}

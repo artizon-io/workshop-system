@@ -5,9 +5,9 @@ import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { IoSettingsSharp } from 'react-icons/io5';
 
-type StyledLoadingVariants = Stitches.VariantProps<typeof StyledLoading>
+type StyledSupportVariants = Stitches.VariantProps<typeof StyledSupport>
 
-const StyledLoading = styled(motion.main, {
+const StyledSupport = styled(motion.main, {
   display: 'flex',
   flexDirection: 'column',
   gap: '20px',
@@ -22,15 +22,15 @@ const StyledLoading = styled(motion.main, {
   },
 });
 
-interface Props extends React.ComponentProps<typeof StyledLoading> {
+interface Props extends React.ComponentProps<typeof StyledSupport> {
   
 };
 
 // const MotionIoSettingsSharp = motion(IoSettingsSharp);
 
-const Loading: React.FC<Props> = ({ ...props }) => {
+const Support: React.FC<Props> = ({ ...props }) => {
   return (
-    <StyledLoading {...props}
+    <StyledSupport {...props}
       initial={{
         opacity: 0,
         scale: 0.9,
@@ -50,25 +50,9 @@ const Loading: React.FC<Props> = ({ ...props }) => {
         }
       }}
     >
-      <motion.span
-        initial={{
-          rotate: 0
-        }}
-        animate={{
-          rotate: 360,
-        }}
-        transition={{
-          repeat: Infinity,
-          repeatType: 'loop',
-          ease: 'linear',
-          duration: 0.6,
-        }}
-      >
-        <IoSettingsSharp style={{ fontSize: '80px' }}/>
-      </motion.span>
-      <h1>Loading</h1>
-    </StyledLoading>
+      <h1>Support</h1>
+    </StyledSupport>
   );
 };
 
-export default Loading;
+export default Support;

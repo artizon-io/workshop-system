@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { styled } from '@artizon/design-system';
 import type * as Stitches from '@stitches/react';
+import { motion } from 'framer-motion';
 
 type StyledAdminUserManagementVariants = Stitches.VariantProps<typeof StyledAdminUserManagement>
 
 const StyledAdminUserManagement = styled('main', {
-  
+  '& > h1': {
+    color: '$gray500',
+    fontFamily: '$firacode'
+  }
 });
 
 interface Props extends React.ComponentProps<typeof StyledAdminUserManagement> {
@@ -15,7 +19,10 @@ interface Props extends React.ComponentProps<typeof StyledAdminUserManagement> {
 const AdminUserManagement: React.FC<Props> = ({ ...props }) => {
   return (
     <StyledAdminUserManagement {...props}>
-      
+      <motion.h1
+      >
+        Admin User Management
+      </motion.h1>
     </StyledAdminUserManagement>
   );
 };
