@@ -8,31 +8,92 @@ type StyledLinkVariants = Stitches.VariantProps<typeof StyledLink>
 const StyledLink = styled(RouterLink, {
   variants: {
     style: {
-      'next': {
+      'gray': {},
+      'blue': {}
+    },
+    'inline': {
+      true: {
+        fontFamily: 'inherit',
+        fontSize: 'inherit',
+      },
+      false:{
         fontFamily: '$firacode',
         fontSize: '14px',
-        color: '$gray550',
-        '&:hover': {
-          color: '$gray050',
-        }
       }
     },
-    variant: {
+    'underline': {
+      true: {
+        underline: "",
+        textDecorationColor: 'transparent',
+      },
+      false: {}
+    },
+    state: {
       'normal': {
         '&:hover': {
           cursor: 'pointer'
         }
       },
       'disabled': {
+        color: '$gray700',
+        textDecoration: 'line-through',
         '&:hover': {
           cursor: 'not-allowed'
-        }
+        },
       },
     }
   },
+  compoundVariants: [
+    {
+      underline: 'true',
+      style: 'blue',
+      state: 'normal',
+      css: {
+        color: '$blue500',
+        '&:hover': {
+          textDecorationColor: "$blue500"
+        }
+      }
+    },
+    {
+      underline: 'true',
+      style: 'gray',
+      state: 'normal',
+      css: {
+        color: '$gray550',
+        '&:hover': {
+          textDecorationColor: "$gray550"
+        }
+      }
+    },
+    {
+      underline: 'false',
+      style: 'blue',
+      state: 'normal',
+      css: {
+        color: '$blue500',
+        '&:hover': {
+          color: '$blue200',
+        }
+      }
+    },
+    {
+      underline: 'false',
+      style: 'gray',
+      state: 'normal',
+      css: {
+        color: '$gray550',
+        '&:hover': {
+          color: '$gray050',
+        }
+      }
+    },
+  ],
   defaultVariants: {
-    style: 'next',
-    variant: 'normal'
+    inline: false,
+    underline: false,
+    state: 'normal',
+    style: 'blue'
   }
 });
 
@@ -40,8 +101,8 @@ interface Props extends React.ComponentProps<typeof StyledLink> {
   
 };
 
-export const Link: React.FC<Props> = ({ ...props }) => {
+export const Link: React.FC<Props> = ({ state, ...props }) => {
   return (
-    <StyledLink {...props}/>
+    <StyledLink state={state} {...props} onClick={e => state === 'disabled' ? e.preventDefault() : null}/>
   );
 };

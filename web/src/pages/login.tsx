@@ -17,7 +17,6 @@ interface Props extends React.ComponentProps<typeof StyledLogin> {
 };
 
 const Login: React.FC<Props> = ({ ...props }) => {
-  const [showLogin, setShowLogin] = useState(true);
   const navigate = useNavigate();
   const [recaptchaVerifer, setRecaptchaVerifier] = useState<RecaptchaVerifier>();
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult>();
@@ -35,43 +34,33 @@ const Login: React.FC<Props> = ({ ...props }) => {
     ));
   }, []);
 
-  useEffect(() => {
-    switch(showLogin) {
-      case false:
-        setTimeout(() => redirect('/admin'), 2000);
-        break;
-    }
-  }, [showLogin]);
-
   const submitPhone = async (phone: string) : Promise<void> => {
-    // return new Promise((resolve, reject) => setTimeout(() => resolve(), 500));
+    return new Promise((resolve, reject) => setTimeout(() => resolve(), 500));
     // return Promise.resolve()
 
-    if (!recaptchaVerifer)
-      throw Error('Recaptcha verifier is still loading')
+    // if (!recaptchaVerifer)
+    //   throw Error('Recaptcha verifier is still loading')
 
-    const result = await signInWithPhoneNumber(auth, phone, recaptchaVerifer);
-    setConfirmationResult(result);
+    // const result = await signInWithPhoneNumber(auth, phone, recaptchaVerifer);
+    // setConfirmationResult(result);
   }
 
   const submitOtp = async (otp: string) : Promise<void> => {
-    // return new Promise((resolve, reject) => setTimeout(() => { resolve(); setShowLogin(false) }, 500));
+    return new Promise((resolve, reject) => setTimeout(() => { resolve(); navigate('/admin'); }, 500));
 
-    if (!confirmationResult)
-      throw Error("OTP hasn't been sent yet");
+    // if (!confirmationResult)
+    //   throw Error("OTP hasn't been sent yet");
 
-    const userCredential = await confirmationResult.confirm(otp);
-    setShowLogin(false);
+    // const userCredential = await confirmationResult.confirm(otp);
+    // setShowLogin(false);
   }
 
   return (
     <StyledLogin {...props}>
-      {showLogin
-      && <LoginForm
+      <LoginForm
         submitPhone={submitPhone}
         submitOtp={submitOtp}
       />
-      }
     </StyledLogin>
   );
 };

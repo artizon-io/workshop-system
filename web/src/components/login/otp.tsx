@@ -11,67 +11,70 @@ import { AnimatePresence, motion } from "framer-motion";
 
 type StyledOTPVariants = Stitches.VariantProps<typeof StyledOTP>;
 
-const StyledOTP = styled(motion.div, {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '35px',
-  // alignItems: 'center',
-  '& > .header': {
-    fontFamily: '$firacode',
-    fontWeight: 500,
-    fontSize: '22px'
+const StyledForm = styled(Form, {
+  flexbox: 'row',
+  gap: '10px',
+});
+
+const StyledOTPInput = styled('input', {
+  border: '2px solid transparent',
+  width: '50px',
+  height: '50px',
+  paddingLeft: '18px',
+  backgroundColor: '$gray900',
+  fontFamily: '$firacode',
+  borderRadius: '8px',
+  color: '$gray100',
+  '&::placeholder': {
+    color: '$gray800',
   },
-  '& > .notify': {
-    color: '$gray600',
-    fontWeight: 300,
-    fontSize: '14px'
+  '&:focus': {
+    borderColor: '$gray050',
+    color: '$gray050',
   },
-  '& > .notify > em': {
+});
+
+const StyledHeader = styled('h2', {
+  fontFamily: '$firacode',
+  fontWeight: 500,
+  fontSize: '22px'
+});
+
+const StyledSubheader = styled('p', {
+  color: '$gray600',
+  fontWeight: 300,
+  fontSize: '14px',
+  '& > em': {
     color: '$gray300',
     fontWeight: 400,
     fontFamily: '$firacode',
     fontSize: 'inherit',
     fontStyle: 'normal'
   },
-  '& > form': {
-    display: 'flex',
-    flexDirection: 'row',
-    gap: '10px',
-    alignSelf: 'center'
-  },
-  '& > form > input': {
-    border: '2px solid transparent',
-    width: '50px',
-    height: '50px',
-    paddingLeft: '18px',
-    backgroundColor: '$gray900',
-    fontFamily: '$firacode',
-    borderRadius: '8px',
-    color: '$gray100',
-  },
-  '& > form > input::placeholder': {
-    color: '$gray800',
-  },
-  '& > form > input:focus': {
-    borderColor: '$gray050',
-    color: '$gray050',
-  },
-  '& > .resend': {
-    color: '$gray600',
-    fontWeight: 300,
-    fontSize: '13px'
-  },
-  '& > .resend > a': {
+});
+
+const StyledBodyText = styled('p', {
+  color: '$gray600',
+  fontWeight: 300,
+  fontSize: '13px',
+  '& > a': {
     color: '$blue500s',
     fontWeight: 400,
-    textDecoration: 'underline',
+    underline: "",
     textDecorationColor: 'transparent',
-    textUnderlineOffset: '3px',
-    textDecorationThickness: '1px'
   },
-  '& > .resend > a:hover': {
+  '& > a:hover': {
     cursor: 'pointer',
     textDecorationColor: '$blue500',
+  },
+});
+
+const StyledOTP = styled(motion.div, {
+  flexbox: "column",
+  alignItems: 'stretch',
+  gap: '35px',
+  [`& ${Back}`]: {
+    alignSelf: 'flex-start',
   },
 });
 
@@ -85,7 +88,7 @@ export const OTP: React.FC<Props> = ({ submitOtp, handleBack, ...props }) => {
   const [otpIndex, setOtpIndex] = useState(0);
   const otpInputRef = useRef<HTMLInputElement>(null);
   const otpSubmitRef = useRef<HTMLButtonElement>(null);
-  const [buttonState, setButtonState] = useState<StyledButtonVariants['variant']>('disabled');
+  const [buttonState, setButtonState] = useState<StyledButtonVariants['state']>('disabled');
 
   // Auto focus to otp input when component render
   useEffect(() => {
@@ -129,8 +132,8 @@ export const OTP: React.FC<Props> = ({ submitOtp, handleBack, ...props }) => {
   return (
     <StyledOTP {...props}>
       <Back onClick={handleBack}/>
-      <h3 className="header">Verification</h3>
-      <p className="notify">An OTP has been sent to <em>91000000</em></p>
+      <StyledHeader>Verification</StyledHeader>
+      <StyledSubheader>An OTP has been sent to <em>91000000</em></StyledSubheader>
       <Formik
         initialValues={
           [...Array(6).keys()].reduce(
@@ -177,17 +180,17 @@ export const OTP: React.FC<Props> = ({ submitOtp, handleBack, ...props }) => {
             formikHandleChange(e);
           };
           return (
-            <Form autoComplete="off">
+            <StyledForm autoComplete="off">
               {[...Array(6).keys()].map(index =>
-                <input key={index} type="tel" name={`otp${index+1}`} placeholder="*" ref={otpIndex === index ? otpInputRef : null} onChange={props.handleChange} disabled={otpIndex !== index} value={props.values[`otp${index+1}`]} onKeyDown={otpInputOnKeydown}/>
+                <StyledOTPInput key={index} type="tel" name={`otp${index+1}`} placeholder="*" ref={otpIndex === index ? otpInputRef : null} onChange={props.handleChange} disabled={otpIndex !== index} value={props.values[`otp${index+1}`]} onKeyDown={otpInputOnKeydown}/>
               )}
               <button type="submit" ref={otpSubmitRef} style={{display: 'none'}}>Verify</button>
-            </Form>
+            </StyledForm>
           );
         }}
       </Formik>
-      <p className="resend">Didn't receive the code? <a>Resend</a></p>
-      <Button variant={buttonState}>Verify</Button>
+      <StyledBodyText className="resend">Didn't receive the code? <a>Resend</a></StyledBodyText>
+      <Button state={buttonState}>Verify</Button>
     </StyledOTP>
   );
 };

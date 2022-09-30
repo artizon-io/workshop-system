@@ -1,19 +1,11 @@
 import React, { useState, useEffect, useRef, ReactNode } from "react";
-import InterLightWoff from '@fonts/Inter-Light.woff';
-import InterRegularWoff from '@fonts/Inter-Regular.woff';
-import InterRegularItalicWoff from '@fonts/Inter-Italic.woff';
-import InterMediumWoff from '@fonts/Inter-Medium.woff';
-import InterSemiBoldWoff from '@fonts/Inter-SemiBold.woff';
-import InterBoldWoff from '@fonts/Inter-Bold.woff';
-import FiraCodeLightWoff from '@fonts/FiraCode-Light.woff';
-import FiraCodeRegularWoff from '@fonts/FiraCode-Regular.woff';
-import FiraCodeMediumWoff from '@fonts/FiraCode-Medium.woff';
-import FiraCodeSemiBoldWoff from '@fonts/FiraCode-SemiBold.woff';
-import FiraCodeBoldWoff from '@fonts/FiraCode-Bold.woff';
+import InterVarWoff from '@fonts/Inter.var.woff2';
+import InterItalicVarWoff from '@fonts/Inter-italic.var.woff2';
+import FiraCodeVFWoff from '@fonts/FiraCode-VF.woff';
 import create from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import { subscribeWithSelector } from 'zustand/middleware';
-import { createStitches } from "@stitches/react";
+import { createStitches, PropertyValue, ScaleValue } from "@stitches/react";
 
 
 // interface ThemeState {
@@ -92,6 +84,11 @@ export const { styled, css, keyframes, globalCss } = createStitches({
       red400: '#942c36',
       red500: '#a43b45',
       red500sss: '#b92a38',
+      red600: '#b44752',
+      red700: '#c2545f',
+      red700s: '#cb505c',
+      red700ss: '#d64a58',
+      red700sss: '#e14555',
     },
     fonts: {
       inter: 'Inter',
@@ -100,9 +97,17 @@ export const { styled, css, keyframes, globalCss } = createStitches({
     },
   },
   utils: {
-    // m: (value) => ({
-    //   margin: value,
-    // }),
+    flexbox: (value : PropertyValue<'flexDirection'>) => ({
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      flexDirection: value,
+    }),
+    underline: (value : "") => ({
+      textDecoration: 'underline',
+      textUnderlineOffset: '3px',
+      textDecorationThickness: '1px'
+    }),
   }
 });
 
@@ -111,68 +116,17 @@ const globalStyles = globalCss({
   "@font-face": [
     {
       fontFamily: 'Inter',
-      src: `url(${InterLightWoff}) format("woff")`,
-      fontWeight: 300,
+      src: `url(${InterVarWoff}) format("woff2")`,
       fontStyle: 'normal'
     },
     {
       fontFamily: 'Inter',
-      src: `url(${InterRegularWoff}) format("woff")`,
-      fontWeight: 400,
-      fontStyle: 'normal',
-    },
-    {
-      fontFamily: 'Inter',
-      src: `url(${InterRegularItalicWoff}) format('woff')`,
-      fontWeight: 400,
-      fontStyle: "italic",
-    },
-    {
-      fontFamily: 'Inter',
-      src: `url(${InterMediumWoff}) format('woff')`,
-      fontWeight: 500,
-      fontStyle: "normal",
-    },
-    {
-      fontFamily: 'Inter',
-      src: `url(${InterSemiBoldWoff}) format('woff')`,
-      fontWeight: 600,
-      fontStyle: "normal",
-    },
-    {
-      fontFamily: 'Inter',
-      src: `url(${InterBoldWoff}) format('woff')`,
-      fontWeight: 700,
-      fontStyle: "normal",
+      src: `url(${InterItalicVarWoff}) format("woff2")`,
+      fontStyle: 'italic'
     },
     {
       fontFamily: 'FiraCode',
-      src: `url(${FiraCodeLightWoff}) format('woff')`,
-      fontWeight: 300,
-      fontStyle: "normal",
-    },
-    {
-      fontFamily: 'FiraCode',
-      src: `url(${FiraCodeRegularWoff}) format('woff')`,
-      fontWeight: 400,
-      fontStyle: "normal",
-    },
-    {
-      fontFamily: 'FiraCode',
-      src: `url(${FiraCodeMediumWoff}) format('woff')`,
-      fontWeight: 500,
-      fontStyle: "normal",
-    },
-    {
-      fontFamily: 'FiraCode',
-      src: `url(${FiraCodeSemiBoldWoff}) format('woff')`,
-      fontWeight: 600,
-      fontStyle: "normal",
-    },
-    {
-      fontFamily: 'FiraCode',
-      src: `url(${FiraCodeBoldWoff}) format('woff')`,
-      fontWeight: 700,
+      src: `url(${FiraCodeVFWoff}) format('woff')`,
       fontStyle: "normal",
     },
   ],
@@ -204,10 +158,7 @@ const globalStyles = globalCss({
     textDecoration: 'none'
   },
   '#root': {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexbox: 'column'
   },
 });
 

@@ -9,7 +9,7 @@ type StyledAdminVariants = Stitches.VariantProps<typeof StyledAdmin>
 const StyledAdmin = styled('main', {
   display: 'flex',
   flexDirection: 'column',
-  margin: '200px 100px 50px 100px',
+  margin: '180px 100px 50px 100px',
   '& > div': {
     display: 'flex',
     flexDirection: 'column',

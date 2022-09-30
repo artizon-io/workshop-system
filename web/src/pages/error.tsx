@@ -4,6 +4,7 @@ import type * as Stitches from '@stitches/react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { MdOutlineReportGmailerrorred } from 'react-icons/md';
+import { SiFacepunch } from 'react-icons/si';
 
 type StyledErrorVariants = Stitches.VariantProps<typeof StyledError>
 
@@ -16,6 +17,7 @@ const StyledError = styled(motion.main, {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    gap: '20px'
   },
   '& > div > svg': {
     color: '$gray600'
@@ -68,7 +70,8 @@ const Error: React.FC<Props> = ({ ...props }) => {
       }}
     >
       <div>
-        <MdOutlineReportGmailerrorred style={{ fontSize: '80px' }}/>
+        {/* <MdOutlineReportGmailerrorred style={{ fontSize: '80px' }}/> */}
+        <SiFacepunch style={{ fontSize: '80px' }}/>
         <h1>Error</h1>
       </div>
       <MotionLink to="/"

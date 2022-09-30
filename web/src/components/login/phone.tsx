@@ -7,32 +7,29 @@ import type * as Stitches from '@stitches/react';
 import { Button, StyledButtonVariants } from "../button";
 import { Back } from "../back";
 // import { HK } from 'country-flag-icons/react/3x2'
-import { Input, StyledInputVariants } from "./input";
+import { Input, StyledInputVariants } from "../input";
 import { AnimatePresence, motion } from "framer-motion";
+import { Link } from "@components/link";
 
 
 type StyledPhoneVariants = Stitches.VariantProps<typeof StyledPhone>;
 
-const StyledPhone = styled(motion.div, {
+const StyledHeader = styled('h2', {
+  fontFamily: '$firacode',
+  fontWeight: 500,
+  fontSize: '25px'
+});
+
+const StyledForm = styled(Form, {
   display: 'flex',
   flexDirection: 'column',
-  gap: '50px',
-  // alignItems: 'center',
-  '& > .header': {
-    fontFamily: '$firacode',
-    fontWeight: 500,
-    fontSize: '25px'
-  },
-  '& > form': {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '25px'
-  },
-  '& > form > div': {
-    display: 'flex',
-    gap: '5px'
-  },
-  '& > form > div > .country': {
+  gap: '25px'
+});
+
+const StyledInputGroup = styled('div', {
+  display: 'flex',
+  gap: '5px',
+  '& > select': {
     backgroundColor: '$gray050',
     borderRadius: '12px',
     color: '$gray900',
@@ -42,23 +39,31 @@ const StyledPhone = styled(motion.div, {
     // '-webkit-appearance': 'none',
     // appearance: 'none',
   },
-  '& > form > .support': {
-    color: '$gray600',
-    fontWeight: 300,
-    fontSize: '13px'
-  },
-  '& > form > .support > a': {
-    color: '$blue500s',
-    fontWeight: 400,
-    textDecoration: 'underline',
-    textDecorationColor: 'transparent',
-    textUnderlineOffset: '3px',
-    textDecorationThickness: '1px'
-  },
-  '& > form > .support > a:hover': {
-    cursor: 'pointer',
-    textDecorationColor: '$blue500',
-  },
+  '& > select:hover': {
+    cursor: 'pointer'
+  }
+});
+
+const StyledFormText = styled('p', {
+  color: '$gray600',
+  fontWeight: 300,
+  fontSize: '13px',
+  // '& > a': {
+  //   color: '$blue500s',
+  //   fontWeight: 400,
+  //   underline: "",
+  //   textDecorationColor: 'transparent',
+  // },
+  // '& > a:hover': {
+  //   cursor: 'pointer',
+  //   textDecorationColor: '$blue500',
+  // },
+});
+
+const StyledPhone = styled(motion.div, {
+  flexbox: 'column',
+  gap: '50px',
+  alignItems: 'flex-start'
 });
 
 // See https://github.com/stitchesjs/stitches/discussions/213
@@ -69,8 +74,8 @@ interface Props extends React.ComponentProps<typeof StyledPhone> {
 
 export const Phone: React.FC<Props> = ({ submitPhone, handleNext, ...props }) => {
   const phoneInputRef = useRef<HTMLInputElement>(null);
-  const [buttonState, setButtonState] = useState<StyledButtonVariants['variant']>('disabled');
-  const [phoneInputState, setPhoneInputState] = useState<StyledInputVariants['variant']>('normal');
+  const [buttonState, setButtonState] = useState<StyledButtonVariants['state']>('disabled');
+  const [phoneInputState, setPhoneInputState] = useState<StyledInputVariants['state']>('normal');
 
   // Auto focus to otp input when component render
   useEffect(() => {
@@ -109,7 +114,7 @@ export const Phone: React.FC<Props> = ({ submitPhone, handleNext, ...props }) =>
 
   return (
     <StyledPhone {...props}>
-      <h3 className="header">Login</h3>
+      <StyledHeader>Login</StyledHeader>
       <Formik
         initialValues={{
           phone: ''
@@ -141,17 +146,17 @@ export const Phone: React.FC<Props> = ({ submitPhone, handleNext, ...props }) =>
             formikHandleChange(e);
           };
           return (
-            <Form autoComplete="off">
-              <div>
+            <StyledForm autoComplete="off">
+              <StyledInputGroup>
                 {/* <HK className='country'/> */}
-                <select className='country'>
+                <select>
                   <option value="hk">+852</option>
                 </select>
-                <Input type="tel" name={'phone'} placeholder="Phone" ref={phoneInputRef} onChange={props.handleChange} value={props.values.phone} variant={phoneInputState} />
-              </div>
-              <p className="support">Need help? <a>Contact support</a></p>
-              <Button type="submit" variant={buttonState} id='recaptcha-container'>Verify</Button>
-            </Form>
+                <Input type="tel" name={'phone'} placeholder="Phone" ref={phoneInputRef} onChange={props.handleChange} value={props.values.phone} state={phoneInputState} />
+              </StyledInputGroup>
+              <StyledFormText className="support">Need help? <Link to="/support" style={'blue'} inline underline>Contact support</Link></StyledFormText>
+              <Button type="submit" state={buttonState} id='recaptcha-container'>Verify</Button>
+            </StyledForm>
           );
         }}
       </Formik>

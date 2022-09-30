@@ -4,10 +4,74 @@ import type * as Stitches from '@stitches/react';
 import { Link } from '../link';
 import { Link as RouterLink } from 'react-router-dom';
 import { ProfileBubble } from './profileBubble';
-import { motion, useAnimation, useAnimationFrame, useScroll, useSpring, useTransform } from 'framer-motion';
+import { LayoutGroup, motion, MotionProps, useAnimation, useAnimationFrame, useScroll, useSpring, useTransform } from 'framer-motion';
 import Logo from './logo';
+import profileIcon from '@assets/profileIcon.jpg';
 
 type StyledNavBarVariants = Stitches.VariantProps<typeof StyledNavBar>
+
+const StyledNav = styled(motion.nav, {
+  flexbox: "row",
+  justifyContent: 'space-between',
+  '& > ul': {
+    flexbox: 'row',
+    gap: '30px',
+  },
+  variants: {
+    state: {
+      'full': {
+        padding: '40px 50px',
+        backgroundColor: '$gray950',
+      },
+      'slim': {
+        padding: '20px 50px',
+        backdropFilter: 'blur(8px)',
+        backgroundColor: 'rgba(255, 255, 255, 0.6)',
+      }
+    }
+  },
+  defaultVariants: {
+    state: 'full'
+  }
+});
+
+const Nav : React.FC<{
+  adminMode: boolean;
+} & React.ComponentProps<typeof StyledNav>> = ({ adminMode, ...props }) => {
+  return (
+    <StyledNav layout {...props}>
+      <Logo to="/" layout/>
+      <motion.ul layout>
+        <li><Link to="/admin/user-management" style={'gray'}>User Management</Link></li>
+        <li><Link to="/support" style={'gray'}>Support</Link></li>
+        {adminMode &&
+        <ProfileBubble img={profileIcon}/>
+        }
+      </motion.ul>
+    </StyledNav>
+  );
+}
+
+const StyledProgressbar = styled(motion.div, {
+  backgroundColor: '$blue300',
+  height: '4px',
+});
+
+const Progressbar : React.FC<React.ComponentProps<typeof StyledProgressbar>> = ({ ...props }) => {
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+
+  return (
+    <StyledProgressbar {...props}
+      layout
+      style={{ scaleX, originX: 0 }}
+    />
+  );
+}
 
 const StyledNavBar = styled(motion.header, {
   width: '100vw',
@@ -15,63 +79,15 @@ const StyledNavBar = styled(motion.header, {
   top: 0,
   left: 0,
   zIndex: 1000,
-  '& > nav > div': {
-    display: 'grid',
-    gridTemplateColumns: 'auto 1fr auto',
-    alignItems: 'center',
-  },
-  '& > nav > div > ul': {
-    display: 'flex',
-    gap: '30px',
-    alignItems: 'center',
-    justifyContent: 'flex-end'
-  },
-  '& > .progressbar': {
-    backgroundColor: '$blue300',
-    transformOrigin: '0%',
-    height: '4px',
-  },
-  variants: {
-    variant: {
-      'full': {
-        '& > nav': {
-          padding: '40px 50px',
-          backgroundColor: '$gray950',
-        },
-        // '& > .progressbar': {
-        //   height: '0px',
-        // }
-      },
-      'slim': {
-        '& > nav': {
-          padding: '20px 50px',
-          backdropFilter: 'blur(8px)',
-          backgroundColor: 'rgba(255, 255, 255, 0.6)',
-        },
-        // '& > .progressbar': {
-        //   height: '5px'
-        //   // borderBottom: '1px solid',
-        //   // borderBottomColor: '$gray850'
-        // } 
-      }
-    }
-  },
 });
 
 interface Props extends React.ComponentProps<typeof StyledNavBar> {
-  img?: string;
+  adminMode?: boolean;
 };
 
-const NavBar: React.FC<Props> = ({ img, ...props }) => {
+const NavBar: React.FC<Props> = ({ adminMode = false, ...props }) => {
   const { scrollY } = useScroll();
   const [atTop, setAtTop] = useState(true);
-
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001
-  });
 
   // Detect if scrollY has value or not
   // const height = useTransform(scrollY, [0, 1], [300, 100]); nice attempt
@@ -80,7 +96,7 @@ const NavBar: React.FC<Props> = ({ img, ...props }) => {
   });
 
   return (
-    <StyledNavBar {...props} layout variant={atTop ? 'full' : 'slim'}
+    <StyledNavBar {...props}
       initial={{
         y: -100
       }}
@@ -94,21 +110,10 @@ const NavBar: React.FC<Props> = ({ img, ...props }) => {
         }
       }}
     >
-      <motion.nav layout>
-        <motion.div layout>
-          <Logo to="/"/>
-          <span></span>
-          <ul>
-            <li><Link to="/admin/user-management">User Management</Link></li>
-            <li><Link to="/support">Support</Link></li>
-            {img &&
-            <ProfileBubble img={img}>
-            </ProfileBubble>
-            }
-          </ul>
-        </motion.div>
-      </motion.nav>
-      <motion.div className="progressbar" style={{ scaleX }}/>
+      <LayoutGroup>
+        <Nav adminMode={adminMode} state={atTop ? 'full' : 'slim'}/>
+        <Progressbar/>
+      </LayoutGroup>
     </StyledNavBar>
   );
 };

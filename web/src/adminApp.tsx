@@ -7,6 +7,7 @@ import Loading from '@pages/loading';
 import AdminUserManagement from '@pages/adminUserManagement';
 import Admin from '@pages/admin';
 import AdminLayout from '@layout/adminLayout';
+import NotFound from '@pages/notFound';
 
 
 const AdminApp : FC<{}> = ({}) => {
@@ -53,6 +54,8 @@ const AdminApp : FC<{}> = ({}) => {
         <Route index element={<Admin/>}/>  
         <Route path="user-management" element={<AdminUserManagement/>}/>
       </Route>
+
+      <Route path="*" element={<NotFound/>}/>
     </Routes>
   );
 }

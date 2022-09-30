@@ -16,66 +16,86 @@ const spinning = keyframes({
   '100%': { transform: 'rotate(360deg)' },
 });
 
+const StyledImSpinner = styled(ImSpinner8, {
+  animation: `${spinning} 1000ms`,
+  animationTimingFunction: 'linear',
+  animationIterationCount: 'infinite'
+});
+
+const SpinnerIcon : React.FC = ({...props}) => {
+  return (
+    <StyledImSpinner {...props}/>
+  )
+}
+
 const StyledButton = styled(motion.button, {
-  '& > .spinner': {
-    animation: `${spinning} 1000ms`,
-    animationTimingFunction: 'linear',
-    animationIterationCount: 'infinite'
-  },
+  fontFamily: '$firacode',
+  fontWeight: 'lighter',
+  transition: 'background-color 0.2s, color 0.2s',
   variants: {
-    style: {
-      'next': {
-        fontFamily: '$firacode',
-        fontWeight: 'lighter',
+    'shadow': {
+      true: {
         $$shadowColor: 'hsla(0, 0%, 30%, 15%)',
         boxShadow: '0 0 20px 3px $$shadowColor',
-        transition: 'background-color 0.2s, color 0.2s',
       },
+      false: {}
+    },
+    style: {
+      'gray': {},
+      'blue': {},
     },
     size: {
+      's': {
+        fontSize: '18px',
+        borderRadius: '30px',
+        padding: '20px 30px'
+      },
       'm': {
         fontSize: '18px',
         borderRadius: '30px',
         padding: '20px 30px'
       },
     },
-    variant: {
+    state: {
       'normal': {
         '&:hover': {
           cursor: 'pointer'
         }
       },
       'disabled': {
+        backgroundColor: '$gray900',
+        color: '$gray800',
         '&:hover': {
           cursor: 'not-allowed'
         },
       },
       'loading': {
+        backgroundColor: '$gray000',
+        color: '$gray950',
         '&:hover': {
           cursor: 'not-allowed'
         }
       },
       'error': {
+        backgroundColor: '$red500sss',
+        color: '$gray950',
         '&:hover': {
           cursor: 'not-allowed'
         }
       },
       'success': {
+        backgroundColor: '$blue500sss',
+        color: '$gray950',
         '&:hover': {
           cursor: 'not-allowed'
         }
       }
     }
   },
-  defaultVariants: {
-    size: 'm',
-    style: 'next',
-    variant: 'normal'
-  },
   compoundVariants: [
     {
-      style: 'next',
-      variant: 'normal',
+      style: 'gray',
+      state: 'normal',
       css: {
         backgroundColor: '$gray050',
         color: '$gray850',
@@ -86,53 +106,38 @@ const StyledButton = styled(motion.button, {
       }
     },
     {
-      style: 'next',
-      variant: 'disabled',
+      style: 'blue',
+      state: 'normal',
       css: {
-        backgroundColor: '$gray900',
-        color: '$gray800',
-      }
-    },
-    {
-      style: 'next',
-      variant: 'loading',
-      css: {
-        backgroundColor: '$gray000',
-        color: '$gray950',
-      }
-    },
-    {
-      style: 'next',
-      variant: 'error',
-      css: {
-        backgroundColor: '$red500sss',
-        color: '$gray950',
-      }
-    },
-    {
-      style: 'next',
-      variant: 'success',
-      css: {
-        backgroundColor: '$blue500sss',
-        color: '$gray950',
+        backgroundColor: '$gray050',
+        color: '$gray850',
+        '&:hover': {
+          backgroundColor: '$gray000',
+          color: '$gray950',
+        }
       }
     },
   ],
+  defaultVariants: {
+    size: 'm',
+    style: 'gray',
+    state: 'normal'
+  },
 });
 
 interface Props extends React.ComponentProps<typeof StyledButton> {
   children: string;
 };
 
-export const Button: React.FC<Props> = ({ variant, children, ...props }) => {
+export const Button: React.FC<Props> = ({ state, children, ...props }) => {
   return (
-    <StyledButton variant={variant} layout {...props} disabled={variant !== 'normal'}
+    <StyledButton state={state} layout {...props} disabled={state !== 'normal'}
       whileTap={{ scale: 0.97 }}
     >
       {
-      variant === 'error' ? <IoClose/> :
-      variant === 'loading' ? <ImSpinner8 className='spinner'/> :
-      variant === 'success' ? <IoCheckmarkSharp/> :
+      state === 'error' ? <IoClose/> :
+      state === 'loading' ? <SpinnerIcon/> :
+      state === 'success' ? <IoCheckmarkSharp/> :
       children
       }
     </StyledButton>

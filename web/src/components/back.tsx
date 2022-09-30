@@ -57,7 +57,7 @@ export const Back: React.FC<Props> = ({ ...props }) => {
   // }, [isHover]);
 
   return (
-    <StyledBack {...props} whileHover="whileHover">
+    <StyledBack {...props} whileHover="whileHover" className='back'>
       <motion.span className='arrow'
         variants={variants}
       >
@@ -67,3 +67,5 @@ export const Back: React.FC<Props> = ({ ...props }) => {
     </StyledBack>
   );
 };
+
+Back.toString = () => '.back'

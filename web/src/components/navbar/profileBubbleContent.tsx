@@ -6,6 +6,7 @@ import { motion, Variants } from 'framer-motion';
 import { MdLogout, MdOutlineManageAccounts } from 'react-icons/md';
 import { HiExternalLink } from 'react-icons/hi';
 import { useAuth } from 'reactfire';
+import { redirect } from 'react-router-dom';
 
 type StyledProfileBubbleContentVariants = Stitches.VariantProps<typeof StyledProfileBubbleContent>
 
@@ -111,15 +112,18 @@ export const ProfileBubbleContent: React.FC<Props> = React.forwardRef(({ isOpen,
           <span>Stripe Dashboard</span>
         </a>
       </motion.li>
+      {/* <motion.li
+        variants={listItemVariants}
+      >
+        <a href="#">Settings</a>
+      </motion.li> */}
       <motion.li
         variants={listItemVariants}
       >
-        {/* <a href="#">Settings</a> */}
-      </motion.li>
-      <motion.li
-        variants={listItemVariants}
-      >
-        <a onClick={() => auth.signOut()} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
+        <a onClick={() => {
+          auth.signOut();
+          redirect('/');
+        }} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
           <MdLogout style={{ transform: 'translate(0px, 0px)', fontSize: '15px' }}/>
           <span>Logout</span>
         </a>

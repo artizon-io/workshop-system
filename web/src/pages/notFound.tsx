@@ -68,7 +68,7 @@ const NotFound: React.FC<Props> = ({ ...props }) => {
       }}
     >
       <div>
-        <TbError404 style={{ fontSize: '80px' }}/>
+        <TbError404 style={{ fontSize: '120px' }}/>
         <h1>Not Found</h1>
       </div>
       <MotionLink to="/"
