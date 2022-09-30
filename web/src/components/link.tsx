@@ -19,7 +19,6 @@ const StyledLink = styled(RouterLink, {
       },
       false:{
         fontFamily: '$firacode',
-        fontSize: '14px',
       }
     },
     'underline': {
@@ -28,6 +27,10 @@ const StyledLink = styled(RouterLink, {
         textDecorationColor: 'transparent',
       },
       false: {}
+    },
+    size: {
+      's': {},
+      'm': {}
     },
     state: {
       'normal': {
@@ -111,12 +114,27 @@ const StyledLink = styled(RouterLink, {
         }
       }
     },
+    {
+      inline: 'false',
+      size: 's',
+      css: {
+        fontSize: '12px'
+      }
+    },
+    {
+      inline: 'false',
+      size: 'm',
+      css: {
+        fontSize: '14px'
+      }
+    },
   ],
   defaultVariants: {
     inline: false,
     underline: false,
     state: 'normal',
-    style: 'blue'
+    style: 'blue',
+    size: 'm'
   }
 });
 

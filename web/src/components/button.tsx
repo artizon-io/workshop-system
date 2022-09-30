@@ -29,6 +29,9 @@ const SpinnerIcon : React.FC = ({...props}) => {
 }
 
 const StyledButton = styled(motion.button, {
+  flexbox: 'row',
+  gap: '5px',
+
   fontFamily: '$firacode',
   fontWeight: 'lighter',
   transition: 'background-color 0.2s, color 0.2s',
@@ -46,9 +49,9 @@ const StyledButton = styled(motion.button, {
     },
     size: {
       's': {
-        fontSize: '18px',
-        borderRadius: '30px',
-        padding: '20px 30px'
+        fontSize: '14px',
+        borderRadius: '20px',
+        padding: '12px 16px'
       },
       'm': {
         fontSize: '18px',
@@ -126,12 +129,12 @@ const StyledButton = styled(motion.button, {
 });
 
 interface Props extends React.ComponentProps<typeof StyledButton> {
-  children: string;
+  state?: StyledButtonVariants['state'];
 };
 
-export const Button: React.FC<Props> = ({ state, children, ...props }) => {
+export const Button: React.FC<Props> = ({ state = 'normal', children, ...props }) => {
   return (
-    <StyledButton state={state} layout {...props} disabled={state !== 'normal'}
+    <StyledButton state={state} {...props} disabled={state !== 'normal'}
       whileTap={{ scale: 0.97 }}
     >
       {

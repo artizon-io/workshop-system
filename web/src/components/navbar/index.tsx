@@ -57,8 +57,8 @@ const Nav : React.FC<{
 }
 
 const StyledProgressbar = styled(motion.div, {
-  backgroundColor: '$blue300',
-  height: '4px',
+  backgroundColor: '$gray300',
+  height: '3px',
 });
 
 const Progressbar : React.FC<React.ComponentProps<typeof StyledProgressbar>> = ({ ...props }) => {

@@ -131,7 +131,7 @@ const Popover : React.FC<{
         variants={listVariants}
       >
         <motion.li variants={listItemVariants}>
-          <Link to="/support" style={'white'} onClick={e => {
+          <Link to="/support" style={'white'} size={'s'} onClick={e => {
             close();
           }}>
             <MdOutlineManageAccounts style={{ transform: 'translate(0px, -1px)', fontSize: '17px' }}/>
@@ -139,7 +139,7 @@ const Popover : React.FC<{
           </Link>
         </motion.li>
         <motion.li variants={listItemVariants}>
-          <Link to="/support" style={'white'} onClick={e => {
+          <Link to="/support" style={'white'} size={'s'} onClick={e => {
             close();
           }}>
             <HiExternalLink style={{ transform: 'translate(0px, 0px)', fontSize: '15px' }}/>
@@ -147,7 +147,7 @@ const Popover : React.FC<{
           </Link>
         </motion.li>
         <motion.li variants={listItemVariants}>
-          <Link to="/" style={'white'} onClick={e => {
+          <Link to="/" style={'white'} size={'s'} onClick={e => {
             close();
             auth.signOut();
             // auth.signOut().then(() => close());

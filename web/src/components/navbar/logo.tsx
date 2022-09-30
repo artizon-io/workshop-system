@@ -82,7 +82,7 @@ const SettingsIcon : React.FC<MotionProps> = ({...props}) => {
           stroke="currentColor"
           strokeLinecap="round"
           strokeLinejoin="round"
-          strokeWidth="50"
+          strokeWidth="45"
         />
       </svg>
     </StyledSettingsIcon>
