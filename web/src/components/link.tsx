@@ -9,7 +9,8 @@ const StyledLink = styled(RouterLink, {
   variants: {
     style: {
       'gray': {},
-      'blue': {}
+      'blue': {},
+      'white': {},
     },
     'inline': {
       true: {
@@ -67,6 +68,17 @@ const StyledLink = styled(RouterLink, {
       }
     },
     {
+      underline: 'true',
+      style: 'white',
+      state: 'normal',
+      css: {
+        color: '$gray800',
+        '&:hover': {
+          textDecorationColor: "$gray800"
+        }
+      }
+    },
+    {
       underline: 'false',
       style: 'blue',
       state: 'normal',
@@ -88,6 +100,17 @@ const StyledLink = styled(RouterLink, {
         }
       }
     },
+    {
+      underline: 'false',
+      style: 'white',
+      state: 'normal',
+      css: {
+        color: '$gray800',
+        '&:hover': {
+          color: '$gray900',
+        }
+      }
+    },
   ],
   defaultVariants: {
     inline: false,
@@ -101,8 +124,16 @@ interface Props extends React.ComponentProps<typeof StyledLink> {
   
 };
 
-export const Link: React.FC<Props> = ({ state, ...props }) => {
+export const Link: React.FC<Props> = ({ state, onClick, ...props }) => {
   return (
-    <StyledLink state={state} {...props} onClick={e => state === 'disabled' ? e.preventDefault() : null}/>
+    <StyledLink state={state} {...props} className='link'
+      onClick={e => {
+        state === 'disabled'
+          ? e.preventDefault()
+          : onClick ? onClick(e) : null
+      }}
+    />
   );
 };
+
+Link.toString = () => '.link';

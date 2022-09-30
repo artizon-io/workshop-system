@@ -73,7 +73,7 @@ const StyledOTP = styled(motion.div, {
   flexbox: "column",
   alignItems: 'stretch',
   gap: '35px',
-  [`& ${Back}`]: {
+  [`& > ${Back}`]: {
     alignSelf: 'flex-start',
   },
 });

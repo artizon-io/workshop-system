@@ -39,7 +39,11 @@ const Nav : React.FC<{
   adminMode: boolean;
 } & React.ComponentProps<typeof StyledNav>> = ({ adminMode, ...props }) => {
   return (
-    <StyledNav layout {...props}>
+    <StyledNav layout {...props}
+      // transition={{
+      //   when: 'afterChildren'
+      // }}
+    >
       <Logo to="/" layout/>
       <motion.ul layout>
         <li><Link to="/admin/user-management" style={'gray'}>User Management</Link></li>
