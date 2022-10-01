@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { keyframes, styled } from "@styleProvider";
 import type * as Stitches from '@stitches/react';
-import { IoCheckmarkSharp, IoClose } from "react-icons/io5";
+import { IoArrowForward, IoCheckmarkSharp, IoClose } from "react-icons/io5";
 import { ImSpinner8 } from "react-icons/im";
 import { motion } from 'framer-motion';
 
@@ -19,7 +19,9 @@ const spinning = keyframes({
 const StyledImSpinner = styled(ImSpinner8, {
   animation: `${spinning} 1000ms`,
   animationTimingFunction: 'linear',
-  animationIterationCount: 'infinite'
+  animationIterationCount: 'infinite',
+
+  fontSize: '22px'
 });
 
 const SpinnerIcon : React.FC = ({...props}) => {
@@ -47,6 +49,7 @@ const StyledButton = styled(motion.button, {
       'gray': {},
       'blue': {},
       'red': {},
+      'lightgray': {},
     },
     size: {
       's': {
@@ -59,6 +62,10 @@ const StyledButton = styled(motion.button, {
         borderRadius: '30px',
         padding: '20px 30px'
       },
+      'round': {
+        borderRadius: '50%',
+        padding: '16px',
+      }
     },
     state: {
       'normal': {
@@ -67,6 +74,13 @@ const StyledButton = styled(motion.button, {
         }
       },
       'disabled': {
+        backgroundColor: '$gray900',
+        color: '$gray800',
+        '&:hover': {
+          cursor: 'not-allowed'
+        },
+      },
+      'waiting': {
         backgroundColor: '$gray900',
         color: '$gray800',
         '&:hover': {
@@ -93,7 +107,14 @@ const StyledButton = styled(motion.button, {
         '&:hover': {
           cursor: 'not-allowed'
         }
-      }
+      },
+      'next': {
+        backgroundColor: '$gray000',
+        color: '$gray950',
+        '&:hover': {
+          cursor: 'not-allowed'
+        }
+      },
     }
   },
   compoundVariants: [
@@ -133,6 +154,18 @@ const StyledButton = styled(motion.button, {
         }
       }
     },
+    {
+      style: 'lightgray',
+      state: 'normal',
+      css: {
+        backgroundColor: '$gray700',
+        color: '$gray850',
+        '&:hover': {
+          backgroundColor: '$gray600',
+          color: '$gray950',
+        }
+      }
+    },
   ],
   defaultVariants: {
     size: 'm',
@@ -145,17 +178,18 @@ interface Props extends React.ComponentProps<typeof StyledButton> {
   state?: StyledButtonVariants['state'];
 };
 
-export const Button: React.FC<Props> = ({ state = 'normal', children, ...props }) => {
+export const Button: React.FC<Props> = React.forwardRef(({ state = 'normal', children, ...props }, ref) => {
   return (
-    <StyledButton state={state} {...props} disabled={state !== 'normal'}
+    <StyledButton state={state} {...props} disabled={state !== 'normal'} ref={ref}
       whileTap={{ scale: 0.97 }}
     >
       {
-      state === 'error' ? <IoClose/> :
+      state === 'error' ? <IoClose style={{ fontSize: '22px' }}/> :
       state === 'loading' ? <SpinnerIcon/> :
-      state === 'success' ? <IoCheckmarkSharp/> :
+      state === 'next' ? <IoArrowForward style={{ fontSize: '22px' }}/> :
+      state === 'success' ? <IoCheckmarkSharp style={{ fontSize: '22px' }}/> :
       children
       }
     </StyledButton>
   );
-};
+});

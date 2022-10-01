@@ -57,6 +57,14 @@ export default defineConfig({
         find: /@fonts/,
         replacement: path.resolve(__dirname, 'fonts'),
       },
+      {
+        find: /@mingsumsze\/common/,
+        replacement: path.resolve(__dirname, 'node_modules/@mingsumsze/common/src'),
+      },
+      {
+        find: /^firebase\/firestore/,
+        replacement: path.resolve(__dirname, 'node_modules/@firebase/firestore'),
+      },
       // {
       //   find: /@artizon\/design-system/,
       //   replacement: path.resolve(__dirname, 'node_modules/@artizon/design-system/src'),

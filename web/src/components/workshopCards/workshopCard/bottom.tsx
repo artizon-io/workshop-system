@@ -40,7 +40,7 @@ const Bottom : React.FC<{
   else  // user
     return (
       <StyledBottom className='bottom'>
-        <Button size={'s'}>
+        <Button size={'s'} style={'blue'}>
           Enroll
           <MdPersonAdd style={{ fontSize: '15px', transform: 'translate(0px, -2px)' }}/>
         </Button>

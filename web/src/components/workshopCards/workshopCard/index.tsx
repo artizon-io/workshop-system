@@ -10,6 +10,7 @@ import Right from './right';
 import Bottom from './bottom';
 import DeleteDialog from './deleteDialog';
 import Top from './top';
+import Overlay from '@components/dialog/overlay';
 
 type StyledWorkshopCardVariants = Stitches.VariantProps<typeof StyledWorkshopCard>
 
@@ -56,36 +57,6 @@ const DeleteTrigger : React.FC<{
 }
 
 DeleteTrigger.toString = () => '.delete-trigger';
-
-const StyledDeleteOverlay = styled(AlertDialogOverlay, {
-  backgroundColor: 'rgba(0, 0, 0, 0.1)',
-  zIndex: 10000,
-  backdropFilter: 'blur(3px)',
-  position: 'fixed',
-  inset: 0
-});
-
-const DeleteOverlay: React.FC = React.forwardRef(({ ...props }, ref) => {
-  return (
-    <StyledDeleteOverlay {...props} asChild={true}>
-      <motion.div
-        // onClick={close}
-        initial={{
-          opacity: 0
-        }}
-        animate={{
-          opacity: 1
-        }}
-        transition={{
-
-        }}
-        exit={{
-          opacity: 0
-        }}
-      />
-    </StyledDeleteOverlay>
-  );
-});
 
 const StyledWorkshopCard = styled(motion.div, {
   position: 'relative',
@@ -193,7 +164,7 @@ const WorkshopCard: React.FC<Props> = ({ workshopId, adminMode, ...props }) => {
           {dialogOpen && <>
             {/* Portal seems to have less bug */}
             <AlertDialogPortal forceMount={true}>
-              <DeleteOverlay/>
+              <Overlay/>
               <AlertDialogContent asChild={true} forceMount={true}>
                 <DeleteDialog close={() => setDialogOpen(false)}/>
               </AlertDialogContent>

@@ -7,31 +7,16 @@ import type * as Stitches from '@stitches/react';
 import { Button, StyledButtonVariants } from "../button";
 import { Back } from "../back";
 import { AnimatePresence, motion } from "framer-motion";
+import Logger from "js-logger";
+import { Input } from "@components/input";
 
 
 type StyledOTPVariants = Stitches.VariantProps<typeof StyledOTP>;
 
-const StyledForm = styled(Form, {
-  flexbox: 'row',
-  gap: '10px',
-});
-
-const StyledOTPInput = styled('input', {
-  border: '2px solid transparent',
-  width: '50px',
-  height: '50px',
-  paddingLeft: '18px',
-  backgroundColor: '$gray900',
-  fontFamily: '$firacode',
-  borderRadius: '8px',
-  color: '$gray100',
-  '&::placeholder': {
-    color: '$gray800',
-  },
-  '&:focus': {
-    borderColor: '$gray050',
-    color: '$gray050',
-  },
+const StyledForm = styled('form', {
+  flexbox: 'column',
+  gap: '30px',
+  alignItems: 'stretch'
 });
 
 const StyledHeader = styled('h2', {
@@ -69,6 +54,11 @@ const StyledBodyText = styled('p', {
   },
 });
 
+const StyledInputGroup = styled('div', {
+  flexbox: 'row',
+  gap: '10px',
+});
+
 const StyledOTP = styled(motion.div, {
   flexbox: "column",
   alignItems: 'stretch',
@@ -88,7 +78,6 @@ export const OTP: React.FC<Props> = ({ submitOtp, handleBack, ...props }) => {
   const [otpIndex, setOtpIndex] = useState(0);
   const otpInputRef = useRef<HTMLInputElement>(null);
   const otpSubmitRef = useRef<HTMLButtonElement>(null);
-  const [buttonState, setButtonState] = useState<StyledButtonVariants['state']>('disabled');
 
   // Auto focus to otp input when component render
   useEffect(() => {
@@ -96,33 +85,80 @@ export const OTP: React.FC<Props> = ({ submitOtp, handleBack, ...props }) => {
   }, []);
 
   useEffect(() => {
-    // console.debug("otpIndex", otpIndex);
     otpInputRef.current?.focus();
   }, [otpIndex]);
 
-  // useEffect(() => {
-  //   Logger.debug(buttonState);
-  // }, [buttonState])
+  const formik = useFormik({
+    initialValues:
+      [...Array(6).keys()]  // loop 6 times
+        .reduce(
+        (acc, current) => {
+          (acc as {[key: string]: string})[`otp${current+1}`] = '';
+          return acc;
+        },
+        {}
+      ),
+    initialStatus: 'waiting',
+    validateOnChange: false,
+    validateOnBlur: false,
+    onSubmit: async (data, { setStatus, setFieldError, resetForm }) => {
+      setStatus('loading');
 
-  const otpInputOnChange : ReactEventHandler<HTMLInputElement> = (e) => {
-    // Logger.debug("Trigger input change");
+      Logger.debug('OTP', Object.values(data).join(''));
+
+      await submitOtp(Object.values(data).join(''))
+        .then(() => {
+          setStatus('success');
+        })
+        .catch(err => {
+          Logger.error(err);
+          resetForm();
+        });
+    },
+    onReset: () => setOtpIndex(0),
+    // validationSchema={toFormikValidationSchema(
+    //   object([...Array(6).keys()].reduce(
+    //     (acc, current) => {
+    //       (acc as {[key: string]: string})[`otp${current+1}`] = string().regex(/\d/);
+    //       return acc;
+    //     },
+    //     {}
+    //   ))
+    // )}
+  });
+
+  useEffect(() => {
+    if (Object.keys(formik.errors).length > 0) {  // note that {} is truthy
+      Logger.debug(Object.keys(formik.errors).length === 0, formik.errors);
+      return formik.setStatus('error');
+    }
+
+    if ((Object.keys(formik.values) as Array<keyof typeof formik.values>).every(field => formik.values[field] === formik.initialValues[field]))
+      return formik.setStatus('waiting');
+
+    return formik.setStatus('normal');
+
+  }, [formik.values, formik.errors]);
+
+  const otpInputOnChange = () => {
     // Just populated last otp input
     if (otpIndex === 5) {
-      otpSubmitRef.current?.click();
-      otpInputRef.current?.blur();
+      otpInputRef.current?.blur();  // Take off focus
+      formik.submitForm();
     }
 
     // Just been populated, move forward
-    if (e.currentTarget.value) {
-      if (buttonState === 'error')
-        setButtonState('disabled');
+    if (otpInputRef.current?.value) {
       setOtpIndex(index => Math.min(5, index+1));
     }
   }
 
+  useEffect(() => {
+    otpInputOnChange();
+  }, [formik.values]);
+
   // Always fire before onChange
   const otpInputOnKeydown : React.KeyboardEventHandler<HTMLInputElement> = (e) => {
-    // Logger.debug("Trigger keydown");
     if (e.key === "Backspace" || e.key === "Delete")
       // Just been removed, move back
       if (!e.currentTarget.value)
@@ -134,63 +170,25 @@ export const OTP: React.FC<Props> = ({ submitOtp, handleBack, ...props }) => {
       <Back onClick={handleBack}/>
       <StyledHeader>Verification</StyledHeader>
       <StyledSubheader>An OTP has been sent to <em>91000000</em></StyledSubheader>
-      <Formik
-        initialValues={
-          [...Array(6).keys()].reduce(
-            (acc, current) => {
-              // @ts-ignore
-              acc[`otp${current+1}`] = '';
-              return acc;
-            },
-            {}
-          )
-        }
-        onSubmit={async (data : {[k: string] : string}, {
-          resetForm
-        }) => {
-          setButtonState('loading');
-          // Logger.debug('Formik otp data', data);
-          console.debug('OTP', Object.values(data).join(''));
-          await submitOtp(Object.values(data).join(''))
-            .then(() => {
-              setButtonState('success');
-            })
-            .catch(_err => {
-              setButtonState('error');
-              resetForm();
-              setOtpIndex(0);
-            });
-        }}
-        // Not strictly necessary
-        // validationSchema={toFormikValidationSchema(
-        //   object([...Array(6).keys()].reduce(
-        //     (acc, current) => {
-        //       // @ts-ignore
-        //       acc[`otp${current+1}`] = string().regex(/\d/);
-        //       return acc;
-        //     },
-        //     {}
-        //   ))
-        // )}
-      >
-        {(props : FormikProps<{[k: string]: string}>) => {
-          const formikHandleChange = props.handleChange;
-          props.handleChange = (e: React.ChangeEvent<any>) => {
-            otpInputOnChange(e);
-            formikHandleChange(e);
-          };
-          return (
-            <StyledForm autoComplete="off">
-              {[...Array(6).keys()].map(index =>
-                <StyledOTPInput key={index} type="tel" name={`otp${index+1}`} placeholder="*" ref={otpIndex === index ? otpInputRef : null} onChange={props.handleChange} disabled={otpIndex !== index} value={props.values[`otp${index+1}`]} onKeyDown={otpInputOnKeydown}/>
-              )}
-              <button type="submit" ref={otpSubmitRef} style={{display: 'none'}}>Verify</button>
-            </StyledForm>
-          );
-        }}
-      </Formik>
-      <StyledBodyText className="resend">Didn't receive the code? <a>Resend</a></StyledBodyText>
-      <Button state={buttonState}>Verify</Button>
+      <StyledForm autoComplete="off" onSubmit={formik.handleSubmit} onReset={formik.handleReset}>
+        <StyledInputGroup>
+          {[...Array(6).keys()].map(index =>
+            <Input
+              key={index} type="tel" name={`otp${index+1}`} placeholder="*"
+              ref={otpIndex === index ? otpInputRef : null}
+              onChange={formik.handleChange} value={(formik.values as {[key: string]: string})[`otp${index+1}`]}
+              state={formik.status} size={'square'}
+              onKeyDown={otpInputOnKeydown}
+            />
+          )}
+        </StyledInputGroup>
+        <StyledBodyText className="resend">Didn't receive the code? <a>Resend</a></StyledBodyText>
+        <Button type="submit"
+          state={formik.status}
+        >
+          Verify
+        </Button>
+      </StyledForm>
     </StyledOTP>
   );
 };

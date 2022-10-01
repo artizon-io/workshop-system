@@ -38,7 +38,7 @@ const Nav : React.FC = ({ ...props }) => {
     <StyledNav>
       <ul>
         <li><Link to="/terms-&-conditions" underline style={'gray'} size={'s'}>Terms & Conditions</Link></li>
-        <li><Link to="/support" underline style={'gray'} size={'s'}>Support</Link></li>
+        <li><Link to="/customer-support" underline style={'gray'} size={'s'}>Customer Support</Link></li>
         <li><Link to="#" underline style={'gray'} size={'s'}>Back to top</Link></li>
       </ul>
     </StyledNav>

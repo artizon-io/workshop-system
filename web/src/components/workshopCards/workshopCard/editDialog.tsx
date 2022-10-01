@@ -8,31 +8,24 @@ import DialogHeader from '@components/dialog/dialogHeader';
 import DialogFooter from '@components/dialog/dialogFooter';
 
 
-const StyledBodyText = styled('p', {
-  fontFamily: '$inter',
-  fontSize: '15px',
-  color: '$gray650'
-});
-
-const StyledDeleteDialog = styled(Dialog, {
+const StyledEditDialog = styled(Dialog, {
 
 });
 
-interface Props extends React.ComponentProps<typeof StyledDeleteDialog> {
+interface Props extends React.ComponentProps<typeof StyledEditDialog> {
   close: () => void;
 };
 
-const DeleteDialog: React.FC<Props> = React.forwardRef(({ close, ...props }, ref) => {
+const EditDialog: React.FC<Props> = React.forwardRef(({ close, ...props }, ref) => {
   return (
-    <StyledDeleteDialog>
-      <DialogHeader>Delete Workshop</DialogHeader>
-      <StyledBodyText>You sure you want to delete this workshop?</StyledBodyText>
+    <StyledEditDialog>
+      <DialogHeader>Edit Workshop Details</DialogHeader>
       <DialogFooter>
         <Button onClick={() => close()} size="s">Cancel</Button>
-        <Button size="s" style={'red'}>Confirm</Button>
+        <Button size="s" style={'blue'}>Apply</Button>
       </DialogFooter>
-    </StyledDeleteDialog>
+    </StyledEditDialog>
   );
 });
 
-export default DeleteDialog;
+export default EditDialog;

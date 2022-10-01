@@ -6,15 +6,25 @@ import { motion } from 'framer-motion';
 export type StyledInputVariants = Stitches.VariantProps<typeof StyledInput>
 
 const StyledInput = styled('input', {
-  borderRadius: '12px',
   fontFamily: '$firacode',
-  padding: '12px 16px',
   border: '2px solid',
   '&::placeholder': {
     color: '$gray800',
     fontFamily: '$firacode'
   },
   variants: {
+    size: {
+      'm': {
+        borderRadius: '12px',
+        padding: '12px 16px',
+      },
+      'square': {
+        width: '50px',
+        height: '50px',
+        paddingLeft: '18px',
+        borderRadius: '8px',
+      }
+    },
     state: {
       'normal': {
         borderColor: '$gray800',
@@ -28,13 +38,38 @@ const StyledInput = styled('input', {
           cursor: 'not-allowed'
         }
       },
+      'waiting': {
+        borderColor: '$gray800',
+        '&:focus': {
+          borderColor: '$gray050',
+        },
+      },
+      'loading': {
+        borderColor: '$gray800',
+        '&:hover': {
+          cursor: 'not-allowed'
+        }
+      },
       'error': {
         borderColor: '$red700ss',
-      }
+      },
+      'success': {
+        borderColor: '$gray800',
+        '&:hover': {
+          cursor: 'not-allowed'
+        }
+      },
+      'next': {
+        borderColor: '$gray800',
+        '&:hover': {
+          cursor: 'not-allowed'
+        }
+      },
     }
   },
   defaultVariants: {
     state: 'normal',
+    size: 'm'
   },
 });
 

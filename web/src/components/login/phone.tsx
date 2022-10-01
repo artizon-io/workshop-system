@@ -6,10 +6,10 @@ import { styled } from "@styleProvider";
 import type * as Stitches from '@stitches/react';
 import { Button, StyledButtonVariants } from "../button";
 import { Back } from "../back";
-// import { HK } from 'country-flag-icons/react/3x2'
 import { Input, StyledInputVariants } from "../input";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "@components/link";
+import Logger from "js-logger";
 
 
 type StyledPhoneVariants = Stitches.VariantProps<typeof StyledPhone>;
@@ -20,7 +20,7 @@ const StyledHeader = styled('h2', {
   fontSize: '25px'
 });
 
-const StyledForm = styled(Form, {
+const StyledForm = styled('form', {
   display: 'flex',
   flexDirection: 'column',
   gap: '25px'
@@ -74,92 +74,78 @@ interface Props extends React.ComponentProps<typeof StyledPhone> {
 
 export const Phone: React.FC<Props> = ({ submitPhone, handleNext, ...props }) => {
   const phoneInputRef = useRef<HTMLInputElement>(null);
-  const [buttonState, setButtonState] = useState<StyledButtonVariants['state']>('disabled');
-  const [phoneInputState, setPhoneInputState] = useState<StyledInputVariants['state']>('normal');
 
   // Auto focus to otp input when component render
   useEffect(() => {
     phoneInputRef.current?.focus();
   }, []);
 
+  const formik = useFormik({
+    initialValues: {
+      phone: ''
+    },
+    initialStatus: 'waiting',
+    validateOnChange: true,
+    validateOnBlur: true,
+    onSubmit: async (data, { setStatus, setFieldError }) => {
+      setStatus('loading');
+      await submitPhone(`+852${data.phone}`)  // Hard code to HK, for now
+        .then(() => {
+          setStatus('next');
+          handleNext();
+        })
+        .catch(err => {
+          setFieldError('phone', 'Invalid');
+        });
+    },
+    // validate: (values) => {
+    //   const { success } = object({
+    //     phone: string().regex(/^\d{8}$/)
+    //   }).safeParse(values);
+    //   if (!success)
+
+    // },
+    validationSchema: toFormikValidationSchema(
+      object({ phone: string().regex(/^\d{8}$/) })
+    )
+  });
+
   useEffect(() => {
-    // console.debug('React to Button State Change');
-    switch(buttonState) {
-      case 'normal':
-        setPhoneInputState('normal');
-        break;
-      case 'loading':
-        setPhoneInputState('disabled');
-        break;
-      case 'error':
-        setPhoneInputState('error');
-        // TODO: figure out how event queue and react works
-        queueMicrotask(() => phoneInputRef.current?.focus());
-        break;
-    }
-  }, [buttonState]);
-
-  const phoneInputOnChange : ReactEventHandler<HTMLInputElement> = (e) => {
-    // Just became empty
-    if (e.currentTarget.value === '') {
-      setButtonState('disabled')
+    if (Object.keys(formik.errors).length > 0) {  // note that {} is truthy
+      Logger.debug(Object.keys(formik.errors).length === 0, formik.errors);
+      return formik.setStatus('error');
     }
 
-    // Just been populated
-    else if (buttonState === 'disabled' || buttonState === 'error') {
-      if (e.currentTarget.value !== '')
-        setButtonState('normal');
-    }
-  }
+    if ((Object.keys(formik.values) as Array<keyof typeof formik.values>).every(field => formik.values[field] === formik.initialValues[field]))
+      return formik.setStatus('waiting');
+
+    return formik.setStatus('normal');
+
+  }, [formik.values, formik.errors]);
 
   return (
     <StyledPhone {...props}>
       <StyledHeader>Login</StyledHeader>
-      <Formik
-        initialValues={{
-          phone: ''
-        }}
-        onSubmit={async data => {
-          setButtonState('loading');
-          // Logger.debug('Formik otp data', data);
-          const { success } = object({ phone: string().regex(/^\d{8}$/) }).safeParse(data);
-          if (!success)
-            return setButtonState('error');
-
-          await submitPhone(`+852${data.phone}`)  // Hard code to HK, for now
-            .then(() => {
-              handleNext();
-            })
-            .catch(_err => {
-              setButtonState('error');
-            });
-        }}
-        // Useful if validationOnChange & validationOnBlur, but not for our usecase
-        // validationSchema={toFormikValidationSchema(
-        //   object({ phone: string().regex(/\d{8}/) })
-        // )}
-      >
-        {props => {
-          const formikHandleChange = props.handleChange;
-          props.handleChange = (e: React.ChangeEvent<any>) => {
-            phoneInputOnChange(e);
-            formikHandleChange(e);
-          };
-          return (
-            <StyledForm autoComplete="off">
-              <StyledInputGroup>
-                {/* <HK className='country'/> */}
-                <select>
-                  <option value="hk">+852</option>
-                </select>
-                <Input type="tel" name={'phone'} placeholder="Phone" ref={phoneInputRef} onChange={props.handleChange} value={props.values.phone} state={phoneInputState} />
-              </StyledInputGroup>
-              <StyledFormText className="support">Need help? <Link to="/support" style={'blue'} inline underline>Contact support</Link></StyledFormText>
-              <Button type="submit" state={buttonState} id='recaptcha-container'>Verify</Button>
-            </StyledForm>
-          );
-        }}
-      </Formik>
+      <StyledForm autoComplete="off" onSubmit={formik.handleSubmit} onReset={formik.handleReset}>
+        <StyledInputGroup>
+          {/* <HK className='country'/> */}
+          <select>
+            <option value="hk">+852</option>
+          </select>
+          <Input
+            type="tel" name={'phone'} placeholder="Phone"
+            onChange={formik.handleChange} value={formik.values.phone}
+            ref={phoneInputRef}
+            state={formik.status}
+          />
+        </StyledInputGroup>
+        <StyledFormText className="support">Need help? <Link to="/support" style={'blue'} inline underline>Contact support</Link></StyledFormText>
+        <Button type="submit" id='recaptcha-container'
+          state={formik.status}
+        >
+          Verify
+        </Button>
+      </StyledForm>
     </StyledPhone>
   );
 };
