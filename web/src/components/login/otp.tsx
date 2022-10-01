@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, ReactEventHandler } from "react";
 import { Form, Formik, FormikProps, useFormik } from "formik";
 import { toFormikValidationSchema } from "@artizon/zod-formik-adapter";
-import { object, string } from "zod";
+import { object, string, ZodString } from "zod";
 import { styled } from "@styleProvider";
 import type * as Stitches from '@stitches/react';
 import { Button, StyledButtonVariants } from "../button";
@@ -101,7 +101,7 @@ export const OTP: React.FC<Props> = ({ submitOtp, handleBack, ...props }) => {
     initialStatus: 'waiting',
     validateOnChange: false,
     validateOnBlur: false,
-    onSubmit: async (data, { setStatus, setFieldError, resetForm }) => {
+    onSubmit: async (data, { setStatus, setFieldError, resetForm, setErrors }) => {
       setStatus('loading');
 
       Logger.debug('OTP', Object.values(data).join(''));
@@ -112,33 +112,42 @@ export const OTP: React.FC<Props> = ({ submitOtp, handleBack, ...props }) => {
         })
         .catch(err => {
           Logger.error(err);
-          resetForm();
+          setErrors({otp: 'Invalid'});
         });
     },
     onReset: () => setOtpIndex(0),
-    // validationSchema={toFormikValidationSchema(
-    //   object([...Array(6).keys()].reduce(
-    //     (acc, current) => {
-    //       (acc as {[key: string]: string})[`otp${current+1}`] = string().regex(/\d/);
-    //       return acc;
-    //     },
-    //     {}
-    //   ))
-    // )}
+    validationSchema: toFormikValidationSchema(
+      object([...Array(6).keys()].reduce(
+        (acc, current) => {
+          // Object.defineProperty(acc, `otp${current+1}`, {
+          //   value: string().regex(/\d/)
+          // });
+          (acc as {[key: string]: ZodString})[`otp${current+1}`] = string().regex(/\d/);
+          return acc;
+        },
+        {}
+      ))
+    )
   });
+
+  useEffect(() : any => {
+    if (!formik.dirty)
+      formik.setStatus('waiting');
+
+    else
+      formik.setStatus('normal');
+
+    formik.setErrors({});
+
+  }, [formik.values]);
 
   useEffect(() => {
     if (Object.keys(formik.errors).length > 0) {  // note that {} is truthy
-      Logger.debug(Object.keys(formik.errors).length === 0, formik.errors);
-      return formik.setStatus('error');
+      Logger.debug(formik.errors);
+      formik.setStatus('error');
+      otpInputRef.current?.focus();
     }
-
-    if ((Object.keys(formik.values) as Array<keyof typeof formik.values>).every(field => formik.values[field] === formik.initialValues[field]))
-      return formik.setStatus('waiting');
-
-    return formik.setStatus('normal');
-
-  }, [formik.values, formik.errors]);
+  }, [formik.errors]);
 
   const otpInputOnChange = () => {
     // Just populated last otp input

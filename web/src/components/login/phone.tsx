@@ -85,8 +85,8 @@ export const Phone: React.FC<Props> = ({ submitPhone, handleNext, ...props }) =>
       phone: ''
     },
     initialStatus: 'waiting',
-    validateOnChange: true,
-    validateOnBlur: true,
+    validateOnChange: false,
+    validateOnBlur: false,
     onSubmit: async (data, { setStatus, setFieldError }) => {
       setStatus('loading');
       await submitPhone(`+852${data.phone}`)  // Hard code to HK, for now
@@ -110,18 +110,27 @@ export const Phone: React.FC<Props> = ({ submitPhone, handleNext, ...props }) =>
     )
   });
 
+  useEffect(() : any => {
+    // else if ((Object.keys(formik.values) as Array<keyof typeof formik.values>).every(field => formik.values[field] === formik.initialValues[field]))
+    //   formik.setStatus('waiting');
+
+    if (!formik.dirty)
+      formik.setStatus('waiting');
+
+    else
+      formik.setStatus('normal');
+
+    formik.setErrors({});
+
+  }, [formik.values]);
+
   useEffect(() => {
     if (Object.keys(formik.errors).length > 0) {  // note that {} is truthy
-      Logger.debug(Object.keys(formik.errors).length === 0, formik.errors);
-      return formik.setStatus('error');
+      Logger.debug(formik.errors);
+      formik.setStatus('error');
+      phoneInputRef.current?.focus();
     }
-
-    if ((Object.keys(formik.values) as Array<keyof typeof formik.values>).every(field => formik.values[field] === formik.initialValues[field]))
-      return formik.setStatus('waiting');
-
-    return formik.setStatus('normal');
-
-  }, [formik.values, formik.errors]);
+  }, [formik.errors]);
 
   return (
     <StyledPhone {...props}>
