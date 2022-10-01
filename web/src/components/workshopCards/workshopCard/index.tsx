@@ -65,7 +65,7 @@ const StyledDeleteOverlay = styled(AlertDialogOverlay, {
   inset: 0
 });
 
-const DeleteOverlay: React.FC = ({ ...props }) => {
+const DeleteOverlay: React.FC = React.forwardRef(({ ...props }, ref) => {
   return (
     <StyledDeleteOverlay {...props} asChild={true}>
       <motion.div
@@ -85,7 +85,7 @@ const DeleteOverlay: React.FC = ({ ...props }) => {
       />
     </StyledDeleteOverlay>
   );
-};
+});
 
 const StyledWorkshopCard = styled(motion.div, {
   position: 'relative',
@@ -101,7 +101,7 @@ const StyledWorkshopCard = styled(motion.div, {
     'left . right'
     'bottom bottom bottom'
   `,
-  // FIXME
+  // FIXME: somehow perhaps classname not working?
   // [`& > ${Top}`]: {
   //   gridArea: 'top'
   // },
@@ -117,8 +117,8 @@ const StyledWorkshopCard = styled(motion.div, {
 
   [`& > ${DeleteTrigger}`]: {
     position: 'absolute',
-    top: '-5px',
-    right: '-5px',
+    top: '-8px',
+    right: '-8px',
     zIndex: 500,
 
     width: '30px',
@@ -140,7 +140,7 @@ interface Props extends React.ComponentProps<typeof StyledWorkshopCard> {
 };
 
 const WorkshopCard: React.FC<Props> = ({ workshopId, adminMode, ...props }) => {
-  const [onHover, setOnHover] = useState(false);
+  // const [onHover, setOnHover] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   return (
@@ -175,8 +175,8 @@ const WorkshopCard: React.FC<Props> = ({ workshopId, adminMode, ...props }) => {
       viewport={{  // for pairing with whileInView
         margin: '-50px 0px 0px 0px'
       }}
-      onHoverStart={() => setOnHover(true)}
-      onHoverEnd={() => setOnHover(false)}
+      // onHoverStart={() => setOnHover(true)}
+      // onHoverEnd={() => setOnHover(false)}
     >
       <Left/>
       <Right/>
@@ -184,17 +184,20 @@ const WorkshopCard: React.FC<Props> = ({ workshopId, adminMode, ...props }) => {
       {adminMode &&
       <AlertDialogRoot>
         <AnimatePresence>
-          {onHover &&
           <DeleteTrigger open={() => setDialogOpen(true)}/>
-          // FIXME: need to toggle twice for dialog to showup
-          }
+          {/* {onHover &&
+          <DeleteTrigger open={() => setDialogOpen(true)}/>
+          } */}
         </AnimatePresence>
         <AnimatePresence>
           {dialogOpen && <>
-            <DeleteOverlay/>
-            <AlertDialogContent asChild={true}>
-              <DeleteDialog close={() => setDialogOpen(false)}/>
-            </AlertDialogContent>
+            {/* Portal seems to have less bug */}
+            <AlertDialogPortal forceMount={true}>
+              <DeleteOverlay/>
+              <AlertDialogContent asChild={true} forceMount={true}>
+                <DeleteDialog close={() => setDialogOpen(false)}/>
+              </AlertDialogContent>
+            </AlertDialogPortal>
           </>}
         </AnimatePresence>
       </AlertDialogRoot>

@@ -46,10 +46,11 @@ const StyledButton = styled(motion.button, {
     style: {
       'gray': {},
       'blue': {},
+      'red': {},
     },
     size: {
       's': {
-        fontSize: '14px',
+        fontSize: '15px',
         borderRadius: '20px',
         padding: '12px 16px'
       },
@@ -112,10 +113,22 @@ const StyledButton = styled(motion.button, {
       style: 'blue',
       state: 'normal',
       css: {
-        backgroundColor: '$gray050',
+        backgroundColor: '$blue300',
         color: '$gray850',
         '&:hover': {
-          backgroundColor: '$gray000',
+          backgroundColor: '$blue200',
+          color: '$gray950',
+        }
+      }
+    },
+    {
+      style: 'red',
+      state: 'normal',
+      css: {
+        backgroundColor: '$red400',
+        color: '$gray850',
+        '&:hover': {
+          backgroundColor: '$red300',
           color: '$gray950',
         }
       }

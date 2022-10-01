@@ -184,10 +184,9 @@ export const ProfileBubble: React.FC<Props> = ({ img, ...props }) => {
         {/* Directly controlling popover open/close logic */}
         {/* See https://github.com/radix-ui/primitives/discussions/1058 */}
         {isOpen &&
-        // Portal will cause popover be outside of the top-level animate presence
-        // <PopoverPortal forceMount={true}>
-        <Popover close={() => setIsOpen(false)}/>
-        // </PopoverPortal>
+        <PopoverPortal forceMount={true}>
+          <Popover close={() => setIsOpen(false)}/>
+        </PopoverPortal>
         }
       </AnimatePresence>
       {/* <Popover close={() => setIsOpen(false)}/> */}

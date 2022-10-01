@@ -19,8 +19,12 @@ const StyledBodyText = styled('p', {
 });
 
 const StyledFooter = styled('div', {
-  flexbox: 'row',
-  gap: '10px'
+  width: '100%',
+  display: 'grid',
+  justifyContent: 'end',
+  gap: '10px',
+  // gridTemplateColumns: 'repeat(auto-fit, max(120px))',  // FIXME
+  gridTemplateColumns: 'repeat(auto-fill, max(120px))',
 });
 
 const StyledDeleteDialog = styled(motion.div, {
@@ -28,7 +32,7 @@ const StyledDeleteDialog = styled(motion.div, {
   top: '50%',
   left: '50%',
   zIndex: 20000,
-  transform: 'translate(-50%, -50%)',  // FIXME
+  // transform: 'translate(-50%, -50%) !important',  // framer motion needs to animate this...
 
   flexbox: 'column',
   alignItems: 'flex-start',
@@ -37,9 +41,9 @@ const StyledDeleteDialog = styled(motion.div, {
   borderRadius: '23px',
   backgroundColor: '$gray950',
 
-  [`& > ${StyledFooter}`]: {
-    alignSelf: 'flex-end',
-  }
+  // [`& > ${StyledFooter}`]: {
+  //   alignSelf: 'flex-end',
+  // }
 });
 
 interface Props extends React.ComponentProps<typeof StyledDeleteDialog> {
@@ -51,33 +55,32 @@ const DeleteDialog: React.FC<Props> = React.forwardRef(({ close, ...props }, ref
     <StyledDeleteDialog {...props} ref={ref}
       initial={{
         opacity: 0,
-        scale: 0.5,
+        y: -30,
+        translateX: '-50%',
+        translateY: '-50%'
       }}
       animate={{
         opacity: 1,
-        scale: 1
+        y: 0
       }}
       transition={{
-        opacity: {
-          ease: 'easeOut',
+        y: {
+          ease: 'easeInOut',
         },
-        scale: {
-          type: 'spring',
-          mass: 0.2,
-          stiffness: 150,
-          damping: 20
+        opacity: {
+          duration: 0.2
         }
       }}
       exit={{
         opacity: 0,
-        scale: 0.5
+        y: -30
       }}
     >
       <StyledHeader>Delete Workshop</StyledHeader>
       <StyledBodyText>You sure you want to delete this workshop?</StyledBodyText>
       <StyledFooter>
         <Button onClick={() => close()} size="s">Cancel</Button>
-        <Button size="s">Confirm</Button>
+        <Button size="s" style={'red'}>Confirm</Button>
       </StyledFooter>
     </StyledDeleteDialog>
   );

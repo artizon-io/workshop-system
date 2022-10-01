@@ -14,9 +14,10 @@ const StyledBottom = styled('div', {
   gridArea: 'bottom',
 
   display: 'grid',
+  justifyContent: 'start',
   gap: '10px',
-  // gridTemplateColumns: 'repeat(auto-fit, max(120px))',  // FIXME
-  gridTemplateColumns: 'repeat(auto-fit, 1fr)',
+  // gridTemplateColumns: 'repeat(auto-fit, 1fr)',
+  gridTemplateColumns: 'repeat(auto-fit, max(120px))',  // FIXME
 });
 
 const Bottom : React.FC<{
@@ -29,7 +30,7 @@ const Bottom : React.FC<{
           Edit
           <ImPen style={{ fontSize: '12px', transform: 'translate(0px, -1px)' }}/>
         </Button>
-        <Button size={'s'}>
+        <Button size={'s'} style={'blue'}>
           Info
           <MdInfoOutline style={{ fontSize: '15px', transform: 'translate(0px, -1px)' }}/>
         </Button>
@@ -39,7 +40,7 @@ const Bottom : React.FC<{
   else  // user
     return (
       <StyledBottom className='bottom'>
-        <Button>
+        <Button size={'s'}>
           Enroll
           <MdPersonAdd style={{ fontSize: '15px', transform: 'translate(0px, -2px)' }}/>
         </Button>

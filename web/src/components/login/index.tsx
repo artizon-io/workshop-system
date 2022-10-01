@@ -39,7 +39,7 @@ const StyledLogin = styled(motion.div, {
   flexbox: 'column',
   [`& > ${LockIcon}`]: {
     position: 'absolute',
-    top: '23px',
+    top: '28px',
     right: '23px',
   },
 });
