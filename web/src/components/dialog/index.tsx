@@ -13,15 +13,37 @@ const StyledDialog = styled(motion.div, {
   // transform: 'translate(-50%, -50%) !important',  // framer motion needs to animate this...
 
   flexbox: 'column',
-  alignItems: 'flex-start',
-  gap: '30px',
-  padding: '40px',
+  justifyContent: 'normal',
+  margin: 'auto',
+  // https://stackoverflow.com/questions/33454533/cant-scroll-to-top-of-flex-item-that-is-overflowing-container
+  alignItems: 'stretch',
   borderRadius: '23px',
   backgroundColor: '$gray950',
 
-  // [`& > ${StyledFooter}`]: {
-  //   alignSelf: 'flex-end',
-  // }
+  overflow: 'scroll',
+
+  variants: {
+    spacing: {
+      'compact': {
+        gap: '15px',
+        padding: '30px',
+
+        maxHeight: '95%',
+        maxWidth: '95%',
+      },
+      'normal': {
+        gap: '30px',
+        padding: '40px',
+
+        maxHeight: '80%',
+        maxWidth: '80%',
+      }
+    }
+  },
+
+  defaultVariants: {
+    spacing: 'normal'
+  }
 });
 
 interface Props extends React.ComponentProps<typeof StyledDialog> {

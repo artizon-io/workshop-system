@@ -109,7 +109,8 @@ const StyledPopover = styled(PopoverContent, {
   flexbox: 'column',
   alignItems: 'flex-start',
   gap: '20px',
-  backgroundColor: '$gray500',
+  backgroundColor: '$gray300',
+  margin: '0 30px',  // collision padding
   padding: '30px',
   [`& > li > ${Link}`]: {
     flexbox: 'row',
@@ -151,7 +152,6 @@ const Popover : React.FC<{
             close();
             auth.signOut();
             // auth.signOut().then(() => close());
-            // FIXME: not triggering animate presence because of promise
           }}>
             <MdLogout style={{ transform: 'translate(0px, 0px)', fontSize: '15px' }}/>
             Logout

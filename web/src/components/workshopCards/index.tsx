@@ -10,10 +10,11 @@ import Overlay from '@components/dialog/overlay';
 import Dialog from '@components/dialog';
 import DialogHeader from '@components/dialog/dialogHeader';
 import DialogFooter from '@components/dialog/dialogFooter';
-import { Form, Formik } from 'formik';
+import { Form, Formik, useFormik } from 'formik';
 import { WorkshopSchema } from '@mingsumsze/common';
 import { toFormikValidationSchema } from '@artizon/zod-formik-adapter';
 import { Input } from '@components/input';
+import Logger from 'js-logger';
 
 type StyledWorkshopCardsVariants = Stitches.VariantProps<typeof StyledWorkshopCards>
 
@@ -59,59 +60,156 @@ const AddTrigger: React.FC<{
   )
 });
 
-const StyledAddDialogForm = styled(Form, {
+const StyledAddDialogForm = styled('form', {
   display: 'flex',
   flexDirection: 'column',
-  gap: '25px'
+  alignItems: 'stretch',
+  gap: '25px',
+  backgroundColor: 'inherit',
 })
 
 const StyledAddDialog = styled(Dialog, {
-  
+  minWidth: '80%',
 });
 
 const AddDialog: React.FC<{
   close: () => void;
 } & React.ComponentProps<typeof StyledAddDialog>> = React.forwardRef(({ close, ...props }, ref) => {
-  const [buttonState, setButtonState] = useState<StyledButtonVariants['state']>('disabled');
+  const formik = useFormik({
+    initialValues: {
+      title: '',
+      description: '',
+      venue: '',
+      fee: '',
+      duration: '',
+      language: '',
+      capacity: '',
+      date: '',
+      time: '',
+      consent: false
+    },
+    initialStatus: 'waiting',
+    validateOnChange: false,
+    validateOnBlur: false,
+    onSubmit: async (data, { setStatus, setFieldError, resetForm, setErrors }) => {
+      setStatus('loading');
+
+      // await submitOtp(Object.values(data).join(''))
+      //   .then(() => {
+      //     setStatus('success');
+      //   })
+      //   .catch(err => {
+      //     Logger.error(err);
+      //     setErrors({otp: 'Invalid'});
+      //   });
+    },
+    validate: ({
+      capacity, consent, date, description, duration, fee, language, time, title, venue
+    }) => {
+      let errors : {[key: string]: string} = {};
+      if (!consent)
+        errors.consent = 'Invalid'
+
+      const data = WorkshopSchema.safeParse({
+        title,
+        capacity,
+        description,
+        duration,
+        fee,
+        language,
+        venue
+      });
+      if (!data.success) {
+        // TODO: make error message better
+        Object.keys(data.error.format).forEach(field => errors[field] = "Invalid");
+      }
+      return errors;
+    },
+  });
+
+  useEffect(() : any => {
+    formik.setErrors({});
+
+    // if (!formik.dirty)
+    if ((Object.keys(formik.values) as Array<keyof typeof formik.values>).some(field => formik.values[field] === formik.initialValues[field]))
+      formik.setStatus('waiting');
+
+    else
+      formik.setStatus('normal');
+
+  }, [formik.values]);
+
+  useEffect(() => {
+    if (Object.keys(formik.errors).length > 0) {  // note that {} is truthy
+      Logger.debug(formik.errors);
+      formik.setStatus('error');
+    }
+  }, [formik.errors]);
 
   return (
-    <StyledAddDialog {...props} ref={ref}>
+    <StyledAddDialog {...props} ref={ref} spacing="compact">
       <DialogHeader>Create Workshop</DialogHeader>
-      <Formik
-        initialValues={{
-          title: '',
-          description: '',
-          venue: '',
-          fee: '',
-          duration: '',
-          language: '',
-          capacity: '',
-          date: '',
-          time: '',
-        }}
-        onSubmit={async data => {
-          setButtonState('loading');
-        }}
-        validationSchema={toFormikValidationSchema(WorkshopSchema)}
-      >
-        {/* {props => {
-          const formikHandleChange = props.handleChange;
-          props.handleChange = (e: React.ChangeEvent<any>) => {
-            phoneInputOnChange(e);
-            formikHandleChange(e);
-          };
-          return (
-            <StyledAddDialogForm autoComplete="off">
-              <Input type="tel" name={'phone'} placeholder="Phone" ref={phoneInputRef} onChange={props.handleChange} value={props.values.phone} state={phoneInputState}></Input>
-              <button type="submit" style={{ display: 'none' }}/>
-            </StyledAddDialogForm>
-          );
-        }} */}
-      </Formik>
-      <DialogFooter>
-        <Button onClick={() => close()} size="s">Cancel</Button>
-        <Button size="s" style={'blue'} state={buttonState}>Create</Button>
-      </DialogFooter>
+      <StyledAddDialogForm autoComplete={'off'} onSubmit={formik.handleSubmit}>
+        <Input
+          type="text" name={'title'}
+          // required={formik.}
+          onChange={formik.handleChange} value={formik.values.title}
+          state={formik.status} thickness={'thin'}
+        >Workshop Title</Input>
+        <Input
+          type="textarea" name={'description'}
+          onChange={formik.handleChange} value={formik.values.description}
+          state={formik.status} thickness={'thin'}
+        >Description</Input>
+        <Input
+          type="text" name={'venue'}
+          onChange={formik.handleChange} value={formik.values.venue}
+          state={formik.status} thickness={'thin'}
+        >Venue/Location</Input>
+        <Input
+          type="number" name={'fee'} placeholder="Enroll fee, in HKD"
+          onChange={formik.handleChange} value={formik.values.fee}
+          state={formik.status} thickness={'thin'}
+        >Fee</Input>
+        <Input
+          type="number" name={'duration'}
+          onChange={formik.handleChange} value={formik.values.duration}
+          state={formik.status} thickness={'thin'}
+        >Duration</Input>
+        <Input
+          type="text" name={'language'}
+          onChange={formik.handleChange} value={formik.values.language}
+          state={formik.status} thickness={'thin'}
+        >Language</Input>
+        <Input
+          type="number" name={'capacity'} placeholder="Maximum allowance of the number of participants"
+          onChange={formik.handleChange} value={formik.values.capacity}
+          state={formik.status} thickness={'thin'}
+        >Capacity</Input>
+        <Input
+          type="date" name={'date'}
+          onChange={formik.handleChange} value={formik.values.date}
+          state={formik.status} thickness={'thin'}
+        >Date</Input>
+        <Input
+          type="time" name={'time'}
+          onChange={formik.handleChange} value={formik.values.time}
+          state={formik.status} thickness={'thin'}
+        >Time</Input>
+        <Input
+          type="checkbox" name={'consent'}
+          onChange={formik.handleChange} value={formik.values.time}
+          state={formik.status} thickness={'thin'} size={'fit'}
+        >I am aware that I would not be able to modify the workshop details once someone paid for it</Input>
+        <DialogFooter>
+          <Button type="button" onClick={() => close()} size="s">Cancel</Button>
+          <Button type="submit"
+            size="s" style={'blue'} state={formik.status}
+          >
+            Create
+          </Button>
+        </DialogFooter>
+      </StyledAddDialogForm>
     </StyledAddDialog>
   )
 });

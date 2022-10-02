@@ -6,7 +6,9 @@ import { Link as RouterLink } from 'react-router-dom';
 import { ProfileBubble } from './profileBubble';
 import { LayoutGroup, motion, MotionProps, useAnimation, useAnimationFrame, useScroll, useSpring, useTransform } from 'framer-motion';
 import Logo from './logo';
-import profileIcon from '@assets/profileIcon.jpg';
+import cat1Icon from '@assets/cat1.jpg';
+import cat2Icon from '@assets/cat2.jpg';
+import cat3Icon from '@assets/cat3.jpg';
 
 type StyledNavBarVariants = Stitches.VariantProps<typeof StyledNavBar>
 
@@ -49,7 +51,9 @@ const Nav : React.FC<{
         <li><Link to="/admin/user-management" style={'gray'}>User Management</Link></li>
         <li><Link to="/support" style={'gray'}>Support</Link></li>
         {adminMode &&
-        <ProfileBubble img={profileIcon}/>
+        <ProfileBubble img={cat1Icon}/>
+        // <ProfileBubble img={cat2Icon}/>
+        // <ProfileBubble img={cat3Icon}/>
         }
       </motion.ul>
     </StyledNav>

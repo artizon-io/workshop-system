@@ -131,13 +131,14 @@ export const OTP: React.FC<Props> = ({ submitOtp, handleBack, ...props }) => {
   });
 
   useEffect(() : any => {
-    if (!formik.dirty)
+    formik.setErrors({});
+
+    // if (!formik.dirty)
+    if ((Object.keys(formik.values) as Array<keyof typeof formik.values>).some(field => formik.values[field] === formik.initialValues[field]))
       formik.setStatus('waiting');
 
     else
       formik.setStatus('normal');
-
-    formik.setErrors({});
 
   }, [formik.values]);
 

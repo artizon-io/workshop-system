@@ -8,7 +8,32 @@ import { IoLanguage, IoLocationSharp, IoClose } from 'react-icons/io5';
 import { ImPen } from 'react-icons/im';
 import { AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogOverlay, AlertDialogPortal, AlertDialogTitle, AlertDialogTrigger, Root as AlertDialogRoot } from '@radix-ui/react-alert-dialog';
 import { Button } from '@components/button';
+import Overlay from '@components/dialog/overlay';
+import EditDialog from './editDialog';
+import InfoDialog from './infoDialog';
 
+
+const EditTrigger : React.FC<{
+  open: () => void;
+}> = ({ open, ...props }) => {
+  return (
+    <Button size={'s'} onClick={() => open()}>
+      Edit
+      <ImPen style={{ fontSize: '12px', transform: 'translate(0px, -1px)' }}/>
+    </Button>
+  );
+}
+
+const InfoTrigger : React.FC<{
+  open: () => void;
+}> = ({ open, ...props }) => {
+  return (
+    <Button size={'s'} style={'blue'} onClick={() => open()}>
+      Info
+      <MdInfoOutline style={{ fontSize: '15px', transform: 'translate(0px, -1px)' }}/>
+    </Button>
+  );
+}
 
 const StyledBottom = styled('div', {
   gridArea: 'bottom',
@@ -17,23 +42,50 @@ const StyledBottom = styled('div', {
   justifyContent: 'start',
   gap: '10px',
   // gridTemplateColumns: 'repeat(auto-fit, 1fr)',
-  gridTemplateColumns: 'repeat(auto-fit, max(120px))',  // FIXME
+  gridTemplateColumns: 'repeat(auto-fit, max(120px))',
 });
 
 const Bottom : React.FC<{
   adminMode: boolean;
 } & React.ComponentProps<typeof StyledBottom>> = ({ adminMode, ...props }) => {
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [infoDialogOpen, setInfoDialogOpen] = useState(false);
+
   if (adminMode)
     return (
       <StyledBottom className='bottom' {...props}>
-        <Button size={'s'}>
-          Edit
-          <ImPen style={{ fontSize: '12px', transform: 'translate(0px, -1px)' }}/>
-        </Button>
-        <Button size={'s'} style={'blue'}>
-          Info
-          <MdInfoOutline style={{ fontSize: '15px', transform: 'translate(0px, -1px)' }}/>
-        </Button>
+        <AlertDialogRoot>
+          <AnimatePresence>
+            <EditTrigger open={() => setEditDialogOpen(true)}/>
+          </AnimatePresence>
+          <AnimatePresence>
+            {editDialogOpen && <>
+              {/* Portal seems to have less bug */}
+              <AlertDialogPortal forceMount={true}>
+                <Overlay/>
+                <AlertDialogContent asChild={true} forceMount={true}>
+                  <EditDialog close={() => setEditDialogOpen(false)}/>
+                </AlertDialogContent>
+              </AlertDialogPortal>
+            </>}
+          </AnimatePresence>
+        </AlertDialogRoot>
+        <AlertDialogRoot>
+          <AnimatePresence>
+            <InfoTrigger open={() => setInfoDialogOpen(true)}/>
+          </AnimatePresence>
+          <AnimatePresence>
+            {infoDialogOpen && <>
+              {/* Portal seems to have less bug */}
+              <AlertDialogPortal forceMount={true}>
+                <Overlay/>
+                <AlertDialogContent asChild={true} forceMount={true}>
+                  <InfoDialog close={() => setInfoDialogOpen(false)}/>
+                </AlertDialogContent>
+              </AlertDialogPortal>
+            </>}
+          </AnimatePresence>
+        </AlertDialogRoot>
       </StyledBottom>
     );
 

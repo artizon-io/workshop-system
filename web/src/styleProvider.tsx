@@ -101,6 +101,7 @@ export const { styled, css, keyframes, globalCss } = createStitches({
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
+      // https://stackoverflow.com/questions/33454533/cant-scroll-to-top-of-flex-item-that-is-overflowing-container
       flexDirection: value,
     }),
     underline: (value : "") => ({
@@ -158,7 +159,8 @@ const globalStyles = globalCss({
     textDecoration: 'none'
   },
   '#root': {
-    flexbox: 'column'
+    flexbox: 'column',
+    // backgroundColor: "$gray850",  // somehow chakra makes #root white
   },
 });
 

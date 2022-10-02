@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import StyleProvider from "@styleProvider";
 import { BrowserRouter } from 'react-router-dom';
+import { ToastProvider } from '@radix-ui/react-toast'
 
 
 const queryClient = new QueryClient();
@@ -13,7 +14,9 @@ export const Services : FC<React.HTMLAttributes<HTMLDivElement>> = ({children}) 
       <StyleProvider>
         {/* {!import.meta.env.PROD && <ReactQueryDevtools/>} */}
         <BrowserRouter>
-          {children}
+          <ToastProvider>
+            {children}
+          </ToastProvider>
         </BrowserRouter>
       </StyleProvider>
     </QueryClientProvider>

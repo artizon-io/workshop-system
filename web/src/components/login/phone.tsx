@@ -113,14 +113,13 @@ export const Phone: React.FC<Props> = ({ submitPhone, handleNext, ...props }) =>
   useEffect(() : any => {
     // else if ((Object.keys(formik.values) as Array<keyof typeof formik.values>).every(field => formik.values[field] === formik.initialValues[field]))
     //   formik.setStatus('waiting');
+    formik.setErrors({});
 
     if (!formik.dirty)
       formik.setStatus('waiting');
 
     else
       formik.setStatus('normal');
-
-    formik.setErrors({});
 
   }, [formik.values]);
 
