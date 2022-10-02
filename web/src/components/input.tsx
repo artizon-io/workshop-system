@@ -137,9 +137,10 @@ export const Input: React.FC<Props> = React.forwardRef(({ state, type, children,
     case 'textarea':
       as = 'textarea';
       additionalCss.resize = 'none';
+      additionalProps.rows = "5";
       break;
     case 'number':
-      additionalProps.onScroll = (e => e.preventDefault()) as React.UIEventHandler<HTMLInputElement>
+      additionalProps.onWheel = (e => e.currentTarget.blur()) as React.WheelEventHandler<HTMLInputElement>
       break;
     case 'checkbox':
       childrenPosition = 'normal';

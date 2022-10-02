@@ -54,7 +54,7 @@ interface Props extends React.ComponentProps<typeof StyledLogo> {}
 
 const variants: Variants = {
   whileHover: {
-    scale: 1.1,
+    scale: 1.05,
     transition: {
       type: "spring",
       bounce: 0.7,
@@ -113,9 +113,11 @@ const Logo: React.FC<Props> = ({ ...props }) => {
   return (
     <StyledLogo
       variants={variants}
-      whileHover="whileHover"
+      // whileHover="whileHover"
+      // TODO: fix when hovered nav goes crazy (because of layout?)
       onHoverStart={() => setIsHover(true)}
       onHoverEnd={() => setIsHover(false)}
+      layout
       {...props}
     >
       <StyledHeader
