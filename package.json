@@ -1,8 +1,0 @@
-{
-  "name": "workshop-system",
-  "workspaces": [
-    "web",
-    "functions",
-    "common"
-  ]
-}

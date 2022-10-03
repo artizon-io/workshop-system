@@ -9,7 +9,8 @@
     "target": "ES2017"
   },
   "include": [
-    "src"
+    "src/endpoint",
+    "src/types"
   ],
   "exclude": [
     "node_modules"
