@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, CSSProperties } from 'react';
 import { keyframes, styled } from "@styleProvider";
 import type * as Stitches from '@stitches/react';
 import { IoArrowForward, IoCheckmarkSharp, IoClose } from "react-icons/io5";
@@ -116,6 +116,15 @@ const StyledButton = styled(motion.button, {
           cursor: 'not-allowed'
         }
       },
+    },
+    position: {
+      'relative': {
+        position: 'relative'
+      },
+      'absolute': {
+        position: 'absolute'
+      },
+      'normal': {}
     }
   },
   compoundVariants: [
@@ -178,11 +187,13 @@ const StyledButton = styled(motion.button, {
 interface Props extends React.ComponentProps<typeof StyledButton> {
   state?: StyledButtonVariants['state'];
   // as?: React.Component;  // TODO
+  // position?: CSSProperties['position'];
+  position?: 'relative' | 'absolute' | 'normal';
 };
 
-export const Button: React.FC<Props> = React.forwardRef(({ state = 'normal', children, ...props }, ref) => {
+export const Button: React.FC<Props> = React.forwardRef(({ state = 'normal', position = 'normal', children, ...props }, ref) => {
   return (
-    <StyledButton state={state} {...props} disabled={state !== 'normal'} ref={ref}
+    <StyledButton state={state} {...props} disabled={state !== 'normal'} ref={ref} position={position}
       whileTap={{ scale: 0.97 }}
     >
       {

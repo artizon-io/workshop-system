@@ -13,7 +13,7 @@ const DisplacementSphere : React.FC<{
 
   const uniforms = useMemo(() => ({
     u_intensity: {
-      value: 0.2,
+      value: 0.0,
     },
     u_time: {
       value: 0.0,
@@ -24,9 +24,9 @@ const DisplacementSphere : React.FC<{
     if (!mesh.current) return;
 
     const { clock } = state;
-    mesh.current.material.uniforms.u_time.value = clock.getElapsedTime() * 0.5;
+    mesh.current.material.uniforms.u_time.value = clock.getElapsedTime() * 0.8;
 
-    const u_intensity_target = isHover.current ? 0.5 : 0.05;
+    const u_intensity_target = isHover.current ? 0.6 : 0.03;
 
     mesh.current.material.uniforms.u_intensity.value = MathUtils.lerp(
       mesh.current.material.uniforms.u_intensity.value,
