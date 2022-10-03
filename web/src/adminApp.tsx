@@ -52,7 +52,7 @@ const AdminApp : FC<{}> = ({}) => {
     <Routes key={location.pathname} location={location}>
       <Route path="/" element={<AdminLayout/>}>
         <Route index element={<Admin/>}/>  
-        <Route path="user-management" element={<AdminUserManagement/>}/>
+        {/* <Route path="user-management" element={<AdminUserManagement/>}/> */}
       </Route>
 
       <Route path="*" element={<NotFound/>}/>

@@ -139,12 +139,18 @@ const StyledLink = styled(RouterLink, {
 });
 
 interface Props extends React.ComponentProps<typeof StyledLink> {
-  
+  as?: 'a';
 };
 
-export const Link: React.FC<Props> = ({ state, onClick, ...props }) => {
+export const Link: React.FC<Props> = ({ state, onClick, to, as, ...props }) => {
+  let additionalProps = {
+    as,
+    [as === 'a' ? 'href' : 'to']: to
+  };
+
   return (
     <StyledLink state={state} {...props} className='link'
+      {...additionalProps}
       onClick={e => {
         state === 'disabled'
           ? e.preventDefault()

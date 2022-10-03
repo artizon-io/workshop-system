@@ -46,8 +46,8 @@ const Login: React.FC<Props> = ({ ...props }) => {
   }
 
   const submitOtp = async (otp: string) : Promise<void> => {
-    // return new Promise((resolve, reject) => setTimeout(() => { resolve(); navigate('/admin'); }, 500));
-    return new Promise((resolve, reject) => setTimeout(() => { reject(); }, 500));
+    return new Promise((resolve, reject) => setTimeout(() => { resolve(); navigate('/admin'); }, 500));
+    // return new Promise((resolve, reject) => setTimeout(() => { reject(); }, 500));
 
     // if (!confirmationResult)
     //   throw Error("OTP hasn't been sent yet");

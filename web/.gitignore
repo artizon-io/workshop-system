@@ -5,3 +5,4 @@ src/firebaseConfig.tsx
 src/stripeConfig.tsx
 public/
 .env
+**/build/

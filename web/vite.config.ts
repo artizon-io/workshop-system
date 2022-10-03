@@ -3,6 +3,7 @@ import path from 'path';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
+  // assetsInclude: ['**/*.vs', '**/*.fs'],
   logLevel: 'info',
   optimizeDeps: {
 
@@ -21,7 +22,7 @@ export default defineConfig({
       // exclude: /\.stories\.(t|j)sx?$/,
       // Only .tsx files
       include: '**/*.tsx'
-    })
+    }),
   ],
   resolve: {
     alias: [

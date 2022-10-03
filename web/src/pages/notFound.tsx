@@ -4,83 +4,45 @@ import type * as Stitches from '@stitches/react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { TbError404 } from 'react-icons/tb'
+import { Button } from '@components/button';
+import Header from '@components/header';
 
 type StyledNotFoundVariants = Stitches.VariantProps<typeof StyledNotFound>
 
 const StyledNotFound = styled(motion.main, {
-  display: 'flex',
-  flexDirection: 'column',
+  flexbox: 'column',
   gap: '20px',
-  alignItems: 'center',
-  '& > div': {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  '& > div > svg': {
-    color: '$gray600'
-  },
-  '& > div > h1': {
-    color: '$gray300',
-    fontFamily: '$firacode',
-    fontWeight: 600
-  },
-  '& > a': {
-    fontFamily: '$ibmplexmono',
-    color: '$gray900',
-    fontsize: '20px',
-    borderRadius: '20px',
-    backgroundColor: '$gray600',
-    padding: '12px 20px',
-    transition: 'background-color 0.2s'
-  },
-  '& > a:hover': {
-    backgroundColor: '$gray500',
-  },
+  '& > svg': {
+    color: '$gray500'
+  }
 });
 
 interface Props extends React.ComponentProps<typeof StyledNotFound> {
   
 };
 
-const MotionLink = motion(Link);
-
 const NotFound: React.FC<Props> = ({ ...props }) => {
+  const navigate = useNavigate();
+
   return (
     <StyledNotFound {...props}
+      // initial="initial"
+      // animate="animate"
+      // exit="exit"
       initial={{
-        opacity: 0,
-        scale: 0.9,
-        y: -30,
+        opacity: 0
       }}
       animate={{
-        opacity: 1,
-        scale: 1,
-        y: 0,
+        opacity: 1
       }}
       exit={{
-        opacity: 0,
-      }}
-      transition={{
-        opacity: {
-          duration: 0.2
-        }
+        opacity: 0
       }}
     >
-      <div>
-        <TbError404 style={{ fontSize: '120px' }}/>
-        <h1>Not Found</h1>
-      </div>
-      <MotionLink to="/"
-        whileHover={{
-          scale: 1.03
-        }}
-        whileTap={{
-          scale: 0.97
-        }}
-      >
-        Back to home
-      </MotionLink>
+      {/* <MdOutlineReportGmailerrorred style={{ fontSize: '80px' }}/> */}
+      <TbError404 style={{ fontSize: '100px' }}/>
+      <Header>Not Found</Header>
+      <Button onClick={() => navigate('/')}>Back to home</Button>
     </StyledNotFound>
   );
 };

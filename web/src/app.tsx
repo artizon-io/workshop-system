@@ -24,10 +24,10 @@ const App : FC<{}> = ({}) => {
 
         <Route path="/workshop" element={<Layout/>}>
           <Route index element={<Workshops/>}/>
-          <Route path=":workshopId/enroll">
+          {/* <Route path=":workshopId/enroll">
             <Route index element={<WorkshopEnroll/>}/>
             <Route path="complete" element={<WorkshopEnrollComplete/>}/>
-          </Route>
+          </Route> */}
         </Route>
 
         <Route path="/admin/*" element={<AdminApp/>}/>
@@ -37,7 +37,7 @@ const App : FC<{}> = ({}) => {
           <Route path="/loading" element={<Loading/>}/>
           <Route path="/notfound" element={<NotFound/>}/>
           <Route path="/error" element={<Error/>}/>
-          <Route path="/support" element={<Support/>}/>
+          {/* <Route path="/support" element={<Support/>}/> */}
         </>}
 
         <Route path="*" element={<NotFound/>}/>

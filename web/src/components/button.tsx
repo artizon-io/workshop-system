@@ -64,7 +64,8 @@ const StyledButton = styled(motion.button, {
       },
       'round': {
         borderRadius: '50%',
-        padding: '16px',
+        width: '50px',
+        height: '50px'
       }
     },
     state: {
@@ -176,6 +177,7 @@ const StyledButton = styled(motion.button, {
 
 interface Props extends React.ComponentProps<typeof StyledButton> {
   state?: StyledButtonVariants['state'];
+  // as?: React.Component;  // TODO
 };
 
 export const Button: React.FC<Props> = React.forwardRef(({ state = 'normal', children, ...props }, ref) => {

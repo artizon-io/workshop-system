@@ -6,6 +6,8 @@ import { motion } from 'framer-motion';
 type StyledAdminUserManagementVariants = Stitches.VariantProps<typeof StyledAdminUserManagement>
 
 const StyledAdminUserManagement = styled('main', {
+  flexbox: 'column',
+  margin: '180px 100px 50px 100px',
   '& > h1': {
     color: '$gray500',
     fontFamily: '$firacode'
