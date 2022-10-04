@@ -124,8 +124,27 @@ const StyledLinkPopover = styled(PopoverRoot, {
 
 });
 
-interface Props extends React.ComponentProps<typeof StyledLinkPopover> {
+const listItemVariants : Variants = {
+  close: {  // initial & exit
+    opacity: 0,
+    y: 20,
+    transition: {
+      duration: 0.5
+    }
+  },
+  open: {  // animate
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 30
+    }
+  },
+};
 
+interface Props extends React.ComponentProps<typeof StyledLinkPopover> {
+  children: NonNullable<ReactNode>[];
 };
 
 export const LinkPopover: React.FC<Props> = ({ children, ...props }) => {
@@ -147,7 +166,11 @@ export const LinkPopover: React.FC<Props> = ({ children, ...props }) => {
         {isOpen &&
         <PopoverPortal forceMount={true}>
           <Popover close={() => setIsOpen(false)} setIsClose={setIsClose}>
-            {children}
+            {children.map((link, index) =>
+              <motion.li variants={listItemVariants} key={index} onClick={() => setIsOpen(false)}>
+                {link}
+              </motion.li>
+            )}
           </Popover>
         </PopoverPortal>
         }

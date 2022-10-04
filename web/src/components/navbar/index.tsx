@@ -69,8 +69,8 @@ const Nav : React.FC<{
             <li><Link to="/support" style={'gray'}>Support</Link></li>
           </>
           : <LinkPopover>
-            <li><Link to="/admin/user-management" style={'white'}>User Management</Link></li>
-            <li><Link to="/support" style={'white'}>Support</Link></li>
+            <Link to="/admin/user-management" style={'white'}>User Management</Link>
+            <Link to="/support" style={'white'}>Support</Link>
           </LinkPopover>
         }
         {adminMode &&
