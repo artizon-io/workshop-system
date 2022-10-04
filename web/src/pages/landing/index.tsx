@@ -20,8 +20,8 @@ const StyledLanding = styled(motion.main, {
     'left right'
     'bottom right'
   `,
-  gridTemplateRows: 'repeat(3, 1fr)',
-  gridTemplateColumns: '1fr 1fr',
+  gridTemplateRows: 'repeat(3, minmax(0px, 1fr))',
+  gridTemplateColumns: 'repeat(2, minmax(0px, 1fr))',
   rowGap: '50px',
 
   borderRadius: '50px',
@@ -78,6 +78,7 @@ const StyledFooter = styled(motion.div, {
 const StyledRight = styled(motion.div, {
   gridArea: 'right',
   // TODO: fix canvas not sizing to 100% of container
+  position: 'relative',
 });
 
 interface Props extends React.ComponentProps<typeof StyledLanding> {
