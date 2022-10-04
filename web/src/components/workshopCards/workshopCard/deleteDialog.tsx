@@ -10,8 +10,8 @@ import DialogFooter from '@components/dialog/dialogFooter';
 
 const StyledBodyText = styled('p', {
   fontFamily: '$inter',
+  color: '$gray650',
   fontSize: '15px',
-  color: '$gray650'
 });
 
 const StyledDeleteDialog = styled(Dialog, {

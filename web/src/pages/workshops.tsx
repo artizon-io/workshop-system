@@ -8,7 +8,18 @@ type StyledWorkshopsVariants = Stitches.VariantProps<typeof StyledWorkshops>
 
 const StyledWorkshops = styled('main', {
   flexbox: 'column',
-  margin: '180px 100px 50px 100px',
+  '@imac': {
+    margin: '180px 10vw 50px 10vw',
+  },
+  '@macbook': {
+    margin: '180px 5vw 50px 5vw',
+  },
+  '@ipad': {
+    margin: '180px 5vw 50px 5vw',
+  },
+  '@iphone': {
+    margin: '180px 5vw 50px 5vw',
+  }
 });
 
 interface Props extends React.ComponentProps<typeof StyledWorkshops> {

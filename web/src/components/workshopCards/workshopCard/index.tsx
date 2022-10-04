@@ -61,17 +61,28 @@ DeleteTrigger.toString = () => '.delete-trigger';
 const StyledWorkshopCard = styled(motion.div, {
   position: 'relative',
   borderRadius: '30px',
-  padding: '50px',
   backgroundColor: '$gray950',
 
   display: 'grid',
-  rowGap: '30px',
-  gridTemplateColumns: 'max(75%) 1fr auto',
+  columnGap: '10%',
+  gridTemplateColumns: 'minmax(0px, 1fr) auto',
   gridTemplateRows: '1fr auto',
-  gridTemplateAreas: `
-    'left . right'
-    'bottom bottom bottom'
-  `,
+  '@imac': {
+    gridTemplateAreas: `
+      'left right'
+      'bottom right'
+    `,
+    padding: '50px',
+    rowGap: '50px',
+  },
+  '@ipad': {
+    gridTemplateAreas: `
+      'left right'
+      'bottom bottom'
+    `,
+    padding: '50px 30px 40px 40px',  // more padding top and left
+    rowGap: '30px'
+  },
   // FIXME: somehow perhaps classname not working?
   // [`& > ${Top}`]: {
   //   gridArea: 'top'

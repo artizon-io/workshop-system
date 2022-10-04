@@ -239,6 +239,7 @@ const Bottom: React.FC<React.ComponentProps<typeof StyledBottom>> = ({ ...props 
             <Overlay/>
             <DialogContent asChild={true} forceMount={true}
               onInteractOutside={() => setShowNavDialog(false)}
+              onEscapeKeyDown={() => setShowNavDialog(false)}
             >
               <StyledDialog
                 initial="close"
@@ -256,7 +257,7 @@ const Bottom: React.FC<React.ComponentProps<typeof StyledBottom>> = ({ ...props 
                 <StyledCloseButton
                   onClick={() => setShowNavDialog(false)}
                 >
-                  <MdOutlineClose style={{ fontSize: '18px', color: 'white' }}/>
+                  <MdOutlineClose style={{ fontSize: '18px' }}/>
                 </StyledCloseButton>
               </StyledDialog>      
             </DialogContent>
@@ -280,6 +281,7 @@ const Bottom: React.FC<React.ComponentProps<typeof StyledBottom>> = ({ ...props 
             <Overlay/>
             <DialogContent asChild={true} forceMount={true}
               onInteractOutside={() => setShowTimelineDialog(false)}
+              onEscapeKeyDown={() => setShowTimelineDialog(false)}
             >
               <StyledDialog
                 initial="close"

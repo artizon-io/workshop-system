@@ -15,7 +15,7 @@ import { Input } from '@components/input';
 // TODO: refactor add/edit dialog
 
 const StyledEditDialog = styled(Dialog, {
-  minWidth: '80%',
+  
 });
 
 const StyledEditDialogForm = styled('form', {

@@ -48,7 +48,18 @@ const Nav : React.FC = ({ ...props }) => {
 const StyledFooter = styled(motion.footer, {
   width: '100vw',
   zIndex: 1000,
-  padding: '60px 80px',
+  '@imac': {
+    padding: '60px 80px',
+  },
+  '@macbook': {
+    padding: '60px 6vw',
+  },
+  '@ipad': {
+    padding: '60px 6vw',
+  },
+  '@iphone': {
+    padding: '60px 8vw',
+  },
   backgroundColor: '$gray950',
 
   position: 'relative',

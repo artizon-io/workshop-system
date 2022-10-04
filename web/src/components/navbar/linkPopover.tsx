@@ -4,12 +4,14 @@ import type * as Stitches from '@stitches/react';
 import { AnimatePresence, motion, Variants } from 'framer-motion';
 import { PopoverAnchor, PopoverArrow, PopoverClose, PopoverContent, PopoverPortal, PopoverTrigger, Root as PopoverRoot } from '@radix-ui/react-popover';
 import { Link } from '@components/link';
-import { MdLogout, MdOutlineManageAccounts } from 'react-icons/md';
+import { MdArrowDropDown, MdLogout, MdOutlineManageAccounts } from 'react-icons/md';
+import { IoIosArrowDropdown, IoIosArrowDropdownCircle } from 'react-icons/io';
 import { HiExternalLink } from 'react-icons/hi';
 import { useAuth } from 'reactfire';
 import { redirect } from 'react-router-dom';
+import Logger from 'js-logger';
 
-type StyledProfileBubbleVariants = Stitches.VariantProps<typeof StyledProfileBubble>
+type StyledLinkPopoverVariants = Stitches.VariantProps<typeof StyledLinkPopover>
 
 const StyledAnchor = styled(PopoverAnchor, {
   // display: 'none',
@@ -28,34 +30,29 @@ const Anchor : React.FC = ({ ...props }) => {
 
 Anchor.toString = () => '.anchor';
 
-const StyledTrigger = styled(PopoverTrigger, {
+const StyledTrigger = styled(motion(PopoverTrigger), {
   position: 'relative',
   background: 'transparent',
-  '& > img': {
-    width: '35px',
-    height: '35px',
-    borderRadius: '50%',
-  },
-  '& > img:hover': {
+  color: '$gray650',
+  '&:hover': {
     cursor: 'pointer'
   },
 });
 
 const Trigger : React.FC<{
-  img: string;
   open: () => void;
-} & React.ComponentProps<typeof StyledTrigger>> = ({ img, open, ...props }) => {
+} & React.ComponentProps<typeof StyledTrigger>> = ({ open, ...props }) => {
   return (
-    <StyledTrigger {...props}>
-      <motion.img src={img}
-        onClick={() => open()}
-        whileHover={{
-          scale: 1.1
-        }}
-        whileTap={{
-          scale: 1
-        }}
-      />
+    <StyledTrigger {...props}
+      onClick={() => open()}
+      whileHover={{
+        scale: 1.1
+      }}
+      whileTap={{
+        scale: 1
+      }}
+    >
+      <IoIosArrowDropdownCircle style={{ fontSize: '25px' }} />
       <Anchor/>
     </StyledTrigger>
   );
@@ -85,25 +82,6 @@ const listVariants : Variants = {
   },
 };
 
-const listItemVariants : Variants = {
-  close: {  // initial & exit
-    opacity: 0,
-    y: 20,
-    transition: {
-      duration: 0.5
-    }
-  },
-  open: {  // animate
-    opacity: 1,
-    y: 0,
-    transition: {
-      type: "spring",
-      stiffness: 300,
-      damping: 30
-    }
-  },
-};
-
 const StyledPopover = styled(PopoverContent, {
   zIndex: 5000,
   flexbox: 'column',
@@ -112,16 +90,12 @@ const StyledPopover = styled(PopoverContent, {
   backgroundColor: '$gray300',
   margin: '0 30px',  // collision padding
   padding: '30px',
-  [`& > li > ${Link}`]: {
-    flexbox: 'row',
-    gap: '5px'
-  }
 });
 
 const Popover : React.FC<{
   close: () => void;
   setIsClose: (val: boolean) => void;
-} & React.ComponentProps<typeof StyledPopover>> = React.forwardRef(({ close, setIsClose, ...props }, ref) => {
+} & React.ComponentProps<typeof StyledPopover>> = React.forwardRef(({ close, setIsClose, children, ...props }, ref) => {
   const auth = useAuth();
 
   useEffect(() => {
@@ -131,7 +105,8 @@ const Popover : React.FC<{
 
   return (
     <StyledPopover asChild={true} forceMount={true} {...props} side='bottom' ref={ref}
-      onInteractOutside={() => close()}  // TODO: fix interact outside with clicking on trigger
+      // onInteractOutside={e => { close(); e.stopImmediatePropagation(); }}  // interactoutside is fired before the click event but they don't belong to the same event tree?
+      onInteractOutside={e => close()}  // interactoutside is fired before the click event but they don't belong to the same event tree?
     >
       <motion.ul
         initial='close'
@@ -139,46 +114,21 @@ const Popover : React.FC<{
         exit='close'
         variants={listVariants}
       >
-        <motion.li variants={listItemVariants}>
-          <Link to="/support" style={'white'} size={'s'} onClick={e => {
-            close();
-          }}>
-            <MdOutlineManageAccounts style={{ transform: 'translate(0px, -1px)', fontSize: '17px' }}/>
-            Account Management
-          </Link>
-        </motion.li>
-        <motion.li variants={listItemVariants}>
-          <Link to="/support" style={'white'} size={'s'} onClick={e => {
-            close();
-          }}>
-            <HiExternalLink style={{ transform: 'translate(0px, 0px)', fontSize: '15px' }}/>
-            Stripe Dashboard
-          </Link>
-        </motion.li>
-        <motion.li variants={listItemVariants}>
-          <Link to="/" style={'white'} size={'s'} onClick={e => {
-            close();
-            auth.signOut();
-            // auth.signOut().then(() => close());
-          }}>
-            <MdLogout style={{ transform: 'translate(0px, 0px)', fontSize: '15px' }}/>
-            Logout
-          </Link>
-        </motion.li>
+        {children}
       </motion.ul>
     </StyledPopover>
   )
 });
 
-const StyledProfileBubble = styled(PopoverRoot, {
+const StyledLinkPopover = styled(PopoverRoot, {
 
 });
 
-interface Props extends React.ComponentProps<typeof StyledProfileBubble> {
-  img: string;
+interface Props extends React.ComponentProps<typeof StyledLinkPopover> {
+
 };
 
-export const ProfileBubble: React.FC<Props> = ({ img, ...props }) => {
+export const LinkPopover: React.FC<Props> = ({ children, ...props }) => {
   const [isOpen, setIsOpen] = useState(false);
   const isClose = useRef(true);
 
@@ -189,18 +139,20 @@ export const ProfileBubble: React.FC<Props> = ({ img, ...props }) => {
   }, []);
 
   return (
-    <StyledProfileBubble {...props} open={isOpen}>
-      <Trigger img={img} open={() => { if (isClose.current) setIsOpen(true); }}/>
+    <StyledLinkPopover {...props} open={isOpen}>
+      <Trigger open={() => { if (isClose.current) setIsOpen(true); }}/>
       <AnimatePresence>
         {/* Directly controlling popover open/close logic */}
         {/* See https://github.com/radix-ui/primitives/discussions/1058 */}
         {isOpen &&
         <PopoverPortal forceMount={true}>
-          <Popover close={() => setIsOpen(false)} setIsClose={setIsClose}/>
+          <Popover close={() => setIsOpen(false)} setIsClose={setIsClose}>
+            {children}
+          </Popover>
         </PopoverPortal>
         }
       </AnimatePresence>
       {/* <Popover close={() => setIsOpen(false)}/> */}
-    </StyledProfileBubble>
+    </StyledLinkPopover>
   );
 };

@@ -7,9 +7,15 @@ import { IconText } from '@components/iconText';
 
 const StyledRight = styled('div', {
   gridArea: 'right',
+  alignSelf: 'start',
 
   flexbox: 'column',
-  gap: '30px',
+  '@imac': {
+    gap: '25px',
+  },
+  '@ipad': {
+    gap: '20px',
+  },
   alignItems: 'flex-start',
 });
 

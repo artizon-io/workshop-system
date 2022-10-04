@@ -8,7 +8,19 @@ type StyledAdminVariants = Stitches.VariantProps<typeof StyledAdmin>
 
 const StyledAdmin = styled('main', {
   flexbox: 'column',
-  margin: '180px 100px 50px 100px',
+  // TODO: Refactor - combine admin & user panel
+  '@imac': {
+    margin: '180px 10vw 50px 10vw',
+  },
+  '@macbook': {
+    margin: '180px 5vw 50px 5vw',
+  },
+  '@ipad': {
+    margin: '180px 5vw 50px 5vw',
+  },
+  '@iphone': {
+    margin: '180px 5vw 50px 5vw',
+  }
 });
 
 interface Props extends React.ComponentProps<typeof StyledAdmin> {

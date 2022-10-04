@@ -141,7 +141,7 @@ const EnrollTable : React.FC = ({ ...props }) => {
 }
 
 const StyledInfoDialog = styled(Dialog, {
-  minWidth: '600px',
+  
 });
 
 interface Props extends React.ComponentProps<typeof StyledInfoDialog> {

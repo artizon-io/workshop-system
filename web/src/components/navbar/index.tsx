@@ -9,6 +9,9 @@ import Logo from './logo';
 import cat1Icon from '@assets/cat1.jpg';
 import cat2Icon from '@assets/cat2.jpg';
 import cat3Icon from '@assets/cat3.jpg';
+import useWindowDimensions from '@hooks/useWindowDimensions';
+import { LinkPopover } from './linkPopover';
+import Logger from 'js-logger';
 
 type StyledNavBarVariants = Stitches.VariantProps<typeof StyledNavBar>
 
@@ -22,11 +25,21 @@ const StyledNav = styled(motion.nav, {
   variants: {
     state: {
       'full': {
-        padding: '40px 50px',
+        '@imac': {
+          padding: '40px 50px',
+        },
+        '@ipad': {
+          padding: '40px 5vw',
+        },
         backgroundColor: '$gray950',
       },
       'slim': {
-        padding: '20px 50px',
+        '@imac': {
+          padding: '20px 50px',
+        },
+        '@ipad': {
+          padding: '20px 5vw',
+        },
         backdropFilter: 'blur(8px)',
         backgroundColor: 'rgba(255, 255, 255, 0.6)',
       }
@@ -40,6 +53,8 @@ const StyledNav = styled(motion.nav, {
 const Nav : React.FC<{
   adminMode: boolean;
 } & React.ComponentProps<typeof StyledNav>> = ({ adminMode, ...props }) => {
+  const { width, height } = useWindowDimensions();
+
   return (
     <StyledNav layout {...props}
       // transition={{
@@ -48,8 +63,16 @@ const Nav : React.FC<{
     >
       <Logo to="/" layout/>
       <motion.ul layout>
-        <li><Link to="/admin/user-management" style={'gray'}>User Management</Link></li>
-        <li><Link to="/support" style={'gray'}>Support</Link></li>
+        {width > 768
+          ? <>
+            <li><Link to="/admin/user-management" style={'gray'}>User Management</Link></li>
+            <li><Link to="/support" style={'gray'}>Support</Link></li>
+          </>
+          : <LinkPopover>
+            <li><Link to="/admin/user-management" style={'white'}>User Management</Link></li>
+            <li><Link to="/support" style={'white'}>Support</Link></li>
+          </LinkPopover>
+        }
         {adminMode &&
         <ProfileBubble img={cat1Icon}/>
         // <ProfileBubble img={cat2Icon}/>

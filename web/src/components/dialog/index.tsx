@@ -25,18 +25,39 @@ const StyledDialog = styled(motion.div, {
   variants: {
     spacing: {
       'compact': {
-        gap: '15px',
-        padding: '30px',
+        '@imac': {
+          gap: '15px',
+          padding: '30px',
 
-        maxHeight: '95%',
-        maxWidth: '95%',
+          height: '95vh',
+          maxHeight: '95vh',
+          width: '95vw',
+          maxWidth: '95vh',
+        },
+        '@ipad': {
+          gap: '10px',
+          padding: '30px',
+
+          height: '95vh',
+          maxHeight: '95vh',
+          width: '95vw',
+          maxWidth: '95vh',
+        }
       },
       'normal': {
         gap: '30px',
-        padding: '40px',
 
-        maxHeight: '80%',
-        maxWidth: '80%',
+        '@imac': {
+          maxHeight: '80vh',
+          maxWidth: '80vw',
+          padding: '40px',
+        },
+        '@ipad': {
+          maxHeight: '90vh',  // TODO: make height & width better
+          width: '90vw',
+          maxWidth: '90vw',
+          padding: '40px 30px',  // adhoc fix for above
+        }
       }
     }
   },
