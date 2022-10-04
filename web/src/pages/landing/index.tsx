@@ -34,7 +34,7 @@ const StyledLanding = styled(motion.main, {
     gap: '50px',
   },
   '@ipad': {
-    padding: '5vh 6vw 10vh 12vw',  // less padding to top and right
+    padding: '5vh 8vw 10vh 12vw',  // less padding to top and right
 
     gridTemplateAreas: `
       'right'
@@ -84,6 +84,22 @@ const StyledHeader = styled(motion.h1, {
       fontSize: '30px',
     },
   },
+  '& > em > small': {
+    color: '$gray750',
+    fontWeight: 300,
+    '@imac': {
+      fontSize: '20px'
+    },
+    '@macbook': {
+      fontSize: '18px',
+    },
+    '@ipad': {
+      fontSize: '18px',
+    },
+    '@iphone': {
+      fontSize: '16px',
+    },
+  }
 });
 
 const StyledLeft = styled(motion.div, {
@@ -146,10 +162,12 @@ const StyledRight = styled(motion.div, {
   margin: 'auto',
   '@imac': {
     width: '100%',
+    maxHeight: '100%',  // constraining the height in case width > height of the bounding box
     padding: '25px 0px 0px 0px',  // padding top
   },
   '@ipad': {
     height: '100%',
+    maxWidth: '100%',
     padding: '0px',
   }
 });
@@ -274,7 +292,7 @@ const Landing: React.FC<Props> = ({ ...props }) => {
           variants={headingVariants} 
         >
           <b>Workshop</b>
-          <em>System</em>
+          <em>System <small>(A Work-In-Progress)</small></em>
         </StyledHeader>
         <StyledSubheader
           variants={headingVariants} 

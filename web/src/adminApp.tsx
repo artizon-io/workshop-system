@@ -1,6 +1,6 @@
 import React, { FC, ReactElement, ReactNode, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Auth, ConfirmationResult, getAuth, RecaptchaVerifier, signInWithPhoneNumber, User, UserCredential } from "firebase/auth";
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter, Navigate, redirect, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import Logger from 'js-logger';
 import { useUser } from 'reactfire';
 import Loading from '@pages/loading';
@@ -8,12 +8,15 @@ import AdminUserManagement from '@pages/adminUserManagement';
 import Admin from '@pages/admin';
 import AdminLayout from '@layout/adminLayout';
 import NotFound from '@pages/notFound';
+import { AnimatePresence } from 'framer-motion';
 
 
 const AdminApp : FC<{}> = ({}) => {
   const user = useUser();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isFetchingAuthClaim, setIsFetchingAuthClaim] = useState(true);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     switch (user.status) {
@@ -32,6 +35,7 @@ const AdminApp : FC<{}> = ({}) => {
             .then(() => setIsAdmin(true))
             .catch(err => Logger.info(err));
         }
+        // setTimeout(() => setIsFetchingAuthClaim(false), 2000);
         setIsFetchingAuthClaim(false);
         break;
     }
@@ -45,9 +49,49 @@ const AdminApp : FC<{}> = ({}) => {
 
   if (isFetchingAuthClaim)
     return null;
-    // return <Loading key="loading"/>;
+  //   return <Loading/>;  // FIXME: Animate presence not waiting for this
+  // return <Loading key="loading"/>;
+  //   return (
+  //     <Routes>
+  //       <Route path="*" element={<Loading/>}/>
+  //     </Routes>
+  //   );
+
+  // if (!isAdmin) {
+  //   navigate('/login');
+  //   return null;
+  // }
 
   return (
+    // Route not changing thus cannot rely on the top-level animate presence to do page transition for us
+    // <AnimatePresence mode='wait'> 
+    //   {isFetchingAuthClaim
+    //   ? <Loading key='loading'/>
+    //   : <Routes>
+    //     <Route path="/" element={<AdminLayout/>}>
+    //       <Route index element={<Admin/>}/>  
+    //       <Route path="user-management" element={<AdminUserManagement/>}/>
+    //     </Route>
+
+    //     <Route path="*" element={<NotFound/>}/>
+    //   </Routes>
+    //   }
+    // </AnimatePresence>
+    // <Routes>
+    //   <Route path="/" element={
+    //     <AnimatePresence mode='wait'>
+    //       {isFetchingAuthClaim
+    //       ? <Loading key='loading'/>
+    //       : <AdminLayout key='layout'/>
+    //       }
+    //     </AnimatePresence>
+    //   }>
+    //     <Route index element={<Admin/>}/>  
+    //     {/* <Route path="user-management" element={<AdminUserManagement/>}/> */}
+    //   </Route>
+
+    //   <Route path="*" element={<NotFound/>}/>
+    // </Routes>
     <Routes>
       <Route path="/" element={<AdminLayout/>}>
         <Route index element={<Admin/>}/>  

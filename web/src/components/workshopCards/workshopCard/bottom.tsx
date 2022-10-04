@@ -6,7 +6,7 @@ import { BiTime, BiStopwatch } from 'react-icons/bi';
 import { MdPersonAdd, MdDateRange, MdAttachMoney, MdPerson, MdInfoOutline } from 'react-icons/md';
 import { IoLanguage, IoLocationSharp, IoClose } from 'react-icons/io5';
 import { ImPen } from 'react-icons/im';
-import { AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogOverlay, AlertDialogPortal, AlertDialogTitle, AlertDialogTrigger, Root as AlertDialogRoot } from '@radix-ui/react-alert-dialog';
+import { DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger, Root as DialogRoot } from '@radix-ui/react-dialog';
 import { Button } from '@components/button';
 import Overlay from '@components/dialog/overlay';
 import EditDialog from './editDialog';
@@ -54,38 +54,38 @@ const Bottom : React.FC<{
   if (adminMode)
     return (
       <StyledBottom className='bottom' {...props}>
-        <AlertDialogRoot>
+        <DialogRoot>
           <AnimatePresence>
             <EditTrigger open={() => setEditDialogOpen(true)}/>
           </AnimatePresence>
           <AnimatePresence>
             {editDialogOpen && <>
               {/* Portal seems to have less bug */}
-              <AlertDialogPortal forceMount={true}>
+              <DialogPortal forceMount={true}>
                 <Overlay/>
-                <AlertDialogContent asChild={true} forceMount={true}>
+                <DialogContent asChild={true} forceMount={true}>
                   <EditDialog close={() => setEditDialogOpen(false)}/>
-                </AlertDialogContent>
-              </AlertDialogPortal>
+                </DialogContent>
+              </DialogPortal>
             </>}
           </AnimatePresence>
-        </AlertDialogRoot>
-        <AlertDialogRoot>
+        </DialogRoot>
+        <DialogRoot>
           <AnimatePresence>
             <InfoTrigger open={() => setInfoDialogOpen(true)}/>
           </AnimatePresence>
           <AnimatePresence>
             {infoDialogOpen && <>
               {/* Portal seems to have less bug */}
-              <AlertDialogPortal forceMount={true}>
+              <DialogPortal forceMount={true}>
                 <Overlay/>
-                <AlertDialogContent asChild={true} forceMount={true}>
+                <DialogContent asChild={true} forceMount={true}>
                   <InfoDialog close={() => setInfoDialogOpen(false)}/>
-                </AlertDialogContent>
-              </AlertDialogPortal>
+                </DialogContent>
+              </DialogPortal>
             </>}
           </AnimatePresence>
-        </AlertDialogRoot>
+        </DialogRoot>
       </StyledBottom>
     );
 

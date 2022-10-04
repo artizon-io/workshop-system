@@ -16,8 +16,13 @@ import Overlay from '@components/dialog/overlay';
 const StyledBottom = styled(motion.div, {
   gridArea: 'bottom',
   flexbox: 'row',
-  justifyContent: 'flex-start',
   gap: '20px',
+  '@imac': {
+    justifyContent: 'flex-start',
+  },
+  '@iphone': {
+    justifyContent: 'flex-end',
+  }
 });
 
 const StyledDialog = styled(motion.div, {
@@ -46,15 +51,17 @@ const StyledDialog = styled(motion.div, {
         alignItems: 'stretch',
         padding: '40px 50px 30px 40px',
         overflow: 'scroll',
-        maxHeight: '80vh',
         '@imac': {
-          width: '50vw'
+          width: '50vw',
+          maxHeight: '80vh',
         },
         '@macbook': {
-          width: '75vw'
+          width: '75vw',
+          maxHeight: '85vh',
         },
         '@ipad': {
-          width: '90vw'
+          width: '90vw',
+          maxHeight: '90vh',
         }
       }
     }

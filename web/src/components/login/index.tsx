@@ -125,7 +125,7 @@ const Login: React.FC<Props> = ({ submitPhone, submitOtp, ...props }) => {
         opacity: 0,
         y: -30,
         transition: {
-          delay: 0.8,
+          // delay: 0.8,  // TODO: dynamic exit depending on if it is successful login?
           opacity: {
             duration: 0.3
           },
