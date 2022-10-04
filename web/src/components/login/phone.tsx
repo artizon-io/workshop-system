@@ -48,16 +48,6 @@ const StyledFormText = styled('p', {
   color: '$gray600',
   fontWeight: 300,
   fontSize: '13px',
-  // '& > a': {
-  //   color: '$blue500s',
-  //   fontWeight: 400,
-  //   underline: "",
-  //   textDecorationColor: 'transparent',
-  // },
-  // '& > a:hover': {
-  //   cursor: 'pointer',
-  //   textDecorationColor: '$blue500',
-  // },
 });
 
 const StyledPhone = styled(motion.div, {

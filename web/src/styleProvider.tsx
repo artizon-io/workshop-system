@@ -104,12 +104,16 @@ export const { styled, css, keyframes, globalCss } = createStitches({
       // https://stackoverflow.com/questions/33454533/cant-scroll-to-top-of-flex-item-that-is-overflowing-container
       flexDirection: value,
     }),
-    underline: (value : "") => ({
-      textDecoration: 'underline',
-      textUnderlineOffset: '3px',
-      textDecorationThickness: '1px'
-    }),
-  }
+  },
+  media: {
+    iphone: 'screen and (max-width: 480px)',
+    // iphone: '(max-width: 480px)',
+    ipad: 'screen and (max-width: 768px)',
+    // ipad: '(min-width: 481px) and (max-width: 768px)',
+    macbook: 'screen and (max-width: 1024px)',
+    // macbook: '(min-width: 769px) and (max-width: 1024px)',
+    imac: 'screen and (max-width: 10000px)'
+  },
 });
 
 

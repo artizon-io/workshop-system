@@ -4,7 +4,7 @@ import type * as Stitches from '@stitches/react';
 import WorkshopCard from './workshopCard';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Button, StyledButtonVariants } from '@components/button';
-import { AlertDialogContent, AlertDialogPortal, AlertDialogTrigger, Root as AlertDialogRoot } from '@radix-ui/react-alert-dialog';  // TODO: use dialog instead of alertdialog?
+import { DialogContent, DialogPortal, DialogTrigger, Root as DialogRoot } from '@radix-ui/react-dialog';
 import { MdAdd } from 'react-icons/md';
 import Overlay from '@components/dialog/overlay';
 import Dialog from '@components/dialog';
@@ -18,7 +18,7 @@ import Logger from 'js-logger';
 
 type StyledWorkshopCardsVariants = Stitches.VariantProps<typeof StyledWorkshopCards>
 
-const StyledAddTrigger = styled(AlertDialogTrigger, {
+const StyledAddTrigger = styled(DialogTrigger, {
   
 });
 
@@ -232,19 +232,19 @@ const WorkshopCards: React.FC<Props> = ({ adminMode = false, ...props }) => {
       <WorkshopCard workshopId={"someId"} adminMode={adminMode}/>
       <WorkshopCard workshopId={"someId"} adminMode={adminMode}/>
       {adminMode &&
-      <AlertDialogRoot>
+      <DialogRoot>
         <AddTrigger open={() => setDialogOpen(true)}/>
         <AnimatePresence>
           {dialogOpen &&
-          <AlertDialogPortal forceMount={true}>
+          <DialogPortal forceMount={true}>
             <Overlay/>
-            <AlertDialogContent asChild={true} forceMount={true}>
+            <DialogContent asChild={true} forceMount={true}>
               <AddDialog close={() => setDialogOpen(false)}/>
-            </AlertDialogContent>
-          </AlertDialogPortal>
+            </DialogContent>
+          </DialogPortal>
           }
         </AnimatePresence>
-      </AlertDialogRoot>
+      </DialogRoot>
       }
     </StyledWorkshopCards>
   );

@@ -1,9 +1,9 @@
-import { AlertDialogOverlay } from "@radix-ui/react-alert-dialog";
+import { DialogOverlay } from "@radix-ui/react-dialog";
 import { styled } from "@styleProvider";
 import { motion } from "framer-motion";
 import React from "react";
 
-const StyledOverlay = styled(AlertDialogOverlay, {
+const StyledOverlay = styled(DialogOverlay, {
   backgroundColor: 'rgba(0, 0, 0, 0.1)',
   zIndex: 10000,
   backdropFilter: 'blur(3px)',

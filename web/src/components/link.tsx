@@ -23,7 +23,9 @@ const StyledLink = styled(RouterLink, {
     },
     'underline': {
       true: {
-        underline: "",
+        textDecoration: 'underline',
+        textUnderlineOffset: '3px',
+        textDecorationThickness: '1px',
         textDecorationColor: 'transparent',
       },
       false: {}

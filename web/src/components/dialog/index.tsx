@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { styled, keyframes } from '@styleProvider';
-import { AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogOverlay, AlertDialogPortal, AlertDialogTitle, AlertDialogTrigger, Root as AlertDialogRoot } from '@radix-ui/react-alert-dialog';
+import { DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger, Root as DialogRoot } from '@radix-ui/react-dialog';
 import { motion } from 'framer-motion';
 import { Button } from '@components/button';
 

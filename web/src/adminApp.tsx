@@ -15,8 +15,6 @@ const AdminApp : FC<{}> = ({}) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isFetchingAuthClaim, setIsFetchingAuthClaim] = useState(true);
 
-  const location = useLocation();
-
   useEffect(() => {
     switch (user.status) {
       case 'loading':
@@ -46,10 +44,11 @@ const AdminApp : FC<{}> = ({}) => {
   }
 
   if (isFetchingAuthClaim)
-    return <Loading/>;
+    return null;
+    // return <Loading key="loading"/>;
 
   return (
-    <Routes key={location.pathname} location={location}>
+    <Routes>
       <Route path="/" element={<AdminLayout/>}>
         <Route index element={<Admin/>}/>  
         {/* <Route path="user-management" element={<AdminUserManagement/>}/> */}

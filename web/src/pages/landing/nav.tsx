@@ -4,12 +4,13 @@ import type * as Stitches from '@stitches/react';
 import { AnimatePresence, motion, Variants } from 'framer-motion';
 import { Link } from '@components/link';
 import { Button } from '@components/button';
-import { PopoverAnchor, PopoverContent, PopoverPortal, PopoverTrigger, Root as PopoverRoot } from '@radix-ui/react-popover'
+import { DialogContent, DialogPortal, DialogTrigger, Root as DialogRoot } from '@radix-ui/react-dialog'
 import { TbCircleDashed, TbHandClick } from 'react-icons/tb';
 import ThreeEnv from '@components/three/threeEnv';
 import DisplacementSphere from '@components/three/displacementSphere';
 import { BiGitBranch } from 'react-icons/bi';
-import { MdCircle, MdOutlineCircle } from 'react-icons/md';
+import { MdCircle, MdOutlineCircle, MdOutlineClose } from 'react-icons/md';
+import Overlay from '@components/dialog/overlay';
 
 
 const StyledBottom = styled(motion.div, {
@@ -19,14 +20,11 @@ const StyledBottom = styled(motion.div, {
   gap: '20px',
 });
 
-const StyledPopoverAnchor = styled('div', {
-  position: 'absolute',
+const StyledDialog = styled(motion.div, {
+  zIndex: 20000,
+  position: 'fixed',
   top: '50%',
-  left: '50%'
-});
-
-const StyledPopover = styled(motion.div, {
-  zIndex: 5000,
+  left: '50%',
   backgroundColor: '$gray000',
   variants: {
     type: {
@@ -34,7 +32,7 @@ const StyledPopover = styled(motion.div, {
         flexbox: 'column',
         alignItems: 'flex-start',
         gap: '20px',
-        padding: '30px',
+        padding: '40px 50px 30px 40px',
         [`& > li > ${Link}`]: {
           flexbox: 'row',
           gap: '5px'
@@ -46,10 +44,18 @@ const StyledPopover = styled(motion.div, {
         margin: 'auto',
         // https://stackoverflow.com/questions/33454533/cant-scroll-to-top-of-flex-item-that-is-overflowing-container
         alignItems: 'stretch',
-        padding: '30px',
+        padding: '40px 50px 30px 40px',
         overflow: 'scroll',
         maxHeight: '80vh',
-        maxWidth: '50vw'
+        '@imac': {
+          width: '50vw'
+        },
+        '@macbook': {
+          width: '75vw'
+        },
+        '@ipad': {
+          width: '90vw'
+        }
       }
     }
   },
@@ -126,6 +132,26 @@ const StyledTimelineDot = styled('div', {
   },
 });
 
+const StyledNavHeader = styled('h2', {
+  alignSelf: 'center',
+  color: '$gray950',
+  fontFamily: '$ibmplexmono',
+  fontSize: '20px',
+  margin: '10px 0'
+});
+
+const StyledCloseButton = styled('button', {
+  position: 'fixed',
+  top: '30px',
+  right:'30px',
+  color: '$gray600',
+  backgroundColor: 'inherit',
+  '&:hover': {
+    cursor: 'pointer',
+    color: '$gray700',
+  }
+})
+
 const TimelineDot : React.FC<React.ComponentProps<typeof StyledTimelineDot>> = ({ type = 'complete', ...props }) => {
   return (
     <StyledTimelineDot type={type}>
@@ -145,7 +171,7 @@ const triggerVariants : Variants = {
   animate: {
     opacity: 1,
     transition: {
-      delay: 2,
+      delay: 1,
       opacity: {
         duration: 0.2
       }
@@ -156,10 +182,11 @@ const triggerVariants : Variants = {
   }
 };
 
-const popoverVariants : Variants = {
+const DialogVariants : Variants = {
   close: {  // initial & exit
     clipPath: "inset(50% 50% 50% 50% round 8px)",
-    translateY: '50%',
+    translateX: '-50%',
+    translateY: '-50%',
     transition: {
       type: "spring",
       bounce: 0,
@@ -168,7 +195,8 @@ const popoverVariants : Variants = {
   },
   open: {  // animate
     clipPath: "inset(0% 0% 0% 0% round 8px)",
-    translateY: '50%',
+    translateX: '-50%',
+    translateY: '-50%',
     transition: {
       type: "spring",
       bounce: 0,
@@ -180,93 +208,77 @@ const popoverVariants : Variants = {
 };
 
 const Bottom: React.FC<React.ComponentProps<typeof StyledBottom>> = ({ ...props }) => {
-  const [showNavPopover, setShowNavPopover] = useState(false);
-  const [showTimelinePopover, setShowTimelinePopover] = useState(false);
-  const isLeaving = useRef(false);
+  const [showNavDialog, setShowNavDialog] = useState(false);
+  const [showTimelineDialog, setShowTimelineDialog] = useState(false);
+  // const isLeaving = useRef(false);
 
   return (
     <StyledBottom>
-      <PopoverRoot>
-        <PopoverTrigger asChild={true}>
+      <DialogRoot>
+        <DialogTrigger asChild={true}>
           <Button
-            onHoverStart={() => { if (!isLeaving.current) setShowNavPopover(true); }}
+            // onHoverStart={() => { if (!isLeaving.current) setShowNavDialog(true); }}
+            onClick={() => setShowNavDialog(true)}
             size={'round'}
             variants={triggerVariants}
             position={'relative'}
           >
-          {/* An attempt */}
-          {/* position: absolute to make it happen */}
-          {/* <motion.div
-            style={{
-              backgroundColor: 'black',
-              width: '300px',
-              height: '300px'
-            }}
-            initial={false}
-            animate={{
-              clipPath: "inset(125px 125px 125px 125px round 50%)",
-            }}
-            whileHover={{
-              clipPath: "inset(0px 0px 0px 0px round 30px)",
-            }}
-            transition={{
-              type: "spring",
-              bounce: 0,
-              duration: 0.3
-            }}
-          > */}
             <TbHandClick style={{ fontSize: '20px' }}/>
-          {/* </motion.div> */}
-            <PopoverAnchor asChild={true}>
-              <StyledPopoverAnchor/>
-            </PopoverAnchor>
           </Button>
-        </PopoverTrigger>
+        </DialogTrigger>
         <AnimatePresence>
-          {showNavPopover &&
-          <PopoverPortal forceMount={true}>
-            <PopoverContent asChild={true} forceMount={true} side={'top'}>
-              <StyledPopover
+          {showNavDialog && <>
+          <DialogPortal forceMount={true}>
+            <Overlay/>
+            <DialogContent asChild={true} forceMount={true}
+              onInteractOutside={() => setShowNavDialog(false)}
+            >
+              <StyledDialog
                 initial="close"
                 animate="open"
                 exit="close"
-                variants={popoverVariants}
-                onHoverEnd={() => setShowNavPopover(false)}
+                variants={DialogVariants}
                 type={'nav'}
               >
-                <Link to="/workshop" style={'white'} onClick={e => { setShowNavPopover(false); isLeaving.current = true; }}>User panel</Link>
-                <Link to="/admin" style={'white'} onClick={e => { setShowNavPopover(false); isLeaving.current = true; }}>Admin panel</Link>
-                <Link to="/loading" style={'white'} onClick={e => { setShowNavPopover(false); isLeaving.current = true; }}>Loading page</Link>
-                <Link to="/login" style={'white'} onClick={e => { setShowNavPopover(false); isLeaving.current = true; }}>Login page</Link>
-                <Link to="/404" style={'white'} onClick={e => { setShowNavPopover(false); isLeaving.current = true; }}>404 page</Link>
-              </StyledPopover>      
-            </PopoverContent>
-          </PopoverPortal>
-          }
+                <StyledNavHeader>Take me to...</StyledNavHeader>
+                <Link to="/workshop" style={'white'} onClick={e => { setShowNavDialog(false); }}>User panel</Link>
+                <Link to="/admin" style={'white'} onClick={e => { setShowNavDialog(false); }}>Admin panel</Link>
+                <Link to="/loading" style={'white'} onClick={e => { setShowNavDialog(false); }}>Loading page</Link>
+                <Link to="/login" style={'white'} onClick={e => { setShowNavDialog(false); }}>Login page</Link>
+                <Link to="/404" style={'white'} onClick={e => { setShowNavDialog(false); }}>404 page</Link>
+                <StyledCloseButton
+                  onClick={() => setShowNavDialog(false)}
+                >
+                  <MdOutlineClose style={{ fontSize: '18px', color: 'white' }}/>
+                </StyledCloseButton>
+              </StyledDialog>      
+            </DialogContent>
+          </DialogPortal>
+          </>}
         </AnimatePresence>
-      </PopoverRoot>
-      <PopoverRoot>
-        <PopoverTrigger asChild={true}>
+      </DialogRoot>
+      <DialogRoot>
+        <DialogTrigger asChild={true}>
           <Button
-            onClick={() => setShowTimelinePopover(state => !state)}
+            onClick={() => setShowTimelineDialog(state => !state)}
             size={'round'}
             variants={triggerVariants}
           >
             <BiGitBranch style={{ fontSize: '20px' }}/>
           </Button>
-        </PopoverTrigger>
-        <PopoverAnchor asChild={true}>
-          <StyledPopoverAnchor/>
-        </PopoverAnchor>
+        </DialogTrigger>
         <AnimatePresence>
-          {showTimelinePopover &&
-          <PopoverPortal forceMount={true}>
-            <PopoverContent asChild={true} forceMount={true} side={'top'}>
-              <StyledPopover
+          {showTimelineDialog && <>
+          <DialogPortal forceMount={true}>
+            <Overlay/>
+            <DialogContent asChild={true} forceMount={true}
+              onInteractOutside={() => setShowTimelineDialog(false)}
+            >
+              <StyledDialog
                 initial="close"
                 animate="open"
                 exit="close"
-                variants={popoverVariants}
+                variants={DialogVariants}
                 type={'timeline'}
               >
                 <StyledTimelineHeader>Timeline</StyledTimelineHeader>
@@ -287,7 +299,7 @@ const Bottom: React.FC<React.ComponentProps<typeof StyledBottom>> = ({ ...props 
                 </StyledTimelineItem>
                 <StyledTimelineItem>
                   <StyledTimelineItemHeader>Admin panel UI</StyledTimelineItemHeader>
-                  <StyledTimelineItemBody>Profile icon popover, add/edit workshop dialog, delete workshop dialog, ...</StyledTimelineItemBody>
+                  <StyledTimelineItemBody>Profile icon Dialog, add/edit workshop dialog, delete workshop dialog, ...</StyledTimelineItemBody>
                   <TimelineDot/>
                 </StyledTimelineItem>
                 <StyledTimelineItem>
@@ -298,6 +310,10 @@ const Bottom: React.FC<React.ComponentProps<typeof StyledBottom>> = ({ ...props 
                   <StyledTimelineItemHeader>Landing page</StyledTimelineItemHeader>
                   <StyledTimelineItemBody>Typography, 3D element, timeline, ...</StyledTimelineItemBody>
                   <TimelineDot/>
+                </StyledTimelineItem>
+                <StyledTimelineItem>
+                  <StyledTimelineItemHeader type='incomplete'>Responsive UI</StyledTimelineItemHeader>
+                  <TimelineDot type={'incomplete'}/>
                 </StyledTimelineItem>
                 <StyledTimelineItem>
                   <StyledTimelineItemHeader type='incomplete'>Payment, register page</StyledTimelineItemHeader>
@@ -311,12 +327,17 @@ const Bottom: React.FC<React.ComponentProps<typeof StyledBottom>> = ({ ...props 
                   <StyledTimelineItemHeader type='incomplete'>Deployment</StyledTimelineItemHeader>
                   <TimelineDot type={'incomplete'}/>
                 </StyledTimelineItem>
-              </StyledPopover>      
-            </PopoverContent>
-          </PopoverPortal>
-          }
+                <StyledCloseButton
+                  onClick={() => setShowTimelineDialog(false)}
+                >
+                  <MdOutlineClose style={{ fontSize: '25px' }}/>
+                </StyledCloseButton>
+              </StyledDialog>      
+            </DialogContent>
+          </DialogPortal>
+          </>}
         </AnimatePresence>
-      </PopoverRoot>
+      </DialogRoot>
     </StyledBottom>
   );
 };
