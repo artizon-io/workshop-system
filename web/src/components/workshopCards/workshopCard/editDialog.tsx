@@ -15,7 +15,7 @@ import { Input } from '@components/input';
 // TODO: refactor add/edit dialog
 
 const StyledEditDialog = styled(Dialog, {
-  
+
 });
 
 const StyledEditDialogForm = styled('form', {
@@ -51,6 +51,8 @@ const EditDialog: React.FC<{
     validateOnBlur: false,
     onSubmit: async (data, { setStatus, setFieldError, resetForm, setErrors }) => {
       setStatus('loading');
+
+      setTimeout(() => setStatus('success'), 2000);
 
       // await submitOtp(Object.values(data).join(''))
       //   .then(() => {

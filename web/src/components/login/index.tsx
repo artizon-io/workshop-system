@@ -33,9 +33,16 @@ const StyledLogin = styled(motion.div, {
   position: 'relative',
   borderRadius: '25px',
   backgroundColor: '$gray950',
-  padding: '100px',
-  width: '500px',
-  height: '500px',
+  '@imac': {
+    padding: '100px',
+    width: '500px',
+    height: '500px',
+  },
+  '@iphone': {
+    padding: '30px',
+    width: '95vw',
+    height: '500px',
+  },
   flexbox: 'column',
   [`& > ${LockIcon}`]: {
     position: 'absolute',

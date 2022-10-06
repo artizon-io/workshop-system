@@ -31,7 +31,7 @@ const StyledDialog = styled(motion.div, {
 
           height: '95vh',
           maxHeight: '95vh',
-          width: '95vw',
+          width: '95vw',  // TODO: not going to maxWidth even if element needs that space
           maxWidth: '95vh',
         },
         '@ipad': {

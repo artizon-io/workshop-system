@@ -31,7 +31,7 @@ const App : FC<{}> = ({}) => {
         </Route>
 
         <Route path="/admin/*" element={<AdminApp/>}/>
-
+        
         {import.meta.env.DEV && <>
           <Route path="/login" element={<Login/>}/>
           <Route path="/loading" element={<Loading/>}/>

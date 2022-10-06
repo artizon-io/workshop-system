@@ -69,7 +69,7 @@ const StyledAddDialogForm = styled('form', {
 })
 
 const StyledAddDialog = styled(Dialog, {
-  minWidth: '80%',
+  
 });
 
 const AddDialog: React.FC<{
@@ -93,6 +93,8 @@ const AddDialog: React.FC<{
     validateOnBlur: false,
     onSubmit: async (data, { setStatus, setFieldError, resetForm, setErrors }) => {
       setStatus('loading');
+
+      setTimeout(() => setStatus('success'), 2000);
 
       // await submitOtp(Object.values(data).join(''))
       //   .then(() => {

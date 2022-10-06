@@ -292,7 +292,7 @@ const Landing: React.FC<Props> = ({ ...props }) => {
           variants={headingVariants} 
         >
           <b>Workshop</b>
-          <em>System <small>(A Work-In-Progress)</small></em>
+          <em>System <small>(WIP)</small></em>
         </StyledHeader>
         <StyledSubheader
           variants={headingVariants} 
