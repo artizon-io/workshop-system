@@ -14,7 +14,6 @@ import Overlay from '@components/dialog/overlay';
 
 
 const StyledBottom = styled(motion.div, {
-  gridArea: 'bottom',
   flexbox: 'row',
   gap: '20px',
   '@imac': {
@@ -325,9 +324,9 @@ const Bottom: React.FC<React.ComponentProps<typeof StyledBottom>> = ({ ...props 
                   <TimelineDot/>
                 </StyledTimelineItem>
                 <StyledTimelineItem>
-                  <StyledTimelineItemHeader type='incomplete'>Performance Optimisation</StyledTimelineItemHeader>
-                  <StyledTimelineItemBody type='incomplete'>Code-splitting, reduce initial page load time</StyledTimelineItemBody>
-                  <TimelineDot type='incomplete'/>
+                  <StyledTimelineItemHeader>Performance Optimisation</StyledTimelineItemHeader>
+                  <StyledTimelineItemBody>Code-splitting, reduce initial page load time</StyledTimelineItemBody>
+                  <TimelineDot/>
                 </StyledTimelineItem>
                 <StyledTimelineItem>
                   <StyledTimelineItemHeader type='incomplete'>Payment, register page</StyledTimelineItemHeader>

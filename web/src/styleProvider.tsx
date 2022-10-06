@@ -118,32 +118,12 @@ export const { styled, css, keyframes, globalCss } = createStitches({
 
 
 const globalStyles = globalCss({
-  "@font-face": [
-    {
-      fontFamily: 'Inter',
-      src: `url(${InterVarWoff}) format("woff2")`,
-      fontStyle: 'normal'
-    },
-    {
-      fontFamily: 'Inter',
-      src: `url(${InterItalicVarWoff}) format("woff2")`,
-      fontStyle: 'italic'
-    },
-    {
-      fontFamily: 'FiraCode',
-      src: `url(${FiraCodeVFWoff}) format('woff')`,
-      fontStyle: "normal",
-    },
-  ],
-  '@import': [
-    'https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&family=Major+Mono+Display&display=swap'
-  ],
   "*": {
     boxSizing: "border-box",
     border: "none",
     margin: 0,
     padding: 0,
-    outline: 'none'
+    outline: 'none',
   },
   html: {
     scrollBehavior: "smooth",

@@ -35,7 +35,7 @@ const StyledButton = styled(motion.button, {
   gap: '5px',
 
   fontFamily: '$firacode',
-  fontWeight: 'lighter',
+  fontWeight: 400,
   transition: 'background-color 0.2s, color 0.2s',
   variants: {
     'shadow': {

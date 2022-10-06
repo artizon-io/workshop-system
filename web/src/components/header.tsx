@@ -6,7 +6,7 @@ const StyledHeader = styled(motion.h1, {
   color: '$gray200',
   fontFamily: '$firacode',
   fontSize: '50px',
-  fontWeight: 600
+  fontWeight: 500
 });
 
 const variants : Variants = {

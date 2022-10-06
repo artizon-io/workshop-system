@@ -24,9 +24,9 @@ const StyledLanding = styled(motion.main, {
     padding: '8vw 2vw 8vw 8vw',  // less padding to the right
     
     gridTemplateAreas: `
-    '... right'
     'left right'
-    'bottom right'
+    'left right'
+    'left right'
     `,
     // https://stackoverflow.com/questions/43311943/prevent-content-from-expanding-grid-items
     gridTemplateRows: 'repeat(3, minmax(0px, 1fr))',
@@ -39,7 +39,7 @@ const StyledLanding = styled(motion.main, {
     gridTemplateAreas: `
       'right'
       'left'
-      'bottom'
+      'left'
     `,
     gridTemplateColumns: 'minmax(0px, 1fr)',
     gridTemplateRows: 'minmax(0px, 2fr) minmax(0px, 2fr) minmax(0px, 1fr)',
@@ -50,6 +50,7 @@ const StyledLanding = styled(motion.main, {
 const StyledHeader = styled(motion.h1, {
   '& > b': {
     fontFamily: '$firacode',
+    fontWeight: 500,
     color: '$gray100',
     fontStyle: 'normal',
     display: 'block',
@@ -68,6 +69,7 @@ const StyledHeader = styled(motion.h1, {
   },
   '& > em': {
     fontFamily: '$firacode',
+    fontWeight: 500,
     color: '$gray100',
     display: 'block',
     fontStyle: 'normal',
@@ -103,6 +105,12 @@ const StyledHeader = styled(motion.h1, {
 });
 
 const StyledLeft = styled(motion.div, {
+  '@imac': {
+    marginTop: '15vh',
+  },
+  '@ipad': {
+    marginTop: '0',
+  },
   gridArea: 'left',
   flexbox: 'column',
   gap: '30px',
@@ -299,6 +307,7 @@ const Landing: React.FC<Props> = ({ ...props }) => {
         >
           A scaffold for vending your services on the web
         </StyledSubheader>
+        <Nav/>
       </StyledLeft>
       <StyledRight
         variants={threeVariants}
@@ -307,7 +316,6 @@ const Landing: React.FC<Props> = ({ ...props }) => {
           <DisplacementSphere/>
         </ThreeEnv>
       </StyledRight>
-      <Nav/>
       <StyledFooter
         variants={footerVariants}
       >

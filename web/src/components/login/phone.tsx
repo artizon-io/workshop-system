@@ -16,7 +16,7 @@ type StyledPhoneVariants = Stitches.VariantProps<typeof StyledPhone>;
 
 const StyledHeader = styled('h2', {
   fontFamily: '$firacode',
-  fontWeight: 500,
+  fontWeight: 400,
   fontSize: '25px'
 });
 
@@ -48,6 +48,7 @@ const StyledFormText = styled('p', {
   color: '$gray600',
   fontWeight: 300,
   fontSize: '13px',
+  fontStyle: 'normal'
 });
 
 const StyledPhone = styled(motion.div, {

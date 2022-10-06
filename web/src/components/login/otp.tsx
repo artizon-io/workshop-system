@@ -21,7 +21,7 @@ const StyledForm = styled('form', {
 
 const StyledHeader = styled('h2', {
   fontFamily: '$firacode',
-  fontWeight: 500,
+  fontWeight: 400,
   fontSize: '22px'
 });
 
