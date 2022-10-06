@@ -6,3 +6,5 @@ src/stripeConfig.tsx
 public/
 .env
 **/build/
+**/dist/
+**/public/

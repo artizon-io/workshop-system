@@ -1,12 +1,16 @@
 import { defineConfig } from 'vite';
 import path from 'path';
 import react from '@vitejs/plugin-react';
+import { visualizer } from "rollup-plugin-visualizer";
 
 export default defineConfig({
   // assetsInclude: ['**/*.vs', '**/*.fs'],
   logLevel: 'info',
   optimizeDeps: {
 
+  },
+  build: {
+    outDir: 'public'
   },
   server: {
     fs: {
@@ -23,6 +27,10 @@ export default defineConfig({
       // Only .tsx files
       include: '**/*.tsx'
     }),
+    visualizer({  // for visualizing bundle size of packages
+      emitFile: false,  // toggle to true during dev
+      filename: "stats.html",
+    })
   ],
   resolve: {
     alias: [

@@ -321,11 +321,20 @@ const Bottom: React.FC<React.ComponentProps<typeof StyledBottom>> = ({ ...props 
                   <TimelineDot/>
                 </StyledTimelineItem>
                 <StyledTimelineItem>
-                  <StyledTimelineItemHeader type='incomplete'>Responsive UI</StyledTimelineItemHeader>
-                  <TimelineDot type={'incomplete'}/>
+                  <StyledTimelineItemHeader>Responsive UI</StyledTimelineItemHeader>
+                  <TimelineDot/>
+                </StyledTimelineItem>
+                <StyledTimelineItem>
+                  <StyledTimelineItemHeader type='incomplete'>Performance Optimisation</StyledTimelineItemHeader>
+                  <StyledTimelineItemBody type='incomplete'>Code-splitting, reduce initial page load time</StyledTimelineItemBody>
+                  <TimelineDot type='incomplete'/>
                 </StyledTimelineItem>
                 <StyledTimelineItem>
                   <StyledTimelineItemHeader type='incomplete'>Payment, register page</StyledTimelineItemHeader>
+                  <TimelineDot type={'incomplete'}/>
+                </StyledTimelineItem>
+                <StyledTimelineItem>
+                  <StyledTimelineItemHeader type='incomplete'>User management page</StyledTimelineItemHeader>
                   <TimelineDot type={'incomplete'}/>
                 </StyledTimelineItem>
                 <StyledTimelineItem>
@@ -335,6 +344,16 @@ const Bottom: React.FC<React.ComponentProps<typeof StyledBottom>> = ({ ...props 
                 <StyledTimelineItem>
                   <StyledTimelineItemHeader type='incomplete'>Deployment</StyledTimelineItemHeader>
                   <TimelineDot type={'incomplete'}/>
+                </StyledTimelineItem>
+                <StyledTimelineItem>
+                  <StyledTimelineItemHeader type='incomplete'>SEO Optimisation</StyledTimelineItemHeader>
+                  <StyledTimelineItemBody type='incomplete'>SSG for landing page</StyledTimelineItemBody>
+                  <TimelineDot type='incomplete'/>
+                </StyledTimelineItem>
+                <StyledTimelineItem>
+                  <StyledTimelineItemHeader type='incomplete'>Workshop Info Datatable</StyledTimelineItemHeader>
+                  <StyledTimelineItemBody type='incomplete'>Autocomplete-search, filtering, sorting</StyledTimelineItemBody>
+                  <TimelineDot type='incomplete'/>
                 </StyledTimelineItem>
                 <StyledCloseButton
                   onClick={() => setShowTimelineDialog(false)}

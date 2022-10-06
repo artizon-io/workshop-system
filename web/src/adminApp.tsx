@@ -3,11 +3,11 @@ import { Auth, ConfirmationResult, getAuth, RecaptchaVerifier, signInWithPhoneNu
 import { BrowserRouter, Navigate, redirect, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import Logger from 'js-logger';
 import { useUser } from 'reactfire';
-import Loading from '@pages/loading';
-import AdminUserManagement from '@pages/adminUserManagement';
-import Admin from '@pages/admin';
-import AdminLayout from '@layout/adminLayout';
-import NotFound from '@pages/notFound';
+const Loading = React.lazy(() => import('@pages/loading'));
+const AdminUserManagement = React.lazy(() => import('@pages/adminUserManagement'));
+const Admin = React.lazy(() => import('@pages/admin'));
+const AdminLayout = React.lazy(() => import('@layout/adminLayout'));
+const NotFound = React.lazy(() => import('@pages/notFound'));
 import { AnimatePresence } from 'framer-motion';
 
 

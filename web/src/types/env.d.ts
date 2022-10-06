@@ -13,6 +13,8 @@ interface ImportMetaEnv {
   
   readonly VITE_STRIPE_API_KEY: string;
   readonly VITE_STRIPE_API_TEST_KEY: string;
+
+  readonly VITE_IS_DEMO_MODE: string;
 }
 
 interface ImportMeta {

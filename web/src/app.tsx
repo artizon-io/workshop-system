@@ -1,17 +1,17 @@
 import React, { FC, ReactElement, ReactNode, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import Loading from '@pages/loading';
-import Landing from '@pages/landing';
-import Workshops from '@pages/workshops';
-import WorkshopEnroll from '@pages/workshopEnroll';
-import WorkshopEnrollComplete from '@pages/workshopEnrollComplete';
-import NotFound from '@pages/notFound';
-import Layout from '@layout/layout';
-import Login from '@pages/login';
-import Error from '@pages/error';
+const Loading = React.lazy(() => import('@pages/loading'));
+const Landing = React.lazy(() => import('@pages/landing'));
+const Workshops = React.lazy(() => import('@pages/workshops'));
+const WorkshopEnroll = React.lazy(() => import('@pages/workshopEnroll'));
+const WorkshopEnrollComplete = React.lazy(() => import('@pages/workshopEnrollComplete'));
+const NotFound = React.lazy(() => import('@pages/notFound'));
+const Layout = React.lazy(() => import('@layout/layout'));
+const Login = React.lazy(() => import('@pages/login'));
+const Error = React.lazy(() => import('@pages/error'));
 import { AnimatePresence } from 'framer-motion';
 import AdminApp from './adminApp';
-import Support from '@pages/support';
+const Support = React.lazy(() => import('@pages/support'));
 
 
 const App : FC<{}> = ({}) => {
@@ -32,7 +32,7 @@ const App : FC<{}> = ({}) => {
 
         <Route path="/admin/*" element={<AdminApp/>}/>
         
-        {import.meta.env.DEV && <>
+        {(import.meta.env.DEV || import.meta.env.VITE_IS_DEMO_MODE) && <>
           <Route path="/login" element={<Login/>}/>
           <Route path="/loading" element={<Loading/>}/>
           <Route path="/notfound" element={<NotFound/>}/>

@@ -11,6 +11,7 @@ import { Button } from '@components/button';
 import Overlay from '@components/dialog/overlay';
 import EditDialog from './editDialog';
 import InfoDialog from './infoDialog';
+import { useNavigate } from 'react-router-dom';
 
 
 const EditTrigger : React.FC<{
@@ -50,6 +51,8 @@ const Bottom : React.FC<{
 } & React.ComponentProps<typeof StyledBottom>> = ({ adminMode, ...props }) => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [infoDialogOpen, setInfoDialogOpen] = useState(false);
+
+  const navigate = useNavigate();
 
   if (adminMode)
     return (
@@ -92,7 +95,7 @@ const Bottom : React.FC<{
   else  // user
     return (
       <StyledBottom className='bottom'>
-        <Button size={'s'} style={'blue'}>
+        <Button size={'s'} style={'blue'} onClick={() => navigate('/workshop/enroll')}>
           Enroll
           <MdPersonAdd style={{ fontSize: '15px', transform: 'translate(0px, -2px)' }}/>
         </Button>
