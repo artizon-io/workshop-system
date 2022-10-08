@@ -1,5 +1,5 @@
 node_modules/
 dist/
 types/
-yarn-error.log
-**/.DS_Store
+**/*DS_Store
+*.log
