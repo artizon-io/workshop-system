@@ -1,12 +1,9 @@
 node_modules/
-assets/test/
 *.log
 src/firebaseConfig.tsx
 src/stripeConfig.tsx
 public/
 .env
-**/build/
-**/dist/
-**/public/
 .firebase/
 stats.html
+.firebaserc
