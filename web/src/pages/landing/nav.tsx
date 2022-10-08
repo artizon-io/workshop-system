@@ -87,6 +87,7 @@ const StyledTimelineItem = styled('div', {
 
 const StyledTimelineItemHeader = styled('h3', {
   fontFamily: '$firacode',
+  fontWeight: 400,
   fontSize: '15px',
   variants: {
     type: {
@@ -327,6 +328,10 @@ const Bottom: React.FC<React.ComponentProps<typeof StyledBottom>> = ({ ...props 
                   <StyledTimelineItemHeader>Performance Optimisation</StyledTimelineItemHeader>
                   <StyledTimelineItemBody>Code-splitting, reduce initial page load time</StyledTimelineItemBody>
                   <TimelineDot/>
+                </StyledTimelineItem>
+                <StyledTimelineItem>
+                  <StyledTimelineItemHeader type='incomplete'>Optimisation for Mobile</StyledTimelineItemHeader>
+                  <TimelineDot type='incomplete'/>
                 </StyledTimelineItem>
                 <StyledTimelineItem>
                   <StyledTimelineItemHeader type='incomplete'>Payment, register page</StyledTimelineItemHeader>

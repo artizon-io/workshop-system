@@ -2,6 +2,12 @@
   "hosting": {
     "public": "public",
     "ignore": [
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
     ]
   }
 }
