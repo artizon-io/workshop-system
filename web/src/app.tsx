@@ -11,11 +11,17 @@ const Login = React.lazy(() => import('@pages/login'));
 const Error = React.lazy(() => import('@pages/error'));
 import { AnimatePresence } from 'framer-motion';
 import AdminApp from './adminApp';
+import DeviceNotSupported from '@pages/deviceNotSupported';
 const Support = React.lazy(() => import('@pages/support'));
 
 
 const App : FC<{}> = ({}) => {
   const location = useLocation();
+  
+  if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))|Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/i.test(navigator.userAgent))
+    return (
+      <DeviceNotSupported/>
+    );
 
   return (
     <AnimatePresence mode='wait'>

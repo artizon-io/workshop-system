@@ -11,3 +11,7 @@ Don't waste time fixing the design decision mistakes that you have made in the p
 ### Picking a Restrictive System
 
 Don't ever pick a system that is restrictive. Down-the-road you will hit the point where you can't surpass its limitations and you will end up doing a massive refactoring... Too much structure is bad.
+
+### Be Considerate on Responsive Design
+
+Test your site on a mobile simulator. Be ready to implement 2 vastly different designs targeted at difference device types. Think about drag controls, hover, focus, and so on. Some libraries or features might not work well on mobile devices.
