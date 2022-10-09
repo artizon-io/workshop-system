@@ -9,6 +9,7 @@ import { Back } from "../back";
 import { AnimatePresence, motion } from "framer-motion";
 import Logger from "js-logger";
 import { Input } from "@components/input";
+import useLoginStore from "./states";
 
 
 type StyledOTPVariants = Stitches.VariantProps<typeof StyledOTP>;
@@ -41,17 +42,7 @@ const StyledSubheader = styled('p', {
 const StyledBodyText = styled('p', {
   color: '$gray600',
   fontWeight: 300,
-  fontSize: '13px',
-  '& > a': {
-    color: '$blue500s',
-    fontWeight: 400,
-    underline: "",
-    textDecorationColor: 'transparent',
-  },
-  '& > a:hover': {
-    cursor: 'pointer',
-    textDecorationColor: '$blue500',
-  },
+  fontSize: '13px'
 });
 
 const StyledInputGroup = styled('div', {
@@ -68,16 +59,18 @@ const StyledOTP = styled(motion.div, {
   },
 });
 
-// See https://github.com/stitchesjs/stitches/discussions/213
 interface Props extends React.ComponentProps<typeof StyledOTP> {
   submitOtp: (otp: string) => Promise<void>;
-  handleBack: React.MouseEventHandler<HTMLAnchorElement>;
+  submitPhone: (phone: string) => Promise<void>;
+  handleBack: () => void;
+  handleNext: () => void;
 };
 
-export const OTP: React.FC<Props> = ({ submitOtp, handleBack, ...props }) => {
+export const OTP: React.FC<Props> = ({ submitOtp, handleBack, submitPhone, ...props }) => {
   const [otpIndex, setOtpIndex] = useState(0);
   const otpInputRef = useRef<HTMLInputElement>(null);
   const otpSubmitRef = useRef<HTMLButtonElement>(null);
+  const phone = useLoginStore(state => state.phone);
 
   // Auto focus to otp input when component render
   useEffect(() => {
@@ -91,13 +84,10 @@ export const OTP: React.FC<Props> = ({ submitOtp, handleBack, ...props }) => {
   const formik = useFormik({
     initialValues:
       [...Array(6).keys()]  // loop 6 times
-        .reduce(
-        (acc, current) => {
+        .reduce((acc, current) => {
           (acc as {[key: string]: string})[`otp${current+1}`] = '';
           return acc;
-        },
-        {}
-      ),
+        },{}),
     initialStatus: 'waiting',
     validateOnChange: false,
     validateOnBlur: false,
@@ -117,26 +107,21 @@ export const OTP: React.FC<Props> = ({ submitOtp, handleBack, ...props }) => {
     },
     onReset: () => setOtpIndex(0),
     validationSchema: toFormikValidationSchema(
-      object([...Array(6).keys()].reduce(
-        (acc, current) => {
-          // Object.defineProperty(acc, `otp${current+1}`, {
-          //   value: string().regex(/\d/)
-          // });
-          (acc as {[key: string]: ZodString})[`otp${current+1}`] = string().regex(/\d/);
-          return acc;
-        },
-        {}
-      ))
+      object([...Array(6).keys()].reduce((acc, current) => {
+        // Object.defineProperty(acc, `otp${current+1}`, {
+        //   value: string().regex(/\d/)
+        // });
+        (acc as {[key: string]: ZodString})[`otp${current+1}`] = string().regex(/\d/);
+        return acc;
+      }, {}))
     )
   });
 
   useEffect(() : any => {
     formik.setErrors({});
 
-    // if (!formik.dirty)
     if ((Object.keys(formik.values) as Array<keyof typeof formik.values>).some(field => formik.values[field] === formik.initialValues[field]))
       formik.setStatus('waiting');
-
     else
       formik.setStatus('normal');
 
@@ -144,7 +129,6 @@ export const OTP: React.FC<Props> = ({ submitOtp, handleBack, ...props }) => {
 
   useEffect(() => {
     if (Object.keys(formik.errors).length > 0) {  // note that {} is truthy
-      Logger.debug(formik.errors);
       formik.setStatus('error');
       otpInputRef.current?.focus();
     }
@@ -158,9 +142,8 @@ export const OTP: React.FC<Props> = ({ submitOtp, handleBack, ...props }) => {
     }
 
     // Just been populated, move forward
-    if (otpInputRef.current?.value) {
+    if (otpInputRef.current?.value)
       setOtpIndex(index => Math.min(5, index+1));
-    }
   }
 
   useEffect(() => {
@@ -179,7 +162,8 @@ export const OTP: React.FC<Props> = ({ submitOtp, handleBack, ...props }) => {
     <StyledOTP {...props}>
       <Back onClick={handleBack}/>
       <StyledHeader>Verification</StyledHeader>
-      <StyledSubheader>An OTP has been sent to <em>91000000</em></StyledSubheader>
+      {/* Replace the last 4 char with * */}
+      <StyledSubheader>An OTP has been sent to <em>{phone.replace(/.{4}$/, '****')}</em></StyledSubheader>
       <StyledForm autoComplete="off" onSubmit={formik.handleSubmit} onReset={formik.handleReset}>
         <StyledInputGroup>
           {[...Array(6).keys()].map(index =>
@@ -192,12 +176,8 @@ export const OTP: React.FC<Props> = ({ submitOtp, handleBack, ...props }) => {
             />
           )}
         </StyledInputGroup>
-        <StyledBodyText className="resend">Didn't receive the code? <a>Resend</a></StyledBodyText>
-        <Button type="submit"
-          state={formik.status}
-        >
-          Verify
-        </Button>
+        <StyledBodyText>Didn't receive the code? <Button onClick={e => submitPhone(phone)}>Resend</Button></StyledBodyText>
+        <Button type="submit" state={formik.status}>Verify</Button>
       </StyledForm>
     </StyledOTP>
   );

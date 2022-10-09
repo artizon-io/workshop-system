@@ -10,10 +10,10 @@ const StyledRight = styled('div', {
   alignSelf: 'start',
 
   flexbox: 'column',
-  '@imac': {
+  '@bp4': {
     gap: '25px',
   },
-  '@ipad': {
+  '@bp2': {
     gap: '20px',
   },
   alignItems: 'flex-start',

@@ -25,19 +25,19 @@ const StyledNav = styled(motion.nav, {
   variants: {
     state: {
       'full': {
-        '@imac': {
+        '@bp4': {
           padding: '40px 50px',
         },
-        '@ipad': {
+        '@bp2': {
           padding: '40px 5vw',
         },
         backgroundColor: '$gray950',
       },
       'slim': {
-        '@imac': {
+        '@bp4': {
           padding: '20px 50px',
         },
-        '@ipad': {
+        '@bp2': {
           padding: '20px 5vw',
         },
         backdropFilter: 'blur(8px)',

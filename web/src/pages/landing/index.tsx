@@ -20,7 +20,7 @@ const StyledLanding = styled(motion.main, {
   backgroundColor: '$gray1000',
 
   display: 'grid',
-  '@imac': {
+  '@bp4': {
     padding: '8vw 2vw 8vw 8vw',  // less padding to the right
     
     gridTemplateAreas: `
@@ -33,7 +33,7 @@ const StyledLanding = styled(motion.main, {
     gridTemplateColumns: 'repeat(2, minmax(0px, 1fr))',
     gap: '50px',
   },
-  '@ipad': {
+  '@bp2': {
     padding: '5vh 8vw 10vh 12vw',  // less padding to top and right
 
     gridTemplateAreas: `
@@ -54,16 +54,16 @@ const StyledHeader = styled(motion.h1, {
     color: '$gray100',
     fontStyle: 'normal',
     display: 'block',
-    '@imac': {
+    '@bp4': {
       fontSize: '80px'
     },
-    '@macbook': {
+    '@bp3': {
       fontSize: '70px',
     },
-    '@ipad': {
+    '@bp2': {
       fontSize: '60px',
     },
-    '@iphone': {
+    '@bp1': {
       fontSize: '50px',
     },
   },
@@ -73,42 +73,42 @@ const StyledHeader = styled(motion.h1, {
     color: '$gray100',
     display: 'block',
     fontStyle: 'normal',
-    '@imac': {
+    '@bp4': {
       fontSize: '40px'
     },
-    '@macbook': {
+    '@bp3': {
       fontSize: '35px',
     },
-    '@ipad': {
+    '@bp2': {
       fontSize: '35px',
     },
-    '@iphone': {
+    '@bp1': {
       fontSize: '30px',
     },
   },
   '& > em > small': {
     color: '$gray750',
     fontWeight: 300,
-    '@imac': {
+    '@bp4': {
       fontSize: '20px'
     },
-    '@macbook': {
+    '@bp3': {
       fontSize: '18px',
     },
-    '@ipad': {
+    '@bp2': {
       fontSize: '18px',
     },
-    '@iphone': {
+    '@bp1': {
       fontSize: '16px',
     },
   }
 });
 
 const StyledLeft = styled(motion.div, {
-  '@imac': {
+  '@bp4': {
     marginTop: '15vh',
   },
-  '@ipad': {
+  '@bp2': {
     marginTop: '0',
   },
   gridArea: 'left',
@@ -123,19 +123,19 @@ const StyledSubheader = styled(motion.h2, {
   fontWeight: 400,
   fontStyle: 'italic',
   display: 'block',
-  '@imac': {
+  '@bp4': {
     fontSize: '18px',
     lineHeight: 2,
   },
-  '@macbook': {
+  '@bp3': {
     fontSize: '18px',
     lineHeight: 1.8,
   },
-  '@ipad': {
+  '@bp2': {
     fontSize: '20px',
     lineHeight: 1.6,
   },
-  '@iphone': {
+  '@bp1': {
     fontSize: '18px',
     lineHeight: 1.5,
   },
@@ -148,16 +148,16 @@ const StyledFooter = styled(motion.div, {
   // transform: 'translate(-50%, -50%)',
 
   fontFamily: '$firacode',
-  '@imac': {
+  '@bp4': {
     fontSize: '16px',
   },
-  '@macbook': {
+  '@bp3': {
     fontSize: '17px',
   },
-  '@ipad': {
+  '@bp2': {
     fontSize: '18px',
   },
-  '@iphone': {
+  '@bp1': {
     fontSize: '16px',
   },
   fontWeight: 300,
@@ -168,12 +168,12 @@ const StyledRight = styled(motion.div, {
   position: 'relative',
   aspectRatio: '1 / 1',
   margin: 'auto',
-  '@imac': {
+  '@bp4': {
     width: '100%',
     maxHeight: '100%',  // constraining the height in case width > height of the bounding box
     padding: '25px 0px 0px 0px',  // padding top
   },
-  '@ipad': {
+  '@bp2': {
     height: '100%',
     maxWidth: '100%',
     padding: '0px',

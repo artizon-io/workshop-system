@@ -67,7 +67,7 @@ const StyledWorkshopCard = styled(motion.div, {
   columnGap: '10%',
   gridTemplateColumns: 'minmax(0px, 1fr) auto',
   gridTemplateRows: '1fr auto',
-  '@imac': {
+  '@bp4': {
     gridTemplateAreas: `
       'left right'
       'bottom right'
@@ -75,7 +75,7 @@ const StyledWorkshopCard = styled(motion.div, {
     padding: '50px',
     rowGap: '50px',
   },
-  '@ipad': {
+  '@bp2': {
     gridTemplateAreas: `
       'left right'
       'bottom bottom'

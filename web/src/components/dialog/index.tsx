@@ -25,7 +25,7 @@ const StyledDialog = styled(motion.div, {
   variants: {
     spacing: {
       'compact': {
-        '@imac': {
+        '@bp4': {
           gap: '15px',
           padding: '30px',
 
@@ -34,7 +34,7 @@ const StyledDialog = styled(motion.div, {
           width: '95vw',  // TODO: not going to maxWidth even if element needs that space
           maxWidth: '95vh',
         },
-        '@ipad': {
+        '@bp2': {
           gap: '10px',
           padding: '30px',
 
@@ -47,12 +47,12 @@ const StyledDialog = styled(motion.div, {
       'normal': {
         gap: '30px',
 
-        '@imac': {
+        '@bp4': {
           maxHeight: '80vh',
           maxWidth: '80vw',
           padding: '40px',
         },
-        '@ipad': {
+        '@bp2': {
           maxHeight: '90vh',  // TODO: make height & width better
           width: '90vw',
           maxWidth: '90vw',

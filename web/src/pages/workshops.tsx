@@ -8,16 +8,16 @@ type StyledWorkshopsVariants = Stitches.VariantProps<typeof StyledWorkshops>
 
 const StyledWorkshops = styled('main', {
   flexbox: 'column',
-  '@imac': {
+  '@bp4': {
     margin: '180px 10vw 50px 10vw',
   },
-  '@macbook': {
+  '@bp3': {
     margin: '180px 5vw 50px 5vw',
   },
-  '@ipad': {
+  '@bp2': {
     margin: '180px 5vw 50px 5vw',
   },
-  '@iphone': {
+  '@bp1': {
     margin: '180px 5vw 50px 5vw',
   }
 });

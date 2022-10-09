@@ -106,13 +106,10 @@ export const { styled, css, keyframes, globalCss } = createStitches({
     }),
   },
   media: {
-    iphone: 'screen and (max-width: 480px)',
-    // iphone: '(max-width: 480px)',
-    ipad: 'screen and (max-width: 768px)',
-    // ipad: '(min-width: 481px) and (max-width: 768px)',
-    macbook: 'screen and (max-width: 1024px)',
-    // macbook: '(min-width: 769px) and (max-width: 1024px)',
-    imac: 'screen and (max-width: 10000px)'
+    bp1: 'screen and (max-width: 480px)',
+    bp2: 'screen and (max-width: 768px)',
+    bp3: 'screen and (max-width: 1024px)',
+    bp4: 'screen'
   },
 });
 
